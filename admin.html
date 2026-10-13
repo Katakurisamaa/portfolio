@@ -273,30 +273,23 @@
   </dialog>
 
   <!-- Boite de dialogue : Synchronisation en ligne (Vercel & GitHub) -->
+    <!-- Boite de dialogue : Synchronisation en ligne (Supabase) -->
   <dialog id="sync-dialog" aria-labelledby="sync-title">
-    <h2 id="sync-title">Synchronisation en ligne (Mobile / Vercel)</h2>
-    <p>Pour enregistrer, modifier ou supprimer des publications directement depuis ton smartphone sur Vercel :</p>
+    <h2 id="sync-title">?? Connect? ? Supabase</h2>
+    <p>Ton Atelier de gestion est maintenant directement reli? ? ta base de donn?es <strong>Supabase</strong> :</p>
     <div class="sync-options-guide">
       <div class="sync-option-box">
-        <strong>Option A (Recommand?e) : Variables Vercel</strong>
-        <p>Dans ton tableau de bord <em>Vercel &gt; Settings &gt; Environment Variables</em>, ajoute :</p>
-        <ul>
-          <li><code>ADMIN_PASSWORD</code> : ton mot de passe</li>
-          <li><code>GITHUB_TOKEN</code> : ton Personal Access Token GitHub (scope <code>repo</code>)</li>
-        </ul>
-        <p><small>Tout fonctionne automatiquement depuis ton mobile avec ton simple mot de passe !</small></p>
+        <strong>? Synchronisation instantan?e</strong>
+        <p style="margin:6px 0;">Projet Supabase : <code>yvrtpioalszmefypdfsy</code></p>
+        <p>Chaque ajout, modification ou suppression depuis ton smartphone est enregistr? en temps r?el dans ta base PostgreSQL.</p>
+        <p style="margin-top:6px;"><small style="color:var(--accent);">? Table <code>projects</code> active &nbsp;?&nbsp; ? Stockage <code>portfolio-media</code> actif</small></p>
       </div>
       <div class="sync-option-box">
-        <strong>Option B : Token m?moris? sur ce smartphone</strong>
-        <p>Si tu n'as pas encore configur? les variables Vercel, tu peux coller ton GitHub Token ici :</p>
-        <input type="password" id="custom-github-token" placeholder="ghp_..." autocomplete="off" style="margin-top:6px;width:100%;box-sizing:border-box;">
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button type="button" id="save-github-token" class="button full-width">M?moriser ce token</button>
-          <button type="button" id="clear-github-token" class="quiet-btn danger-link">Effacer</button>
-        </div>
+        <strong>?? Acc?s s?curis? depuis ton mobile</strong>
+        <p>Les fonctions serveur de ton portfolio sont branch?es sur Supabase.</p>
+        <p>Tu n'as besoin que de ton mot de passe administrateur pour tout g?rer depuis ton smartphone.</p>
       </div>
     </div>
-    <p id="sync-token-status" class="sync-status-text"></p>
     <div class="dialog-actions">
       <button type="button" class="button" id="close-sync-dialog">Fermer</button>
     </div>

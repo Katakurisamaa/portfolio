@@ -244,6 +244,40 @@ def publish_local(items):
             stale.unlink()
     atomic(ROOT / 'index.html', output)
 
+
+SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://yvrtpioalszmefypdfsy.supabase.co')
+SUPABASE_ANON = os.environ.get('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2cnRwaW9hbHN6bWVmeXBkZnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODk3NTksImV4cCI6MjEwNzQ2NTc1OX0.WECsQoXXtIrymJanEZqhCw1mZvVnOKkNRrU-9P0SrAs')
+
+def sync_to_supabase(items):
+    def run():
+        try:
+            req = urllib.request.Request(f"{SUPABASE_URL}/rest/v1/projects?select=id", headers={
+                'apikey': SUPABASE_ANON,
+                'Authorization': f'Bearer {SUPABASE_ANON}',
+                'Accept': 'application/json'
+            })
+            with urllib.request.urlopen(req, timeout=5) as r:
+                existing = json.loads(r.read().decode('utf-8'))
+                current_ids = {p['id'] for p in items}
+                for ex in existing:
+                    if ex['id'] not in current_ids:
+                        del_req = urllib.request.Request(f"{SUPABASE_URL}/rest/v1/projects?id=eq.{urllib.parse.quote(ex['id'])}", method='DELETE', headers={
+                            'apikey': SUPABASE_ANON,
+                            'Authorization': f'Bearer {SUPABASE_ANON}'
+                        })
+                        urllib.request.urlopen(del_req, timeout=5)
+            if items:
+                upsert_req = urllib.request.Request(f"{SUPABASE_URL}/rest/v1/projects?on_conflict=id", data=json.dumps(items).encode('utf-8'), headers={
+                    'apikey': SUPABASE_ANON,
+                    'Authorization': f'Bearer {SUPABASE_ANON}',
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates'
+                })
+                urllib.request.urlopen(upsert_req, timeout=5)
+        except Exception as e:
+            print(f"[Supabase Sync] {e}")
+    threading.Thread(target=run, daemon=True).start()
+
 def persist(items):
     render_index(items)
     backup = ROOT / '.backups'
@@ -251,6 +285,7 @@ def persist(items):
     name = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S-%f') + '.json'
     (backup / name).write_bytes((ROOT / 'projects.json').read_bytes())
     atomic(ROOT / 'projects.json', json.dumps({'projects': items}, ensure_ascii=False, indent=2))
+    sync_to_supabase(items)
     publish_local(items)
 
 def get_local_ip():

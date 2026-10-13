@@ -1,18 +1,18 @@
-// Vercel Serverless Function: Gestion des projets et publications via GitHub API
+// Vercel Serverless Function: Gestion des projets et publications via Supabase
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const REPO_OWNER = 'Katakurisamaa';
-const REPO_NAME = 'portfolio';
-
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yvrtpioalszmefypdfsy.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2cnRwaW9hbHN6bWVmeXBkZnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODk3NTksImV4cCI6MjEwNzQ2NTc1OX0.WECsQoXXtIrymJanEZqhCw1mZvVnOKkNRrU-9P0SrAs';
+const DEFAULT_HASH = '3ca8a7088a58c4bdc1334af1e91e33a08da0b3bf8ced9a1a7344c48ad12a5ea2'; // sha256 Richesse19
 
 const SECTIONS = [
-  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '↗', theme: 'sage', description: 'Probabilités, données et modélisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
-  { key: 'Web', title: 'Développement web', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label: 'projet' },
-  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '✦', theme: 'sand', description: 'Mes expériences avec l’intelligence artificielle, les outils que j’explore et ce que j’apprends en les construisant.', label: 'projet' },
-  { key: 'Lectures', title: 'Lectures & découvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les idées et les découvertes que j’ai envie de partager.', label: 'partage' },
-  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '✝', theme: 'clay', description: 'Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label: 'partage' }
+  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '?', theme: 'sage', description: 'Probabilit?s, donn?es et mod?lisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
+  { key: 'Web', title: 'D?veloppement web', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je cr?e sur mon temps libre. Des id?es qui deviennent des outils ? utiliser.', label: 'projet' },
+  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '?', theme: 'sand', description: 'Mes exp?riences avec l?intelligence artificielle, les outils que j?explore et ce que j?apprends en les construisant.', label: 'projet' },
+  { key: 'Lectures', title: 'Lectures & d?couvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les id?es et les d?couvertes que j?ai envie de partager.', label: 'partage' },
+  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '?', theme: 'clay', description: 'Ma relation avec J?sus, mes lectures de la Bible et mes r?flexions autour de la foi.', label: 'partage' }
 ];
 
 function catalog(items) {
@@ -21,8 +21,6 @@ function catalog(items) {
     count: items.filter(p => p.category === s.key).length
   }));
 }
-
-const DEFAULT_HASH = '3ca8a7088a58c4bdc1334af1e91e33a08da0b3bf8ced9a1a7344c48ad12a5ea2';
 
 function verifyAuth(req) {
   const auth = req.headers.authorization || req.headers['x-editor-token'] || '';
@@ -34,69 +32,107 @@ function verifyAuth(req) {
   return token === DEFAULT_HASH;
 }
 
+function normalizeFromDb(row) {
+  return {
+    id: row.id,
+    title: row.title || '',
+    category: row.category || '',
+    type: row.type || 'projet',
+    description: row.description || '',
+    details: row.details || '',
+    technologies: row.technologies || '',
+    site: row.site || '',
+    demo: row.demo || '',
+    github: row.github || '',
+    image: row.image || '',
+    imageAlt: row.imagealt || row.imageAlt || '',
+    artwork: row.artwork || '',
+    author: row.author || '',
+    bookTitle: row.booktitle || row.bookTitle || '',
+    quote: row.quote || '',
+    bibleRef: row.bibleref || row.bibleRef || '',
+    verseText: row.versetext || row.verseText || '',
+    created_at: row.created_at
+  };
+}
+
+function normalizeToDb(item) {
+  return {
+    id: item.id,
+    title: item.title || '',
+    category: item.category || '',
+    type: item.type || 'projet',
+    description: item.description || '',
+    details: item.details || '',
+    technologies: item.technologies || '',
+    site: item.site || '',
+    demo: item.demo || '',
+    github: item.github || '',
+    image: item.image || '',
+    imagealt: item.imageAlt || item.imagealt || '',
+    artwork: item.artwork || '',
+    author: item.author || '',
+    booktitle: item.bookTitle || item.booktitle || '',
+    quote: item.quote || '',
+    bibleref: item.bibleRef || item.bibleref || '',
+    versetext: item.verseText || item.versetext || ''
+  };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Editor-Token, X-GitHub-Token');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Editor-Token');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const githubToken = req.headers['x-github-token'] || process.env.GITHUB_TOKEN;
-
   // GET /api/projects
   if (req.method === 'GET') {
     try {
-      let content = null;
-      if (githubToken) {
-        try {
-          const ghRes = await fetch(https://api.github.com/repos///contents/projects.json, {
-            headers: {
-              'Authorization': Bearer ,
-              'Accept': 'application/vnd.github.v3+json',
-              'User-Agent': 'Portfolio-Vercel'
-            }
-          });
-          if (ghRes.ok) {
-            const ghData = await ghRes.json();
-            content = Buffer.from(ghData.content, 'base64').toString('utf-8');
+      let items = null;
+      try {
+        const sbRes = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*&order=created_at.asc`, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Accept': 'application/json'
           }
-        } catch (e) {
-          console.warn('GitHub fetch fallback:', e.message);
+        });
+        if (sbRes.ok) {
+          const rows = await sbRes.json();
+          items = rows.map(normalizeFromDb);
         }
+      } catch (e) {
+        console.warn('Supabase fetch fallback:', e.message);
       }
 
-      if (!content) {
+      if (!items) {
         const localPath = path.join(process.cwd(), 'projects.json');
         if (fs.existsSync(localPath)) {
-          content = fs.readFileSync(localPath, 'utf-8');
+          const content = fs.readFileSync(localPath, 'utf-8');
+          items = JSON.parse(content).projects || [];
         } else {
-          content = JSON.stringify({ projects: [] });
+          items = [];
         }
       }
 
-      const data = JSON.parse(content);
-      const items = data.projects || [];
+      const rev = crypto.createHash('sha256').update(JSON.stringify(items)).digest('hex');
       return res.status(200).json({
         projects: items,
-        revision: crypto.createHash('sha256').update(content).digest('hex'),
-        sections: catalog(items)
+        revision: rev,
+        sections: catalog(items),
+        source: 'supabase'
       });
     } catch (err) {
       return res.status(500).json({ error: 'Impossible de charger les publications : ' + err.message });
     }
   }
 
-  // PUT /api/projects : Enregistrement, Modification ou Suppression
+  // PUT /api/projects
   if (req.method === 'PUT') {
     if (!verifyAuth(req)) {
-      return res.status(401).json({ error: 'Session expirée. Connecte-toi.' });
-    }
-
-    if (!githubToken) {
-      return res.status(400).json({
-        error: 'GITHUB_TOKEN manquant. Configure-le dans Vercel (Environment Variables) ou clique sur « Sync en ligne » en haut pour le renseigner.'
-      });
+      return res.status(401).json({ error: 'Session expir?e. Connecte-toi.' });
     }
 
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -106,48 +142,54 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-      const getRes = await fetch(https://api.github.com/repos///contents/projects.json, {
+      const existingRes = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=id`, {
         headers: {
-          'Authorization': Bearer ,
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Portfolio-Vercel'
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Accept': 'application/json'
         }
       });
-      if (!getRes.ok) {
-        throw new Error('Impossible de récupérer projects.json sur GitHub (' + getRes.status + '). Vérifie les permissions du token.');
-      }
-      const currentFile = await getRes.json();
-      const currentSha = currentFile.sha;
+      const existingRows = existingRes.ok ? await existingRes.json() : [];
+      const newIds = new Set(projects.map(p => p.id));
+      const toDelete = existingRows.filter(r => !newIds.has(r.id)).map(r => r.id);
 
-      const newContent = JSON.stringify({ projects }, null, 2);
-      const encoded = Buffer.from(newContent, 'utf-8').toString('base64');
-
-      const putRes = await fetch(https://api.github.com/repos///contents/projects.json, {
-        method: 'PUT',
-        headers: {
-          'Authorization': Bearer ,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Portfolio-Vercel'
-        },
-        body: JSON.stringify({
-          message: 'Mise à jour des publications [Atelier Mobile / Web]',
-          content: encoded,
-          sha: currentSha
-        })
-      });
-
-      if (!putRes.ok) {
-        const putError = await putRes.json().catch(() => ({}));
-        throw new Error(putError.message || 'Erreur lors du commit GitHub (' + putRes.status + ')');
+      if (toDelete.length > 0) {
+        for (const id of toDelete) {
+          await fetch(`${SUPABASE_URL}/rest/v1/projects?id=eq.${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+          });
+        }
       }
 
+      if (projects.length > 0) {
+        const dbItems = projects.map(normalizeToDb);
+        const upsertRes = await fetch(`${SUPABASE_URL}/rest/v1/projects?on_conflict=id`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify(dbItems)
+        });
+        if (!upsertRes.ok) {
+          const errData = await upsertRes.json().catch(() => ({}));
+          throw new Error('Erreur Supabase : ' + (errData.message || upsertRes.statusText));
+        }
+      }
+
+      const rev = crypto.createHash('sha256').update(JSON.stringify(projects)).digest('hex');
       return res.status(200).json({
         success: true,
         projects,
-        revision: crypto.createHash('sha256').update(newContent).digest('hex'),
+        revision: rev,
         sections: catalog(projects),
-        message: 'Publications enregistrées ! Vercel redéploie le site automatiquement.'
+        message: 'Synchronis? instantan?ment avec Supabase !'
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });
