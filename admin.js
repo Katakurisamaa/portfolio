@@ -25,7 +25,6 @@ let projects = [], revision = '', token = '';
 let current = null, dirty = false, busy = false;
 let imagePath = '', imageFile = null, imageURL = '', artwork = '';
 let undo = null, pendingDelete = null;
-let searchQuery = '';
 
 // Hachage cryptographique standard dans le navigateur
 async function hashPassword(pw) {
@@ -34,7 +33,7 @@ async function hashPassword(pw) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Requêtes API de secours
+// Requetes API avec secours
 async function apiRequest(url, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
@@ -55,18 +54,9 @@ async function apiRequest(url, options = {}) {
   return text ? JSON.parse(text) : {};
 }
 
-let messageTimer = null;
 const message = (text, kind = '') => {
-  const el = $('message');
-  el.textContent = text;
-  el.className = `message ${kind}`;
-  if (messageTimer) clearTimeout(messageTimer);
-  if (kind === 'success') {
-    messageTimer = setTimeout(() => {
-      el.className = 'message';
-      el.textContent = 'Prêt pour de nouvelles créations.';
-    }, 6000);
-  }
+  $('message').textContent = text;
+  $('message').className = `message ${kind}`;
 };
 
 function lock(value) {
@@ -78,12 +68,6 @@ function lock(value) {
   $('confirm-delete').disabled = value;
   $('keep-project').disabled = value;
   document.querySelectorAll('.list-actions button, #section-tabs button').forEach(b => b.disabled = value);
-  const saveBtn = $('save');
-  if (value) {
-    saveBtn.innerHTML = '<span class="live-dot" style="display:inline-block; margin-right:6px;"></span> Publication en cours...';
-  } else {
-    saveBtn.innerHTML = 'Enregistrer et publier <span aria-hidden="true">↗</span>';
-  }
 }
 
 function approveDiscard() {
@@ -92,8 +76,7 @@ function approveDiscard() {
 
 function markDirty() {
   dirty = true;
-  $('save-state').textContent = '● Modifications non enregistrées';
-  $('save-state').style.color = 'var(--admin-accent)';
+  $('save-state').textContent = 'Modifications non enregistrées';
 }
 
 function clearImageURL() {
@@ -135,44 +118,52 @@ async function checkAuth() {
 
 $('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const pw = $('login-password').value.trim();
-  if (!pw) return;
-
-  const hashed = await hashPassword(pw);
-  if (hashed === EXPECTED_HASH) {
-    token = hashed;
-    localStorage.setItem('bm_admin_token', token);
-    showLogin(false);
-    message('✓ Bienvenue dans ton Atelier de création !', 'success');
-    await fetchProjectsFromSources();
-    return;
-  }
+  const password = $('login-password').value;
+  $('login-btn').disabled = true;
+  $('login-error').hidden = true;
 
   try {
-    const res = await apiRequest('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ password: pw })
-    });
-    if (res.token) {
-      token = res.token;
-      localStorage.setItem('bm_admin_token', token);
-      showLogin(false);
-      message('✓ Bienvenue dans ton Atelier de création !', 'success');
-      await fetchProjectsFromSources();
-      return;
+    const computedHash = await hashPassword(password);
+    let isAuthed = false;
+    let finalToken = '';
+
+    // Validation instantanee par hash SHA-256
+    if (computedHash === EXPECTED_HASH) {
+      isAuthed = true;
+      finalToken = computedHash;
+    } else {
+      // Tenter le endpoint /api/auth/login si mot de passe modifie dans Vercel
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        if (res.ok) {
+          const text = await res.text();
+          if (text) {
+            const data = JSON.parse(text);
+            finalToken = data.token;
+            isAuthed = true;
+          }
+        }
+      } catch (apiErr) {}
     }
+
+    if (!isAuthed) {
+      throw new Error('Mot de passe incorrect.');
+    }
+
+    token = finalToken;
+    localStorage.setItem('bm_admin_token', token);
+    showLogin(false);
+    load();
   } catch (err) {
     $('login-error').hidden = false;
-    $('login-error').textContent = 'Mot de passe incorrect. Réessaie.';
-    $('login-password').focus();
+    $('login-error').textContent = err.message || 'Erreur de connexion.';
+  } finally {
+    $('login-btn').disabled = false;
   }
-});
-
-$('toggle-password').addEventListener('click', () => {
-  const input = $('login-password');
-  const show = input.type === 'password';
-  input.type = show ? 'text' : 'password';
-  $('toggle-password').textContent = show ? '🙈' : '👁';
 });
 
 $('logout-btn').addEventListener('click', async () => {
@@ -181,58 +172,48 @@ $('logout-btn').addEventListener('click', async () => {
   localStorage.removeItem('bm_admin_token');
   sessionStorage.removeItem('bm_admin_token');
   token = '';
-  showLogin(true, 'Tu as été déconnecté.');
+  showLogin(true, 'Déconnecté avec succès.');
+});
+
+$('toggle-pw-visibility').addEventListener('click', () => {
+  const inp = $('login-password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
 });
 
 // Changement de mot de passe
 $('open-change-pw').addEventListener('click', () => {
-  $('current-pw').value = '';
-  $('new-pw').value = '';
   $('change-pw-error').hidden = true;
+  $('change-pw-form').reset();
   $('change-pw-dialog').showModal();
-  $('current-pw').focus();
 });
-
-$('cancel-change-pw').addEventListener('click', () => {
-  $('change-pw-dialog').close();
-});
+$('cancel-change-pw').addEventListener('click', () => $('change-pw-dialog').close());
 
 $('change-pw-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const cur = $('current-pw').value;
-  const nw = $('new-pw').value;
-  const errEl = $('change-pw-error');
-  errEl.hidden = true;
+  const currentPassword = $('current-pw').value;
+  const newPassword = $('new-pw').value;
+  $('confirm-change-pw').disabled = true;
 
   try {
-    await apiRequest('/api/auth/change-password', {
-      method: 'POST',
-      body: JSON.stringify({ currentPassword: cur, newPassword: nw })
-    });
+    const curHash = await hashPassword(currentPassword);
+    if (curHash !== EXPECTED_HASH) {
+      throw new Error('Mot de passe actuel incorrect.');
+    }
+    message('Pour modifier le mot de passe sur Vercel, ajoute ADMIN_PASSWORD dans les variables d’environnement Vercel.', 'success');
     $('change-pw-dialog').close();
-    message('✓ Mot de passe mis à jour avec succès.', 'success');
   } catch (err) {
-    errEl.hidden = false;
-    errEl.textContent = err.message || 'Impossible de mettre à jour le mot de passe.';
+    $('change-pw-error').hidden = false;
+    $('change-pw-error').textContent = err.message;
+  } finally {
+    $('confirm-change-pw').disabled = false;
   }
 });
 
-// Dialogue Supabase
-$('open-sync-dialog').addEventListener('click', () => {
-  $('sync-dialog').showModal();
-});
-$('close-sync-dialog').addEventListener('click', () => {
-  $('sync-dialog').close();
-});
-
-// Bascule de format de publication
+// --- Selecteur de type de publication ---
 function setPublicationType(type) {
   $('type').value = type;
-
   document.querySelectorAll('.type-pill').forEach(btn => {
-    const active = btn.dataset.type === type;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', String(active));
+    btn.classList.toggle('active', btn.dataset.type === type);
   });
 
   $('fields-projet').hidden = (type !== 'projet');
@@ -258,7 +239,7 @@ document.querySelectorAll('.type-pill').forEach(btn => {
   btn.addEventListener('click', () => setPublicationType(btn.dataset.type));
 });
 
-// --- Prévisualisation temps réel ---
+// --- Previsualisation temps reel ---
 function renderPreview() {
   const type = $('type').value || 'projet';
   const title = $('title').value.trim() || 'Titre de la publication';
@@ -327,7 +308,7 @@ function renderPreview() {
   }
 }
 
-// --- Édition et liste des publications ---
+// --- Edition et liste ---
 function edit(project = null, moveFocus = false) {
   form.reset();
   current = project?.id || null;
@@ -356,42 +337,27 @@ function edit(project = null, moveFocus = false) {
 
   dirty = false;
   $('edit-title').textContent = project ? 'Modifier la publication' : 'Nouvelle publication';
-  $('save-state').textContent = project ? '✓ Enregistré sur Supabase' : 'Prêt à écrire';
-  $('save-state').style.color = 'var(--admin-muted)';
+  $('save-state').textContent = project ? 'Enregistré sur cet appareil' : 'Prêt à écrire';
 
   renderList();
   renderPreview();
   if (moveFocus) $('title').focus();
-  if (window.innerWidth <= 850 && (project || moveFocus)) setMobileView('editor');
 }
 
 function renderList() {
   renderSections();
-  let visible = selectedSection === '__all__'
+  const visible = selectedSection === '__all__'
     ? projects
     : projects.filter(p => p.category === selectedSection);
-
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    visible = visible.filter(p =>
-      (p.title || '').toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q) ||
-      (p.category || '').toLowerCase().includes(q)
-    );
-  }
-
   $('count').textContent = String(visible.length);
-  if ($('mobile-list-count')) $('mobile-list-count').textContent = String(visible.length);
   $('project-list').replaceChildren();
 
   if (!visible.length) {
     const p = document.createElement('p');
     p.className = 'list-empty';
-    p.textContent = searchQuery
-      ? `Aucun résultat pour « ${searchQuery} ».`
-      : (selectedSection === '__all__'
-        ? 'Aucune publication pour le moment. Clique sur « ＋ Nouvelle publication » pour commencer.'
-        : `Aucune publication dans la rubrique « ${selectedSection} ». Clique sur « ＋ Nouvelle publication » pour en ajouter une.`);
+    p.textContent = selectedSection === '__all__'
+      ? 'Aucune publication pour le moment. Clique sur « Nouvelle publication » pour commencer.'
+      : `Aucune publication dans la rubrique « ${selectedSection} ». Clique sur « Nouvelle publication » pour en ajouter une.`;
     $('project-list').append(p);
   }
 
@@ -399,66 +365,32 @@ function renderList() {
     const article = document.createElement('article');
     article.className = 'list-project' + (item.id === current ? ' selected' : '');
 
-    // Haut de carte : tag type + rubrique
     const top = document.createElement('div');
     top.className = 'list-project-top';
-
     const tag = document.createElement('span');
     tag.className = 'list-type-tag';
-    const icon = item.type === 'lecture' ? '📖' : item.type === 'foi' ? '✝' : '💻';
-    tag.textContent = `${icon} ${item.type || 'projet'} · ${item.category || ''}`;
+    const icon = item.type === 'lecture' ? 'Aa Lecture' : item.type === 'foi' ? '✝ Foi' : '✦ Projet';
+    tag.textContent = `${icon} · ${item.category || ''}`;
     top.append(tag);
-
-    // Corps de carte : miniature + titre
-    const body = document.createElement('div');
-    body.className = 'list-project-body';
-
-    if (item.image) {
-      const img = document.createElement('img');
-      img.className = 'list-thumbnail';
-      img.src = item.image;
-      img.alt = item.title;
-      img.loading = 'lazy';
-      body.append(img);
-    } else {
-      const ph = document.createElement('div');
-      ph.className = 'list-thumbnail-placeholder';
-      ph.textContent = icon;
-      body.append(ph);
-    }
-
-    const info = document.createElement('div');
-    info.className = 'list-info';
 
     const heading = document.createElement('h3');
     heading.textContent = item.title;
 
-    const sub = document.createElement('div');
-    sub.className = 'list-meta-sub';
-    sub.textContent = item.bibleref || item.bibleRef || item.technologies || item.author || item.description || '';
-
-    info.append(heading, sub);
-    body.append(info);
-
-    // Actions
     const actions = document.createElement('div');
     actions.className = 'list-actions';
 
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
-    editBtn.className = 'btn-card-action';
-    editBtn.innerHTML = '✏️ Modifier';
-    editBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    editBtn.textContent = 'Modifier';
+    editBtn.addEventListener('click', () => {
       if (!busy && approveDiscard()) edit(item, true);
     });
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
-    delBtn.className = 'btn-card-action delete';
-    delBtn.innerHTML = '🗑️ Supprimer';
-    delBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    delBtn.className = 'delete';
+    delBtn.textContent = 'Supprimer';
+    delBtn.addEventListener('click', () => {
       if (busy || !approveDiscard()) return;
       pendingDelete = item.id;
       $('delete-description').textContent = `« ${item.title} » sera retiré du portfolio.`;
@@ -467,14 +399,7 @@ function renderList() {
     });
 
     actions.append(editBtn, delBtn);
-
-    article.append(top, body, actions);
-    article.addEventListener('click', () => {
-      if (!busy && approveDiscard() && item.id !== current) {
-        edit(item, false);
-      }
-    });
-
+    article.append(top, heading, actions);
     $('project-list').append(article);
   }
 
@@ -532,18 +457,9 @@ function renderSections() {
   const section = sections.find(s => s.key === selectedSection);
   $('section-title').textContent = selectedSection === '__all__' ? 'Toutes les publications' : (section?.title || selectedSection);
   $('section-description').textContent = selectedSection === '__all__'
-    ? 'Vue d’ensemble de toutes tes publications dans le portfolio.'
+    ? 'Vue d\'ensemble de toutes tes publications dans le portfolio.'
     : (section?.description || '');
   $('view-section').href = section ? `/rubriques/${section.slug}.html` : '/';
-}
-
-// Filtre recherche temps réel
-const searchInput = $('project-search');
-if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value.trim();
-    renderList();
-  });
 }
 
 // --- Chargement et sauvegarde avec Supabase en direct ---
@@ -555,24 +471,63 @@ async function fetchProjectsFromSources() {
         'Authorization': `Bearer ${SUPABASE_KEY}`
       }
     });
+    if (res.ok) {
+      const rows = await res.json();
+      return rows.map(r => ({
+        id: r.id,
+        title: r.title || '',
+        category: r.category || '',
+        type: r.type || 'projet',
+        description: r.description || '',
+        details: r.details || '',
+        technologies: r.technologies || '',
+        site: r.site || '',
+        demo: r.demo || '',
+        github: r.github || '',
+        image: r.image || '',
+        imageAlt: r.imagealt || r.imageAlt || '',
+        artwork: r.artwork || '',
+        author: r.author || '',
+        bookTitle: r.booktitle || r.bookTitle || '',
+        quote: r.quote || '',
+        bibleRef: r.bibleref || r.bibleRef || '',
+        verseText: r.versetext || r.verseText || '',
+        created_at: r.created_at
+      }));
+    }
+  } catch (e) {
+    console.warn('Supabase fetch error, fallback local:', e);
+  }
 
+  try {
+    const res = await fetch('/api/projects');
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        projects = data.map(row => ({
-          ...row,
-          imageAlt: row.imagealt || row.imageAlt || '',
-          bookTitle: row.booktitle || row.bookTitle || '',
-          bibleRef: row.bibleref || row.bibleRef || '',
-          verseText: row.versetext || row.verseText || ''
-        }));
-      }
-    } else {
-      const local = await apiRequest('/api/projects');
-      revision = local.revision || '';
-      projects = local.projects || [];
+      return data.projects || [];
     }
+  } catch (e) {}
 
+  try {
+    const res = await fetch('/projects.json');
+    if (res.ok) {
+      const data = await res.json();
+      return data.projects || [];
+    }
+  } catch (e) {}
+
+  return [];
+}
+
+async function load() {
+  lock(true);
+  try {
+    const isAuthed = await checkAuth();
+    if (!isAuthed) return;
+
+    message('Chargement des publications…');
+    const items = await fetchProjectsFromSources();
+    projects = items;
+    revision = String(Date.now());
     sections = SECTIONS.map(s => ({
       ...s,
       count: projects.filter(p => p.category === s.key).length
@@ -584,7 +539,7 @@ async function fetchProjectsFromSources() {
     undo = null;
     $('undo').hidden = true;
     edit();
-    message(`✓ Connecté à Supabase. ${projects.length} publications synchronisées !`, 'success');
+    message('✓ Connecté à Supabase. Tes publications sont synchronisées !', 'success');
   } catch (err) {
     message(`Erreur de chargement : ${err.message}`, 'error');
   } finally {
@@ -624,17 +579,16 @@ async function persist(next) {
         demo: p.demo || '',
         github: p.github || '',
         image: p.image || '',
-        imagealt: p.imageAlt || p.imagealt || '',
+        imagealt: p.imageAlt || '',
         artwork: p.artwork || '',
         author: p.author || '',
-        booktitle: p.bookTitle || p.booktitle || '',
+        booktitle: p.bookTitle || '',
         quote: p.quote || '',
-        bibleref: p.bibleRef || p.bibleref || '',
-        versetext: p.verseText || p.versetext || '',
-        updated_at: new Date().toISOString()
+        bibleref: p.bibleRef || '',
+        versetext: p.verseText || ''
       }));
 
-      const upRes = await fetch(`${SUPABASE_URL}/rest/v1/projects`, {
+      const upRes = await fetch(`${SUPABASE_URL}/rest/v1/projects?on_conflict=id`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_KEY,
@@ -649,7 +603,7 @@ async function persist(next) {
       savedToSupabase = true;
     }
   } catch (e) {
-    console.warn('Supabase save warning:', e);
+    console.warn('Supabase save error:', e);
   }
 
   try {
@@ -669,14 +623,14 @@ async function persist(next) {
   }));
 }
 
-// Événements formulaire
+// Formulaire
 form.addEventListener('input', () => {
   markDirty();
   renderPreview();
 });
 
-// Dropzone et sélection d'image
-function handleFile(file) {
+$('image-file').addEventListener('change', async () => {
+  const file = $('image-file').files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
     $('image-file').value = '';
@@ -689,33 +643,7 @@ function handleFile(file) {
   markDirty();
   renderPreview();
   message('Image prête. Enregistre pour la conserver.');
-}
-
-$('image-file').addEventListener('change', () => {
-  handleFile($('image-file').files[0]);
 });
-
-const dropzone = $('dropzone');
-if (dropzone) {
-  ['dragenter', 'dragover'].forEach(name => {
-    dropzone.addEventListener(name, (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = 'var(--admin-accent)';
-      dropzone.style.background = '#ffffff';
-    });
-  });
-  ['dragleave', 'drop'].forEach(name => {
-    dropzone.addEventListener(name, (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = '#cfcbba';
-      dropzone.style.background = 'var(--admin-surface-soft)';
-    });
-  });
-  dropzone.addEventListener('drop', (e) => {
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  });
-}
 
 $('remove-image').addEventListener('click', () => {
   clearImageURL();
@@ -731,12 +659,11 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (busy || !form.reportValidity()) return;
   lock(true);
-  message('⚡ Enregistrement et synchronisation en cours...');
+  message('Enregistrement et publication en cours…');
 
   try {
     if (imageFile) {
       let uploadedUrl = '';
-
       try {
         const ext = imageFile.name.split('.').pop() || 'jpg';
         const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -753,7 +680,7 @@ form.addEventListener('submit', async (e) => {
           uploadedUrl = `${SUPABASE_URL}/storage/v1/object/public/portfolio-media/${filename}`;
         }
       } catch (e) {
-        console.warn('Supabase storage upload failed:', e);
+        console.warn('Supabase upload storage failed, fallback /api/upload:', e);
       }
 
       if (!uploadedUrl) {
@@ -784,10 +711,9 @@ form.addEventListener('submit', async (e) => {
     const next = current ? projects.map(p => p.id === current ? item : p) : [...projects, item];
     await persist(next);
     edit(projects.find(p => p.id === item.id));
-    if (window.innerWidth <= 850) setMobileView('list');
-    message('✓ Publication enregistrée et synchronisée avec Supabase !', 'success');
+    message('Publication enregistrée et synchronisée instantanément avec Supabase !', 'success');
   } catch (err) {
-    message(`Erreur : ${err.message}`, 'error');
+    message(err.message, 'error');
     renderPreview();
   } finally {
     lock(false);
@@ -799,71 +725,61 @@ $('new-project').addEventListener('click', () => {
 });
 
 $('cancel').addEventListener('click', () => {
-  if (approveDiscard()) edit(projects.find(p => p.id === current));
+  if (approveDiscard()) edit(projects.find(p => p.id === current) || null);
 });
 
 $('reload').addEventListener('click', () => {
-  if (approveDiscard()) fetchProjectsFromSources();
+  if (approveDiscard()) load();
 });
 
-// Suppression et annulation
+$('keep-project').addEventListener('click', () => $('delete-dialog').close());
+
 $('confirm-delete').addEventListener('click', async () => {
-  if (!pendingDelete) return;
-  const targetId = pendingDelete;
-  $('delete-dialog').close();
+  if (busy || !pendingDelete) return;
   lock(true);
-  message('Suppression en cours...');
-
   try {
-    const prev = projects;
-    const removed = projects.find(p => p.id === targetId);
-    const next = projects.filter(p => p.id !== targetId);
-
-    await persist(next);
-    undo = { project: removed, previous: prev };
+    const idx = projects.findIndex(p => p.id === pendingDelete);
+    const item = projects[idx];
+    await persist(projects.filter(p => p.id !== pendingDelete));
+    undo = { item, idx };
     $('undo').hidden = false;
+    $('delete-dialog').close();
     edit(null);
-    message(`« ${removed?.title} » a été supprimé.`, 'success');
+    message('Publication retirée de Supabase. Tu peux annuler si besoin.', 'success');
   } catch (err) {
-    message(`Erreur de suppression : ${err.message}`, 'error');
+    $('delete-dialog').close();
+    message(err.message, 'error');
   } finally {
     pendingDelete = null;
     lock(false);
   }
 });
 
-$('keep-project').addEventListener('click', () => {
-  $('delete-dialog').close();
-  pendingDelete = null;
-});
-
 $('undo').addEventListener('click', async () => {
   if (!undo || busy || !approveDiscard()) return;
   lock(true);
-  message('Restauration en cours...');
   try {
-    const toRestore = undo.project;
-    const next = [...projects, toRestore];
+    const next = [...projects];
+    next.splice(Math.min(undo.idx, next.length), 0, undo.item);
     await persist(next);
+    edit(projects.find(p => p.id === undo.item.id));
     undo = null;
     $('undo').hidden = true;
-    edit(toRestore);
-    message('✓ Publication restaurée avec succès !', 'success');
+    message('Publication restaurée avec succès.', 'success');
   } catch (err) {
-    message(`Erreur de restauration : ${err.message}`, 'error');
+    message(err.message, 'error');
   } finally {
     lock(false);
   }
 });
 
-// Initialisation
-window.addEventListener('beforeunload', (e) => {
-  if (dirty) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
+$('open-sync-dialog')?.addEventListener('click', () => {
+  $('sync-dialog').showModal();
+});
+$('close-sync-dialog')?.addEventListener('click', () => $('sync-dialog').close());
+
+window.addEventListener('beforeunload', e => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
 });
 
-checkAuth().then(ok => {
-  if (ok) fetchProjectsFromSources();
-});
+load();
