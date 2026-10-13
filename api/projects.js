@@ -9,7 +9,7 @@ const DEFAULT_HASH = '3ca8a7088a58c4bdc1334af1e91e33a08da0b3bf8ced9a1a7344c48ad1
 
 const SECTIONS = [
   { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '?', theme: 'sage', description: 'Probabilit?s, donn?es et mod?lisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
-  { key: 'Web', title: 'D?veloppement web', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je cr?e sur mon temps libre. Des id?es qui deviennent des outils ? utiliser.', label: 'projet' },
+  { key: 'Web', title: 'Programmation', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je cr?e sur mon temps libre. Des id?es qui deviennent des outils ? utiliser.', label: 'projet' },
   { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '?', theme: 'sand', description: 'Mes exp?riences avec l?intelligence artificielle, les outils que j?explore et ce que j?apprends en les construisant.', label: 'projet' },
   { key: 'Lectures', title: 'Lectures & d?couvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les id?es et les d?couvertes que j?ai envie de partager.', label: 'partage' },
   { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '?', theme: 'clay', description: 'Ma relation avec J?sus, mes lectures de la Bible et mes r?flexions autour de la foi.', label: 'partage' }

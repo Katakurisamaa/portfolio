@@ -4,7 +4,7 @@ import hashlib, re, unicodedata
 
 SECTIONS = [
     dict(key='Actuariat & data', title='Sciences actuarielles', slug='sciences-actuarielles', symbol='∑', theme='sage', description='Probabilités, données et modélisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label='projet'),
-    dict(key='Web', title='Développement web', slug='developpement-web', symbol='</>', theme='clay', description='Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label='projet'),
+    dict(key='Web', title='Programmation', slug='developpement-web', symbol='</>', theme='clay', description='Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label='projet'),
     dict(key='IA', title='Intelligence artificielle', slug='intelligence-artificielle', symbol='✦', theme='sand', description='Mes expériences avec l’intelligence artificielle, les outils que j’explore et ce que j’apprends en les construisant.', label='projet'),
     dict(key='Lectures', title='Lectures & découvertes', slug='lectures', symbol='Aa', theme='sage', description='Un espace pour les livres, les idées et les découvertes que j’ai envie de partager.', label='partage'),
     dict(key='Foi', title='Foi & Bible', slug='foi-bible', symbol='✝', theme='clay', description='Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label='partage'),
