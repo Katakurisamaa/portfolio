@@ -13,11 +13,11 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const EXPECTED_HASH = '3ca8a7088a58c4bdc1334af1e91e33a08da0b3bf8ced9a1a7344c48ad12a5ea2';
 
 const SECTIONS = [
-  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '?', theme: 'sage', description: 'Probabilit?s, donn?es et mod?lisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
-  { key: 'Web', title: 'D?veloppement web', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je cr?e sur mon temps libre. Des id?es qui deviennent des outils ? utiliser.', label: 'projet' },
-  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '?', theme: 'sand', description: 'Mes exp?riences avec l?intelligence artificielle, les outils que j?explore et ce que j?apprends en les construisant.', label: 'projet' },
-  { key: 'Lectures', title: 'Lectures & d?couvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les id?es et les d?couvertes que j?ai envie de partager.', label: 'partage' },
-  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '?', theme: 'clay', description: 'Ma relation avec J?sus, mes lectures de la Bible et mes r?flexions autour de la foi.', label: 'partage' }
+  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '↗', theme: 'sage', description: 'Probabilités, données et modélisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
+  { key: 'Web', title: 'Développement web', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label: 'projet' },
+  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '✦', theme: 'sand', description: 'Mes expériences avec l’intelligence artificielle, les outils que j’explore et ce que j’apprends en les construisant.', label: 'projet' },
+  { key: 'Lectures', title: 'Lectures & découvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les idées et les découvertes que j’ai envie de partager.', label: 'partage' },
+  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '✝', theme: 'clay', description: 'Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label: 'partage' }
 ];
 
 let sections = [...SECTIONS], selectedSection = 'Actuariat & data';
@@ -43,7 +43,7 @@ async function apiRequest(url, options = {}) {
   const response = await fetch(url, { ...options, headers });
   if (!response.ok) {
     if (response.status === 401) {
-      showLogin(true, 'Session expir?e. Reconnecte-toi.');
+      showLogin(true, 'Session expirée. Reconnecte-toi.');
     }
     const text = await response.text().catch(() => '');
     let err = `Erreur (${response.status})`;
@@ -71,12 +71,12 @@ function lock(value) {
 }
 
 function approveDiscard() {
-  return !dirty || window.confirm('Abandonner les modifications non enregistr?es ?');
+  return !dirty || window.confirm('Abandonner les modifications non enregistrées ?');
 }
 
 function markDirty() {
   dirty = true;
-  $('save-state').textContent = 'Modifications non enregistr?es';
+  $('save-state').textContent = 'Modifications non enregistrées';
 }
 
 function clearImageURL() {
@@ -172,7 +172,7 @@ $('logout-btn').addEventListener('click', async () => {
   localStorage.removeItem('bm_admin_token');
   sessionStorage.removeItem('bm_admin_token');
   token = '';
-  showLogin(true, 'D?connect? avec succ?s.');
+  showLogin(true, 'Déconnecté avec succès.');
 });
 
 $('toggle-pw-visibility').addEventListener('click', () => {
@@ -199,7 +199,7 @@ $('change-pw-form').addEventListener('submit', async (e) => {
     if (curHash !== EXPECTED_HASH) {
       throw new Error('Mot de passe actuel incorrect.');
     }
-    message('Pour modifier le mot de passe sur Vercel, ajoute ADMIN_PASSWORD dans les variables d?environnement Vercel.', 'success');
+    message('Pour modifier le mot de passe sur Vercel, ajoute ADMIN_PASSWORD dans les variables d’environnement Vercel.', 'success');
     $('change-pw-dialog').close();
   } catch (err) {
     $('change-pw-error').hidden = false;
@@ -221,14 +221,14 @@ function setPublicationType(type) {
   $('fields-foi').hidden = (type !== 'foi');
 
   if (type === 'lecture') {
-    $('details-heading').textContent = 'Note de lecture & r?flexions approfondies';
-    $('details-help').textContent = 'Ce texte s?affichera dans la section d?pliable de la fiche de lecture.';
+    $('details-heading').textContent = 'Note de lecture & réflexions approfondies';
+    $('details-help').textContent = 'Ce texte s’affichera dans la section dépliable de la fiche de lecture.';
   } else if (type === 'foi') {
-    $('details-heading').textContent = 'M?ditation & partage personnel';
-    $('details-help').textContent = 'Ce texte s?affichera dans la section d?pliable du partage.';
+    $('details-heading').textContent = 'Méditation & partage personnel';
+    $('details-help').textContent = 'Ce texte s’affichera dans la section dépliable du partage.';
   } else {
     $('details-heading').textContent = 'Dans les coulisses';
-    $('details-help').textContent = 'D?tails techniques, architecture ou d?marche du projet.';
+    $('details-help').textContent = 'Détails techniques, architecture ou démarche du projet.';
   }
 
   markDirty();
@@ -243,7 +243,7 @@ document.querySelectorAll('.type-pill').forEach(btn => {
 function renderPreview() {
   const type = $('type').value || 'projet';
   const title = $('title').value.trim() || 'Titre de la publication';
-  const desc = $('description').value.trim() || 'Le r?sum? appara?tra ici.';
+  const desc = $('description').value.trim() || 'Le résumé apparaîtra ici.';
   const cat = $('category').value || selectedSection;
 
   $('preview-name').textContent = title;
@@ -251,16 +251,16 @@ function renderPreview() {
   $('preview-extra').replaceChildren();
 
   if (type === 'lecture') {
-    $('preview-category').textContent = `Lecture ? ${$('author').value.trim() || 'Livre'}`;
+    $('preview-category').textContent = `Lecture · ${$('author').value.trim() || 'Livre'}`;
     const quote = $('quote').value.trim();
     if (quote) {
       const bq = document.createElement('blockquote');
       bq.className = 'reading-quote';
-      bq.textContent = `? ${quote} ?`;
+      bq.textContent = `« ${quote} »`;
       $('preview-extra').append(bq);
     }
   } else if (type === 'foi') {
-    $('preview-category').textContent = `Foi & Bible ? ${$('bibleRef').value.trim() || 'M?ditation'}`;
+    $('preview-category').textContent = `Foi & Bible · ${$('bibleRef').value.trim() || 'Méditation'}`;
     const verse = $('verseText').value.trim();
     if (verse) {
       const bq = document.createElement('blockquote');
@@ -271,11 +271,11 @@ function renderPreview() {
         ref.textContent = $('bibleRef').value.trim();
         bq.append(ref);
       }
-      bq.append(document.createTextNode(`? ${verse} ?`));
+      bq.append(document.createTextNode(`« ${verse} »`));
       $('preview-extra').append(bq);
     }
   } else {
-    $('preview-category').textContent = [cat, $('technologies').value.trim()].filter(Boolean).join(' ? ');
+    $('preview-category').textContent = [cat, $('technologies').value.trim()].filter(Boolean).join(' · ');
   }
 
   const src = imageURL || imagePath;
@@ -287,13 +287,13 @@ function renderPreview() {
   } else {
     $('preview-image').removeAttribute('src');
     $('preview-placeholder').querySelector('strong').textContent = (title.slice(0, 2) || 'BM').toUpperCase();
-    $('preview-placeholder').querySelector('span').textContent = artwork ? 'VISUEL CONSERV?' : 'NOUVELLE PUBLICATION';
+    $('preview-placeholder').querySelector('span').textContent = artwork ? 'VISUEL CONSERVÉ' : 'NOUVELLE PUBLICATION';
   }
   $('remove-image').hidden = !src;
 
   $('preview-links').replaceChildren();
   if (type === 'projet') {
-    for (const [key, label] of [['site', 'Voir le site ?'], ['demo', 'D?mo ?'], ['github', 'Code source ?']]) {
+    for (const [key, label] of [['site', 'Voir le site ↗'], ['demo', 'Démo ↗'], ['github', 'Code source ↗']]) {
       try {
         const url = new URL($(key).value);
         if (['http:', 'https:'].includes(url.protocol)) {
@@ -337,7 +337,7 @@ function edit(project = null, moveFocus = false) {
 
   dirty = false;
   $('edit-title').textContent = project ? 'Modifier la publication' : 'Nouvelle publication';
-  $('save-state').textContent = project ? 'Enregistr? sur cet appareil' : 'Pr?t ? ?crire';
+  $('save-state').textContent = project ? 'Enregistré sur cet appareil' : 'Prêt à écrire';
 
   renderList();
   renderPreview();
@@ -353,7 +353,7 @@ function renderList() {
   if (!visible.length) {
     const p = document.createElement('p');
     p.className = 'list-empty';
-    p.textContent = 'Aucune publication dans cette rubrique pour le moment. Clique sur ? Nouvelle publication ? pour commencer.';
+    p.textContent = 'Aucune publication dans cette rubrique pour le moment. Clique sur « Nouvelle publication » pour commencer.';
     $('project-list').append(p);
   }
 
@@ -365,7 +365,7 @@ function renderList() {
     top.className = 'list-project-top';
     const tag = document.createElement('span');
     tag.className = 'list-type-tag';
-    tag.textContent = item.type === 'lecture' ? '?? Lecture' : item.type === 'foi' ? '? Foi' : '?? Projet';
+    tag.textContent = item.type === 'lecture' ? '📖 Lecture' : item.type === 'foi' ? '✝ Foi' : '🚀 Projet';
     top.append(tag);
 
     const heading = document.createElement('h3');
@@ -388,7 +388,7 @@ function renderList() {
     delBtn.addEventListener('click', () => {
       if (busy || !approveDiscard()) return;
       pendingDelete = item.id;
-      $('delete-description').textContent = `? ${item.title} ? sera retir? du portfolio.`;
+      $('delete-description').textContent = `« ${item.title} » sera retiré du portfolio.`;
       $('delete-dialog').showModal();
       $('keep-project').focus();
     });
@@ -425,7 +425,7 @@ function renderSections() {
       if (busy || !approveDiscard()) return;
       selectedSection = section.key;
       edit();
-      message(`Rubrique ? ${section.title} ?. S?lectionne une publication ou ajoutes-en une.`);
+      message(`Rubrique « ${section.title} ». Sélectionne une publication ou ajoutes-en une.`);
     });
     $('section-tabs').append(button);
   }
@@ -498,7 +498,7 @@ async function load() {
     const isAuthed = await checkAuth();
     if (!isAuthed) return;
 
-    message('Chargement des publications?');
+    message('Chargement des publications…');
     const items = await fetchProjectsFromSources();
     projects = items;
     revision = String(Date.now());
@@ -513,7 +513,7 @@ async function load() {
     undo = null;
     $('undo').hidden = true;
     edit();
-    message('?? Connect? ? Supabase. Tes publications sont synchronis?es !', 'success');
+    message('🟢 Connecté à Supabase. Tes publications sont synchronisées !', 'success');
   } catch (err) {
     message(`Erreur de chargement : ${err.message}`, 'error');
   } finally {
@@ -616,7 +616,7 @@ $('image-file').addEventListener('change', async () => {
   imageURL = URL.createObjectURL(file);
   markDirty();
   renderPreview();
-  message('Image pr?te. Enregistre pour la conserver.');
+  message('Image prête. Enregistre pour la conserver.');
 });
 
 $('remove-image').addEventListener('click', () => {
@@ -633,7 +633,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (busy || !form.reportValidity()) return;
   lock(true);
-  message('Enregistrement et publication en cours?');
+  message('Enregistrement et publication en cours…');
 
   try {
     if (imageFile) {
@@ -685,7 +685,7 @@ form.addEventListener('submit', async (e) => {
     const next = current ? projects.map(p => p.id === current ? item : p) : [...projects, item];
     await persist(next);
     edit(projects.find(p => p.id === item.id));
-    message('Publication enregistr?e et synchronis?e instantan?ment avec Supabase !', 'success');
+    message('Publication enregistrée et synchronisée instantanément avec Supabase !', 'success');
   } catch (err) {
     message(err.message, 'error');
     renderPreview();
@@ -719,7 +719,7 @@ $('confirm-delete').addEventListener('click', async () => {
     $('undo').hidden = false;
     $('delete-dialog').close();
     edit(null);
-    message('Publication retir?e de Supabase. Tu peux annuler si besoin.', 'success');
+    message('Publication retirée de Supabase. Tu peux annuler si besoin.', 'success');
   } catch (err) {
     $('delete-dialog').close();
     message(err.message, 'error');
@@ -739,7 +739,7 @@ $('undo').addEventListener('click', async () => {
     edit(projects.find(p => p.id === undo.item.id));
     undo = null;
     $('undo').hidden = true;
-    message('Publication restaur?e avec succ?s.', 'success');
+    message('Publication restaurée avec succès.', 'success');
   } catch (err) {
     message(err.message, 'error');
   } finally {
