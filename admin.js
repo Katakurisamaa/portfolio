@@ -5,7 +5,8 @@ const form = $('editor');
 const allFields = [
   'title', 'category', 'type', 'description', 'details',
   'technologies', 'site', 'demo', 'github', 'imageAlt',
-  'author', 'bookTitle', 'quote', 'bibleRef', 'verseText'
+  'author', 'bookTitle', 'quote', 'bibleRef', 'verseText',
+  'document'
 ];
 
 const SUPABASE_URL = 'https://yvrtpioalszmefypdfsy.supabase.co';
@@ -325,6 +326,14 @@ function renderPreview() {
       } catch {}
     }
   }
+  const docVal = $('document')?.value?.trim();
+  if (docVal) {
+    const docBtn = document.createElement('button');
+    docBtn.type = 'button';
+    docBtn.className = 'project-doc-btn';
+    docBtn.textContent = '📄 Lire le document d’étude ↗';
+    $('preview-links').append(docBtn);
+  }
 }
 
 // --- Édition et liste des publications ---
@@ -462,6 +471,20 @@ function edit(project = null, moveFocus = false) {
   imageFile = null;
   artwork = project?.artwork || '';
   clearImageURL();
+
+  const docStatus = $('doc-upload-status');
+  const docText = $('doc-upload-text');
+  if (docText) docText.textContent = 'Téléverser PDF';
+  if ($('document-file')) $('document-file').value = '';
+  if (docStatus) {
+    if (project?.document) {
+      docStatus.className = 'doc-upload-status ready';
+      docStatus.textContent = '✓ Document PDF associé (Lecture seule)';
+      docStatus.hidden = false;
+    } else {
+      docStatus.hidden = true;
+    }
+  }
 
   dirty = false;
   $('edit-title').textContent = project ? 'Modifier la publication' : 'Nouvelle publication';
@@ -668,13 +691,24 @@ async function fetchProjectsFromSources() {
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        projects = data.map(row => ({
-          ...row,
-          imageAlt: row.imagealt || row.imageAlt || '',
-          bookTitle: row.booktitle || row.bookTitle || '',
-          bibleRef: row.bibleref || row.bibleRef || '',
-          verseText: row.versetext || row.verseText || ''
-        }));
+        projects = data.map(row => {
+          let doc = row.document || '';
+          let det = row.details || '';
+          const match = det.match(/\[DOC:([^\]]+)\]/);
+          if (match) {
+            if (!doc) doc = match[1].trim();
+            det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+          }
+          return {
+            ...row,
+            details: det,
+            document: doc,
+            imageAlt: row.imagealt || row.imageAlt || '',
+            bookTitle: row.booktitle || row.bookTitle || '',
+            bibleRef: row.bibleref || row.bibleRef || '',
+            verseText: row.versetext || row.verseText || ''
+          };
+        });
       }
     } else {
       const local = await apiRequest('/api/projects');
@@ -721,27 +755,37 @@ async function persist(next) {
     }
 
     if (next.length > 0) {
-      const dbRows = next.map(p => ({
-        id: p.id,
-        title: p.title || '',
-        category: p.category || '',
-        type: p.type || 'projet',
-        description: p.description || '',
-        details: p.details || '',
-        technologies: p.technologies || '',
-        site: p.site || '',
-        demo: p.demo || '',
-        github: p.github || '',
-        image: p.image || '',
-        imagealt: p.imageAlt || p.imagealt || '',
-        artwork: p.artwork || '',
-        author: p.author || '',
-        booktitle: p.bookTitle || p.booktitle || '',
-        quote: p.quote || '',
-        bibleref: p.bibleRef || p.bibleref || '',
-        versetext: p.verseText || p.versetext || '',
-        updated_at: new Date().toISOString()
-      }));
+      const dbRows = next.map(p => {
+        let det = p.details || '';
+        const doc = (p.document || '').trim();
+        if (doc) {
+          det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+          det = det ? `${det}\n\n[DOC:${doc}]` : `[DOC:${doc}]`;
+        } else {
+          det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+        }
+        return {
+          id: p.id,
+          title: p.title || '',
+          category: p.category || '',
+          type: p.type || 'projet',
+          description: p.description || '',
+          details: det,
+          technologies: p.technologies || '',
+          site: p.site || '',
+          demo: p.demo || '',
+          github: p.github || '',
+          image: p.image || '',
+          imagealt: p.imageAlt || p.imagealt || '',
+          artwork: p.artwork || '',
+          author: p.author || '',
+          booktitle: p.bookTitle || p.booktitle || '',
+          quote: p.quote || '',
+          bibleref: p.bibleRef || p.bibleref || '',
+          versetext: p.verseText || p.versetext || '',
+          updated_at: new Date().toISOString()
+        };
+      });
 
       const upRes = await fetch(`${SUPABASE_URL}/rest/v1/projects`, {
         method: 'POST',
@@ -843,6 +887,33 @@ form.addEventListener('submit', async (e) => {
   message('⚡ Enregistrement et synchronisation en cours...');
 
   try {
+    const docInput = $('document-file');
+    const docFile = docInput?.files?.[0];
+    if (docFile) {
+      if (docFile.size > 25 * 1024 * 1024) {
+        throw new Error('Le document PDF ne doit pas dépasser 25 Mo.');
+      }
+      message('⚡ Téléversement du document PDF sur Supabase Storage...');
+      const cleanName = docFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filename = `doc-${Date.now()}-${cleanName}`;
+      const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${filename}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/pdf'
+        },
+        body: docFile
+      });
+      if (upRes.ok) {
+        $('document').value = `${SUPABASE_URL}/storage/v1/object/public/portfolio-media/${filename}`;
+        docInput.value = '';
+      } else {
+        const errText = await upRes.text().catch(() => '');
+        throw new Error(`Échec de téléversement du PDF : ${errText || upRes.statusText}`);
+      }
+    }
+
     if (imageFile) {
       let uploadedUrl = '';
 
@@ -979,3 +1050,33 @@ window.addEventListener('beforeunload', (e) => {
 checkAuth().then(ok => {
   if (ok) fetchProjectsFromSources();
 });
+
+const docFileInput = $('document-file');
+if (docFileInput) {
+  docFileInput.addEventListener('change', () => {
+    const file = docFileInput.files[0];
+    const status = $('doc-upload-status');
+    const labelText = $('doc-upload-text');
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        docFileInput.value = '';
+        if (status) {
+          status.className = 'doc-upload-status';
+          status.textContent = 'Veuillez sélectionner un fichier PDF valide.';
+          status.hidden = false;
+        }
+        return;
+      }
+      if (labelText) labelText.textContent = file.name.length > 20 ? file.name.slice(0, 17) + '...' : file.name;
+      if (status) {
+        status.className = 'doc-upload-status ready';
+        status.textContent = `✓ « ${file.name} » prêt à être téléversé (${(file.size / 1024 / 1024).toFixed(1)} Mo)`;
+        status.hidden = false;
+      }
+      markDirty();
+    } else {
+      if (labelText) labelText.textContent = 'Téléverser PDF';
+      if (status) status.hidden = true;
+    }
+  });
+}

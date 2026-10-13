@@ -391,3 +391,207 @@
   background: rgba(167, 66, 45, 0.08);
   transform: scale(1.15);
 }
+
+/* ==========================================================================
+   Bouton & Liseuse intégrée de documents d'étude (Lecture seule sécurisée)
+   ========================================================================== */
+.project-doc-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent);
+  padding: 6px 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.project-doc-btn:hover {
+  color: var(--accent);
+  border-bottom-color: var(--ink);
+}
+
+.doc-viewer-modal {
+  width: min(94vw, 1140px);
+  height: min(92vh, 880px);
+  max-width: 96vw;
+  max-height: 94vh;
+  margin: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0;
+  box-shadow: 0 25px 60px rgba(41, 44, 37, 0.28);
+  overflow: hidden;
+}
+
+.doc-viewer-modal::backdrop {
+  background: rgba(41, 44, 37, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.doc-viewer-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--paper);
+}
+
+.doc-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.doc-viewer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.doc-viewer-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.doc-viewer-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-viewer-sub {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.doc-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.doc-viewer-mode-btn {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.doc-viewer-mode-btn:hover {
+  border-color: var(--ink);
+  background: #ffffff;
+}
+
+.doc-viewer-close-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.doc-viewer-close-btn:hover {
+  background: var(--accent);
+}
+
+.doc-viewer-body {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: #eae7dd;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.doc-viewer-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(245, 242, 233, 0.94);
+  z-index: 2;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.doc-viewer-spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: docSpin 0.8s linear infinite;
+}
+
+@keyframes docSpin {
+  to { transform: rotate(360deg); }
+}
+
+.doc-viewer-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 760px) {
+  .doc-viewer-modal {
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+  .doc-viewer-header {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .doc-viewer-title {
+    font-size: 1rem;
+  }
+  .doc-viewer-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

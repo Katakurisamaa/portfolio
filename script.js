@@ -68,3 +68,96 @@ if ('IntersectionObserver' in window && !reducedMotion.matches) {
     if (event.matches) { observer.disconnect(); document.querySelectorAll('.is-pending').forEach(element => element.classList.remove('is-pending')); }
   });
 }
+
+// --- Liseuse intégrée de documents d'étude & recherche (Lecture seule sécurisée) ---
+const docModal = document.querySelector('#doc-viewer-modal');
+if (docModal) {
+  const docFrame = document.querySelector('#doc-viewer-frame');
+  const docTitle = document.querySelector('#doc-viewer-title');
+  const docLoading = document.querySelector('#doc-viewer-loading');
+  const closeBtn = document.querySelector('#close-doc-viewer');
+  const modeToggle = document.querySelector('#doc-viewer-mode-toggle');
+  let currentDocUrl = '';
+  let viewerMode = 'optimized';
+
+  function computeViewerUrl(rawUrl, mode) {
+    if (!rawUrl) return 'about:blank';
+    if (rawUrl.includes('drive.google.com')) {
+      return rawUrl.replace(/\/view(\?.*)?$/, '/preview');
+    }
+    if (mode === 'optimized') {
+      return `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+    }
+    const sep = rawUrl.includes('#') ? '&' : '#';
+    return `${rawUrl}${sep}toolbar=0&navpanes=0&scrollbar=1`;
+  }
+
+  function loadDoc(url, title) {
+    currentDocUrl = url;
+    if (docTitle) docTitle.textContent = title || 'Document d’étude';
+    if (docLoading) docLoading.hidden = false;
+    if (docFrame) {
+      docFrame.src = computeViewerUrl(currentDocUrl, viewerMode);
+      docFrame.onload = () => {
+        if (docLoading) docLoading.hidden = true;
+      };
+    }
+    if (modeToggle) {
+      modeToggle.textContent = viewerMode === 'optimized' ? 'Vue directe' : 'Vue optimisée';
+    }
+    if (typeof docModal.showModal === 'function') {
+      try { docModal.showModal(); } catch { docModal.setAttribute('open', ''); }
+    } else {
+      docModal.setAttribute('open', '');
+    }
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDoc() {
+    if (typeof docModal.close === 'function') {
+      try { docModal.close(); } catch { docModal.removeAttribute('open'); }
+    } else {
+      docModal.removeAttribute('open');
+    }
+    if (docFrame) docFrame.src = 'about:blank';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', event => {
+    const btn = event.target.closest('.project-doc-btn');
+    if (btn) {
+      event.preventDefault();
+      const doc = btn.dataset.doc;
+      const title = btn.dataset.docTitle || btn.closest('.project')?.querySelector('h3')?.textContent || 'Document d’étude';
+      if (doc) loadDoc(doc, title);
+    }
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeDoc);
+
+  if (modeToggle) {
+    modeToggle.addEventListener('click', () => {
+      viewerMode = viewerMode === 'optimized' ? 'direct' : 'optimized';
+      if (currentDocUrl) {
+        if (docLoading) docLoading.hidden = false;
+        if (docFrame) docFrame.src = computeViewerUrl(currentDocUrl, viewerMode);
+        modeToggle.textContent = viewerMode === 'optimized' ? 'Vue directe' : 'Vue optimisée';
+      }
+    });
+  }
+
+  docModal.addEventListener('click', event => {
+    if (event.target === docModal) closeDoc();
+  });
+
+  docModal.addEventListener('cancel', () => {
+    closeDoc();
+  });
+
+  docModal.addEventListener('contextmenu', e => e.preventDefault());
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's') && (docModal.open || docModal.hasAttribute('open'))) {
+      e.preventDefault();
+    }
+  });
+}

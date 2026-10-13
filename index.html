@@ -112,4 +112,27 @@
 </section>
 <section class="contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap contact-grid reveal"><div><p class="eyebrow">04 / LA CONVERSATION CONTINUE</p><h2 id="contact-title">Une idée, un livre,<br><em>un bonjour ?</em></h2></div><div class="contact-copy"><p>Pour parler d’un projet, partager une découverte ou simplement faire connaissance.</p><a class="email-link" href="mailto:minkojunior400@gmail.com">minkojunior400@gmail.com <span aria-hidden="true">↗</span></a><div class="contact-links"><button id="copy-email" hidden>Copier l’adresse <span aria-hidden="true">⧉</span></button><a href="https://www.linkedin.com/in/benjaminminko" target="_blank" rel="noopener noreferrer">LinkedIn ↗<span class="sr-only"> (nouvel onglet)</span></a></div><p class="copy-status" id="copy-status" role="status"></p></div></div></section>
 </main><footer class="wrap footer"><a class="brand" href="#accueil">bm.</a><span>© <span id="year">2026</span> Benjamin Minko · Toujours en chemin.<a class="discreet-admin-link" href="admin.html" aria-label="Atelier" title="Atelier">✦</a></span><a href="#accueil">Retour en haut ↑</a></footer>
+  <!-- Liseuse de document d'étude & recherche (Lecture seule sécurisée) -->
+  <dialog id="doc-viewer-modal" class="doc-viewer-modal" aria-labelledby="doc-viewer-title">
+    <div class="doc-viewer-container">
+      <div class="doc-viewer-header">
+        <div class="doc-viewer-info">
+          <span class="doc-viewer-badge">✦ CONSULTATION EN LIGNE · LECTURE SEULE</span>
+          <h2 id="doc-viewer-title" class="doc-viewer-title">Document d’étude</h2>
+          <p class="doc-viewer-sub">Lecture intégrale du document · Téléchargement et exportation désactivés</p>
+        </div>
+        <div class="doc-viewer-actions">
+          <button type="button" class="doc-viewer-mode-btn" id="doc-viewer-mode-toggle" title="Basculer le mode de rendu">Vue directe</button>
+          <button type="button" class="doc-viewer-close-btn" id="close-doc-viewer" aria-label="Fermer la liseuse">✕ Fermer</button>
+        </div>
+      </div>
+      <div class="doc-viewer-body" id="doc-viewer-body">
+        <div class="doc-viewer-loading" id="doc-viewer-loading">
+          <span class="doc-viewer-spinner" aria-hidden="true"></span>
+          <span>Ouverture du document en cours...</span>
+        </div>
+        <iframe id="doc-viewer-frame" class="doc-viewer-frame" src="about:blank" title="Document d’étude" loading="lazy"></iframe>
+      </div>
+    </div>
+  </dialog>
 </body></html>

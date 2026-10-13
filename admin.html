@@ -188,6 +188,26 @@
                   </div>
                   <label for="demo">Lien de démonstration <small>facultatif</small></label>
                   <input id="demo" name="demo" type="url" maxlength="2000" placeholder="https://demo.monsite.com">
+
+                  <div class="document-upload-box">
+                    <label for="document">
+                      Document d’étude ou mémoire <small>PDF · Lecture seule intégrée</small>
+                    </label>
+                    <p class="field-help">Permet aux visiteurs de lire l’intégralité de ton étude directement sur le portfolio, sans pouvoir la télécharger ni l'exporter.</p>
+                    <div class="doc-input-grid">
+                      <div class="doc-file-btn-wrap">
+                        <label for="document-file" class="doc-upload-trigger">
+                          <span class="doc-icon" aria-hidden="true">📄</span>
+                          <span id="doc-upload-text">Téléverser PDF</span>
+                        </label>
+                        <input type="file" id="document-file" accept="application/pdf" class="sr-only">
+                      </div>
+                      <div class="doc-url-wrap">
+                        <input id="document" name="document" type="url" maxlength="2000" placeholder="https://... ou téléverse un fichier PDF ci-contre">
+                      </div>
+                    </div>
+                    <div id="doc-upload-status" class="doc-upload-status" hidden></div>
+                  </div>
                 </div>
               </div>
 

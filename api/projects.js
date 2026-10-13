@@ -33,17 +33,25 @@ function verifyAuth(req) {
 }
 
 function normalizeFromDb(row) {
+  let doc = row.document || '';
+  let det = row.details || '';
+  const match = det.match(/\[DOC:([^\]]+)\]/);
+  if (match) {
+    if (!doc) doc = match[1].trim();
+    det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+  }
   return {
     id: row.id,
     title: row.title || '',
     category: row.category || '',
     type: row.type || 'projet',
     description: row.description || '',
-    details: row.details || '',
+    details: det,
     technologies: row.technologies || '',
     site: row.site || '',
     demo: row.demo || '',
     github: row.github || '',
+    document: doc,
     image: row.image || '',
     imageAlt: row.imagealt || row.imageAlt || '',
     artwork: row.artwork || '',
@@ -57,13 +65,21 @@ function normalizeFromDb(row) {
 }
 
 function normalizeToDb(item) {
+  let det = item.details || '';
+  const doc = item.document ? item.document.trim() : '';
+  if (doc) {
+    det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+    det = det ? `${det}\n\n[DOC:${doc}]` : `[DOC:${doc}]`;
+  } else {
+    det = det.replace(/\[DOC:[^\]]+\]/g, '').trim();
+  }
   return {
     id: item.id,
     title: item.title || '',
     category: item.category || '',
     type: item.type || 'projet',
     description: item.description || '',
-    details: item.details || '',
+    details: det,
     technologies: item.technologies || '',
     site: item.site || '',
     demo: item.demo || '',

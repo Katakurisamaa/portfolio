@@ -26,6 +26,7 @@ FIELDS = {
     'site': 2000,
     'demo': 2000,
     'github': 2000,
+    'document': 2000,
     'imageAlt': 200,
     'author': 150,
     'bookTitle': 200,
@@ -152,8 +153,15 @@ def validate_projects(items):
                 p['type'] = 'foi'
             else:
                 p['type'] = 'projet'
-        # Validation des liens
-        for key in ('site', 'demo', 'github'):
+        # Extraction du document si encode dans details
+        if not p.get('document') and '[DOC:' in p['details']:
+            m_doc = re.search(r'\[DOC:([^\]]+)\]', p['details'])
+            if m_doc:
+                p['document'] = m_doc.group(1).strip()
+                p['details'] = re.sub(r'\[DOC:[^\]]+\]', '', p['details']).strip()
+
+        # Validation des liens et documents
+        for key in ('site', 'demo', 'github', 'document'):
             if p[key]:
                 url = urlsplit(p[key])
                 if url.scheme not in ('https', 'http') or not url.hostname or url.username or url.password or any(c.isspace() for c in p[key]):
@@ -209,6 +217,8 @@ def render_projects(items):
             meta_sub = e('author') or 'Partage'
             if p.get('quote'):
                 body_extra += f'<blockquote class="reading-quote">« {e("quote")} »</blockquote>'
+            if p.get('document'):
+                body_extra += f'<div class="project-links"><button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire la note de lecture ↗</button></div>'
             details_label = 'Note de lecture & réflexions'
         elif ptype == 'foi':
             meta_label = f'{n+1:02d} — Foi & Bible'
@@ -218,6 +228,8 @@ def render_projects(items):
             if verse_val:
                 ref_span = f'<span class="verse-ref">{escape(ref_val, quote=True)}</span>' if ref_val else ''
                 body_extra += f'<blockquote class="faith-quote">{ref_span}« {escape(verse_val, quote=True)} »</blockquote>'
+            if p.get('document'):
+                body_extra += f'<div class="project-links"><button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire le partage ↗</button></div>'
             details_label = 'Méditation & partage'
         else:
             meta_label = f'{n+1:02d} — {e("category")}'
@@ -227,6 +239,8 @@ def render_projects(items):
             for key, label in [('site', 'Voir le site'), ('demo', 'Essayer la démo'), ('github', 'Code source')]:
                 if p.get(key):
                     links.append(f'<a href="{e(key)}" target="_blank" rel="noopener noreferrer">{label} ↗<span class="sr-only"> (nouvel onglet)</span></a>')
+            if p.get('document'):
+                links.append(f'<button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire le document d’étude ↗</button>')
             if links:
                 body_extra += '<div class="project-links">' + ''.join(links) + '</div>'
 
