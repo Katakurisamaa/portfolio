@@ -86,7 +86,7 @@ async function checkAuth() {
     if (res.authenticated) {
       showLogin(false);
       if (res.defaultPasswordUsed) {
-        $('default-pw-hint').hidden = false;
+        // hint removed
       }
       return true;
     }
@@ -117,7 +117,7 @@ $('login-form').addEventListener('submit', async (e) => {
     localStorage.setItem('bm_admin_token', token);
     showLogin(false);
     if (data.defaultPasswordUsed) {
-      $('default-pw-hint').hidden = false;
+      // hint removed
     }
     load();
   } catch (err) {
@@ -164,7 +164,7 @@ $('change-pw-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ currentPassword, newPassword })
     });
     $('change-pw-dialog').close();
-    $('default-pw-hint').hidden = true;
+    // hint removed
     message('Mot de passe mis à jour avec succès.', 'success');
   } catch (err) {
     $('change-pw-error').hidden = false;

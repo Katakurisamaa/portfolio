@@ -1,5 +1,9 @@
 # Identifiants et configurations sensibles
 admin_config.json
+admin_config*.json
+ADMIN_GUIDE.md
+*.cmd
+supabase_setup.sql
 .env
 *.env
 .env.*

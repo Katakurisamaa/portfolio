@@ -52,14 +52,14 @@ def verify_pw(pw, h, salt):
 def load_auth_config():
     with LOCK:
         if not CONFIG_FILE.exists():
-            h, salt = hash_pw('benjamin2026')
+            h, salt = hash_pw(os.environ.get('ADMIN_PASSWORD', secrets.token_hex(12)))
             data = {'password_hash': h, 'salt': salt, 'default_used': True, 'created_at': time.time()}
             CONFIG_FILE.write_text(json.dumps(data, indent=2), encoding='utf-8')
             return data
         try:
             return json.loads(CONFIG_FILE.read_text(encoding='utf-8'))
         except Exception:
-            h, salt = hash_pw('benjamin2026')
+            h, salt = hash_pw(os.environ.get('ADMIN_PASSWORD', secrets.token_hex(12)))
             data = {'password_hash': h, 'salt': salt, 'default_used': True, 'created_at': time.time()}
             CONFIG_FILE.write_text(json.dumps(data, indent=2), encoding='utf-8')
             return data
@@ -513,7 +513,7 @@ if __name__ == '__main__':
     print(f'  Atelier Admin    : http://localhost:{args.port}/admin')
     print(f'  Mobile (Wi-Fi)   : http://{local_ip}:{args.port}/admin')
     if auth_data.get('default_used', False):
-        print(f'  Mot de passe     : benjamin2026 (par défaut, modifiable dans l’admin)')
+        print('  Mot de passe     : [Configur? et s?curis?]')
     else:
         print(f'  Mot de passe     : [Configuré et personnalisé]')
     print('=' * 65 + '\n', flush=True)
