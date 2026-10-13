@@ -16,9 +16,11 @@ let undo = null, pendingDelete = null;
 
 // --- Gestion des requêtes sécurisées ---
 async function apiRequest(url, options = {}) {
+  const customGhToken = localStorage.getItem('bm_github_token') || '';
   const headers = {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(customGhToken ? { 'X-GitHub-Token': customGhToken } : {}),
     ...options.headers
   };
   const response = await fetch(url, { ...options, headers });
@@ -573,3 +575,41 @@ window.addEventListener('beforeunload', e => {
 
 // Démarrage
 load();
+
+
+// --- Synchronisation en ligne & Token GitHub ---
+function updateSyncDialogStatus() {
+  const savedToken = localStorage.getItem('bm_github_token') || '';
+  if (savedToken) {
+    const preview = savedToken.slice(0, 4) + '...' + savedToken.slice(-4);
+    $('sync-token-status').textContent = `Token configur? sur ce smartphone (${preview}). Pr?t pour enregistrer et supprimer en ligne !`;
+    $('custom-github-token').value = savedToken;
+  } else {
+    $('sync-token-status').textContent = 'Aucun token stock? sur cet appareil. Les variables Vercel sont utilis?es si configur?es.';
+    $('custom-github-token').value = '';
+  }
+}
+
+$('open-sync-dialog')?.addEventListener('click', () => {
+  updateSyncDialogStatus();
+  $('sync-dialog').showModal();
+});
+$('close-sync-dialog')?.addEventListener('click', () => $('sync-dialog').close());
+
+$('save-github-token')?.addEventListener('click', () => {
+  const val = $('custom-github-token').value.trim();
+  if (!val) {
+    message('Entre un token GitHub valide.', 'error');
+    return;
+  }
+  localStorage.setItem('bm_github_token', val);
+  updateSyncDialogStatus();
+  message('Token GitHub m?moris? sur ce smartphone !', 'success');
+});
+
+$('clear-github-token')?.addEventListener('click', () => {
+  localStorage.removeItem('bm_github_token');
+  $('custom-github-token').value = '';
+  updateSyncDialogStatus();
+  message('Token effac? de ce smartphone.', 'success');
+});

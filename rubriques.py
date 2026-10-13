@@ -59,6 +59,7 @@ def pages(source,items,render_projects):
     header=header.replace('href="rubriques/tous-les-projets.html"','href="tous-les-projets.html"')
     header=re.sub(r'href="#(?!contenu)([^\"]+)"',r'href="../index.html#\1"',header)
     contact=re.sub(r'href="#([^\"]+)"',r'href="../index.html#\1"',contact)
+    contact=contact.replace('href="admin.html"','href="../admin.html"')
     output={}
     individual=catalog(items)
     sections=[dict(key='__all__',title='Tous mes projets',slug='tous-les-projets',symbol='↗',theme='sage',description='Tous mes projets réunis ici : sciences actuarielles, développement web et intelligence artificielle. Choisis ensuite une rubrique pour approfondir.',label='projet',count=sum(s['count'] for s in individual if s['label']=='projet'))]+individual
