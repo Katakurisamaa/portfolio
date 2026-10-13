@@ -1443,6 +1443,14 @@ dialog p {
    Règles Responsive Dédiées : PETIT ÉCRAN & MOBILE (Pure Mobile UX)
    ========================================================================== */
 @media(max-width: 850px) {
+
+  /* Correction chevauchement barre de recherche */
+  .list-search-box {
+    position: relative !important;
+    width: 100% !important;
+  }
+
+
   .desktop-only {
     display: none !important;
   }
@@ -1586,6 +1594,31 @@ dialog p {
   select {
     font-size: 16px !important;
     padding: 12px 14px !important;
+  }
+
+  /* Correction absolue du chevauchement icone / texte dans le champ de recherche */
+  .list-search-box {
+    position: relative !important;
+    width: 100% !important;
+  }
+  .list-search-icon {
+    position: absolute !important;
+    left: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 15px !important;
+    opacity: 0.55 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    line-height: 1 !important;
+  }
+  input.list-search-input,
+  #project-search.list-search-input {
+    padding-left: 50px !important;
+    padding-right: 16px !important;
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+    border-radius: 9999px !important;
   }
 
   .preview-section {
