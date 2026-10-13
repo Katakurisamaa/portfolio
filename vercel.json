@@ -1,7 +1,5 @@
 {
-  "version": 2,
   "buildCommand": "python3 build.py || python build.py",
-  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/admin",
@@ -10,22 +8,6 @@
     {
       "source": "/admin/",
       "destination": "/admin.html"
-    },
-    {
-      "source": "/api/auth/(.*)",
-      "destination": "/api/auth.js"
-    },
-    {
-      "source": "/api/auth",
-      "destination": "/api/auth.js"
-    },
-    {
-      "source": "/api/projects",
-      "destination": "/api/projects.js"
-    },
-    {
-      "source": "/api/upload",
-      "destination": "/api/upload.js"
     }
   ]
 }
