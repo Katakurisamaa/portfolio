@@ -456,17 +456,19 @@ function edit(project = null, moveFocus = false) {
     if ($(name)) $(name).value = project?.[name] || '';
   });
 
-  const type = project?.type || (
-    project?.category === 'Lectures' ? 'lecture' :
-    project?.category === 'Foi' ? 'foi' : 'projet'
-  );
-  setPublicationType(type);
-
   if (project) {
     selectedSection = project.category;
+    $('category').value = project.category;
   } else {
     $('category').value = selectedSection === '__all__' ? (sections[0]?.key || 'Actuariat & data') : selectedSection;
   }
+
+  const currentCat = $('category').value;
+  const type = project?.type || (
+    currentCat === 'Lectures' ? 'lecture' :
+    currentCat === 'Foi' ? 'foi' : 'projet'
+  );
+  setPublicationType(type);
 
   imagePath = project?.image || '';
   imageFile = null;
@@ -1087,4 +1089,22 @@ if (docFileInput) {
       if (status) status.hidden = true;
     }
   });
+}
+
+function syncTypeFromCategory() {
+  const cat = ($('category')?.value || '').trim().toLowerCase();
+  if (cat === 'lectures' || cat.startsWith('lecture') || cat.startsWith('livre')) {
+    setPublicationType('lecture');
+  } else if (cat === 'foi' || cat.startsWith('foi') || cat.includes('bible')) {
+    setPublicationType('foi');
+  } else if (cat === 'article') {
+    setPublicationType('article');
+  } else if (['actuariat & data', 'web', 'programmation', 'ia', 'intelligence artificielle', 'sciences actuarielles'].includes(cat)) {
+    setPublicationType('projet');
+  }
+}
+
+if ($('category')) {
+  $('category').addEventListener('input', syncTypeFromCategory);
+  $('category').addEventListener('change', syncTypeFromCategory);
 }
