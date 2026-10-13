@@ -132,6 +132,8 @@ def validate_projects(items):
         p = {}
         for key, limit in FIELDS.items():
             value = item.get(key, '')
+            if not value and key.lower() in item:
+                value = item.get(key.lower(), '')
             if not isinstance(value, str) or len(value) > limit:
                 raise ValueError(f'Champ {key} trop long ou invalide.')
             p[key] = value.strip()
@@ -162,8 +164,15 @@ def validate_projects(items):
         ids.add(ident)
         p['id'] = ident
         image = item.get('image', '')
-        if not isinstance(image, str) or (image and (not re.fullmatch(r'uploads/[a-f0-9]{32}\.(png|jpg|webp)', image) or not (ROOT / image).is_file())):
+        if not isinstance(image, str):
             raise ValueError('Image inconnue.')
+        if image:
+            if image.startswith(('https://', 'http://')):
+                pass
+            elif re.fullmatch(r'uploads/[a-f0-9]{32}\.(png|jpg|webp|jpeg)', image):
+                pass
+            else:
+                raise ValueError('Image inconnue.')
         p['image'] = image
         p['artwork'] = item.get('artwork', '') if item.get('artwork', '') in ('web', 'data', 'ia') else ''
         result.append(p)
@@ -175,22 +184,23 @@ def render_projects(items):
     cards = []
     for n, p in enumerate(items):
         e = lambda key: escape(p.get(key, ''), quote=True)
-        ptype = p.get('type') or ('lecture' if p['category'] == 'Lectures' else 'foi' if p['category'] == 'Foi' else 'projet')
+        ptype = p.get('type') or ('lecture' if p.get('category') == 'Lectures' else 'foi' if p.get('category') == 'Foi' else 'projet')
         
         # 1. Image ou visuel selon le format
-        if p['image']:
-            image = f'<img class="project-image" src="{e("image")}" alt="{escape(p["imageAlt"] or p["title"], quote=True)}" loading="lazy" width="800" height="500">'
+        if p.get('image'):
+            alt = escape(p.get('imageAlt') or p.get('imagealt') or p.get('title', ''), quote=True)
+            image = f'<img class="project-image" src="{e("image")}" alt="{alt}" loading="lazy" width="800" height="500">'
         elif p.get('artwork') in art:
             image = art[p['artwork']]
         elif ptype == 'lecture':
-            book = e('bookTitle') or e('title')
+            book = e('bookTitle') or e('booktitle') or e('title')
             author = e('author') or 'Lecture'
             image = f'<div class="project-art reading-art" aria-hidden="true"><span class="art-label">LECTURE & IDÉE</span><div class="reading-card-inner"><strong>{book}</strong><span>{author}</span></div></div>'
         elif ptype == 'foi':
-            ref = e('bibleRef') or 'Méditation'
-            image = f'<div class="project-art faith-art" aria-hidden="true"><span class="art-label">FOI & PAROLE</span><div class="faith-card-inner"><i>✝</i><strong>{ref}</strong></div></div>'
+            ref = e('bibleRef') or e('bibleref') or 'Méditation'
+            image = f'<div class="project-art faith-art" aria-hidden="true"><span class="art-label">FOI & PAROLE</span><div class="faith-card-inner"><i>✦</i><strong>{ref}</strong></div></div>'
         else:
-            image = f'<div class="project-art project-placeholder" aria-hidden="true"><strong>{escape(p["title"][:2].upper())}</strong><span>{e("category")}</span></div>'
+            image = f'<div class="project-art project-placeholder" aria-hidden="true"><strong>{escape(p.get("title", "")[:2].upper())}</strong><span>{e("category")}</span></div>'
 
         # 2. Liens ou citations selon le type
         body_extra = ''
@@ -202,10 +212,12 @@ def render_projects(items):
             details_label = 'Note de lecture & réflexions'
         elif ptype == 'foi':
             meta_label = f'{n+1:02d} — Foi & Bible'
-            meta_sub = e('bibleRef') or 'Partage'
-            if p.get('verseText'):
-                ref_span = f'<span class="verse-ref">{e("bibleRef")}</span>' if p.get('bibleRef') else ''
-                body_extra += f'<blockquote class="faith-quote">{ref_span}« {e("verseText")} »</blockquote>'
+            ref_val = p.get('bibleRef') or p.get('bibleref', '')
+            meta_sub = escape(ref_val, quote=True) or 'Partage'
+            verse_val = p.get('verseText') or p.get('versetext', '')
+            if verse_val:
+                ref_span = f'<span class="verse-ref">{escape(ref_val, quote=True)}</span>' if ref_val else ''
+                body_extra += f'<blockquote class="faith-quote">{ref_span}« {escape(verse_val, quote=True)} »</blockquote>'
             details_label = 'Méditation & partage'
         else:
             meta_label = f'{n+1:02d} — {e("category")}'
@@ -218,13 +230,14 @@ def render_projects(items):
             if links:
                 body_extra += '<div class="project-links">' + ''.join(links) + '</div>'
 
-        details = f'<details><summary>{details_label} <span aria-hidden="true">＋</span></summary><div class="detail-body">{e("details")}</div></details>' if p.get('details') else ''
+        details = f'<details><summary>{details_label} <span aria-hidden="true">+</span></summary><div class="detail-body">{e("details")}</div></details>' if p.get('details') else ''
         body = f'<div class="project-meta"><span>{meta_label}</span><span>{meta_sub}</span></div><h3>{e("title")}</h3><p>{e("description")}</p>{body_extra}{details}'
         
         wide = (n == len(items) - 1 and len(items) % 2 == 1 and len(items) > 1)
         cards.append(f'<article class="project{" project-wide" if wide else ""} reveal" data-category="{e("category")}">{image}{"<div class=\"wide-copy\">" if wide else ""}{body}{"</div>" if wide else ""}</article>')
 
-    return '<div class="projects">' + ('\n'.join(cards) if cards else '<p class="empty-projects">De nouvelles explorations arrivent bientôt.</p>') + '</div>\n'
+    joined = "\n".join(cards) if cards else "<p class=\"empty-projects\">De nouvelles explorations arrivent bient\xc3\xb4t.</p>"
+    return f"<div class=\"projects\">{joined}</div>\n"
 
 def render_index(items):
     source = (ROOT / 'index.html').read_text(encoding='utf-8-sig')

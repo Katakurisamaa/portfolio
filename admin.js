@@ -20,7 +20,7 @@ const SECTIONS = [
   { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '✝', theme: 'clay', description: 'Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label: 'partage' }
 ];
 
-let sections = [...SECTIONS], selectedSection = 'Actuariat & data';
+let sections = [...SECTIONS], selectedSection = '__all__';
 let projects = [], revision = '', token = '';
 let current = null, dirty = false, busy = false;
 let imagePath = '', imageFile = null, imageURL = '', artwork = '';
@@ -327,7 +327,7 @@ function edit(project = null, moveFocus = false) {
   if (project) {
     selectedSection = project.category;
   } else {
-    $('category').value = selectedSection;
+    $('category').value = selectedSection === '__all__' ? (sections[0]?.key || 'Actuariat & data') : selectedSection;
   }
 
   imagePath = project?.image || '';
@@ -346,14 +346,18 @@ function edit(project = null, moveFocus = false) {
 
 function renderList() {
   renderSections();
-  const visible = projects.filter(p => p.category === selectedSection);
+  const visible = selectedSection === '__all__'
+    ? projects
+    : projects.filter(p => p.category === selectedSection);
   $('count').textContent = String(visible.length);
   $('project-list').replaceChildren();
 
   if (!visible.length) {
     const p = document.createElement('p');
     p.className = 'list-empty';
-    p.textContent = 'Aucune publication dans cette rubrique pour le moment. Clique sur « Nouvelle publication » pour commencer.';
+    p.textContent = selectedSection === '__all__'
+      ? 'Aucune publication pour le moment. Clique sur « Nouvelle publication » pour commencer.'
+      : `Aucune publication dans la rubrique « ${selectedSection} ». Clique sur « Nouvelle publication » pour en ajouter une.`;
     $('project-list').append(p);
   }
 
@@ -365,7 +369,8 @@ function renderList() {
     top.className = 'list-project-top';
     const tag = document.createElement('span');
     tag.className = 'list-type-tag';
-    tag.textContent = item.type === 'lecture' ? '📖 Lecture' : item.type === 'foi' ? '✝ Foi' : '🚀 Projet';
+    const icon = item.type === 'lecture' ? '📖 Lecture' : item.type === 'foi' ? '✝ Foi' : '💻 Projet';
+    tag.textContent = `${icon} · ${item.category || ''}`;
     top.append(tag);
 
     const heading = document.createElement('h3');
@@ -408,6 +413,25 @@ function renderList() {
 
 function renderSections() {
   $('section-tabs').replaceChildren();
+
+  // Onglet "Toutes les rubriques"
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = 'section-tab';
+  allBtn.setAttribute('aria-pressed', String(selectedSection === '__all__'));
+  const allTitle = document.createElement('span');
+  allTitle.textContent = 'Toutes les rubriques';
+  const allCount = document.createElement('span');
+  allCount.textContent = String(projects.length);
+  allBtn.append(allTitle, allCount);
+  allBtn.addEventListener('click', () => {
+    if (busy || !approveDiscard()) return;
+    selectedSection = '__all__';
+    edit();
+    message(`Toutes les publications affichées (${projects.length}).`);
+  });
+  $('section-tabs').append(allBtn);
+
   for (const section of sections) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -431,8 +455,10 @@ function renderSections() {
   }
 
   const section = sections.find(s => s.key === selectedSection);
-  $('section-title').textContent = section?.title || selectedSection;
-  $('section-description').textContent = section?.description || '';
+  $('section-title').textContent = selectedSection === '__all__' ? 'Toutes les publications' : (section?.title || selectedSection);
+  $('section-description').textContent = selectedSection === '__all__'
+    ? 'Vue d\'ensemble de toutes tes publications dans le portfolio.'
+    : (section?.description || '');
   $('view-section').href = section ? `/rubriques/${section.slug}.html` : '/';
 }
 
@@ -507,8 +533,8 @@ async function load() {
       count: projects.filter(p => p.category === s.key).length
     }));
 
-    if (!sections.some(s => s.key === selectedSection)) {
-      selectedSection = sections[0]?.key || 'Actuariat & data';
+    if (selectedSection !== '__all__' && !sections.some(s => s.key === selectedSection)) {
+      selectedSection = '__all__';
     }
     undo = null;
     $('undo').hidden = true;
