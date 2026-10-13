@@ -1,0 +1,46 @@
+{
+  "projects": [
+    {
+      "title": "Un espace pour collaborer.",
+      "category": "Web",
+      "description": "Une plateforme collaborative et son tableau de bord, pour explorer les liens entre interface et données.",
+      "details": "Ce projet réunit une architecture client-serveur, la gestion des états, l’authentification et des visualisations de données. Côté outils : JavaScript, Node.js, bases de données et API REST.",
+      "technologies": "Node.js · JavaScript",
+      "site": "",
+      "demo": "",
+      "github": "",
+      "imageAlt": "",
+      "id": "original-web",
+      "image": "",
+      "artwork": "web"
+    },
+    {
+      "title": "Explorer l’incertitude.",
+      "category": "Actuariat & data",
+      "description": "Des simulations actuarielles pour observer des trajectoires et mieux comprendre le risque de ruine.",
+      "details": "Une exploration des processus de Poisson composés, des simulations Monte Carlo et de la Value at Risk. Les calculs utilisent Python, NumPy et SciPy, avec une visualisation via Streamlit.",
+      "technologies": "Python · Monte Carlo",
+      "site": "",
+      "demo": "",
+      "github": "",
+      "imageAlt": "",
+      "id": "original-data",
+      "image": "",
+      "artwork": "data"
+    },
+    {
+      "title": "Faire dialoguer les connaissances.",
+      "category": "IA",
+      "description": "Un assistant documentaire pour explorer la recherche d’information et la synthèse de textes avec l’IA.",
+      "details": "Le principe du RAG : retrouver des passages pertinents dans des documents, puis les fournir à un modèle pour construire une réponse sourcée. Ce projet explore Python, les embeddings et les bases vectorielles.",
+      "technologies": "Python · RAG",
+      "site": "",
+      "demo": "",
+      "github": "",
+      "imageAlt": "",
+      "id": "original-ia",
+      "image": "",
+      "artwork": "ia"
+    }
+  ]
+}

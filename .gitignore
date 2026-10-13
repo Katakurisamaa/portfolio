@@ -1,0 +1,19 @@
+# Identifiants et configurations sensibles
+admin_config.json
+.env
+*.env
+.env.*
+
+# Sauvegardes locales automatiques
+.backups/
+
+# Caches et fichiers temporaires Python
+__pycache__/
+*.py[cod]
+*.class
+*.tmp
+
+# Fichiers systeme
+.DS_Store
+Thumbs.db
+desktop.ini
