@@ -362,6 +362,7 @@ function edit(project = null, moveFocus = false) {
   renderList();
   renderPreview();
   if (moveFocus) $('title').focus();
+  if (window.innerWidth <= 850 && (project || moveFocus)) setMobileView('editor');
 }
 
 function renderList() {
@@ -380,6 +381,7 @@ function renderList() {
   }
 
   $('count').textContent = String(visible.length);
+  if ($('mobile-list-count')) $('mobile-list-count').textContent = String(visible.length);
   $('project-list').replaceChildren();
 
   if (!visible.length) {
@@ -782,6 +784,7 @@ form.addEventListener('submit', async (e) => {
     const next = current ? projects.map(p => p.id === current ? item : p) : [...projects, item];
     await persist(next);
     edit(projects.find(p => p.id === item.id));
+    if (window.innerWidth <= 850) setMobileView('list');
     message('✓ Publication enregistrée et synchronisée avec Supabase !', 'success');
   } catch (err) {
     message(`Erreur : ${err.message}`, 'error');
