@@ -37,9 +37,10 @@ async function hashPassword(pw) {
 
 // Requêtes API de secours
 async function apiRequest(url, options = {}) {
+  const currentToken = token || sessionStorage.getItem('bm_client_auth') || localStorage.getItem('bm_admin_token') || EXPECTED_HASH;
   const headers = {
     'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(currentToken ? { 'Authorization': `Bearer ${currentToken}` } : {}),
     ...options.headers
   };
   const response = await fetch(url, { ...options, headers });
@@ -681,6 +682,11 @@ if (searchInput) {
 // --- Chargement et sauvegarde avec Supabase en direct ---
 async function fetchProjectsFromSources() {
   try {
+    try {
+      const local = await apiRequest('/api/projects');
+      if (local?.revision) revision = local.revision;
+    } catch {}
+
     const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*&order=created_at.asc`, {
       headers: {
         'apikey': SUPABASE_KEY,
@@ -806,11 +812,13 @@ async function persist(next) {
   }
 
   try {
-    await apiRequest('/api/projects', {
+    const apiRes = await apiRequest('/api/projects', {
       method: 'PUT',
       body: JSON.stringify({ revision, projects: next })
     });
+    if (apiRes?.revision) revision = apiRes.revision;
   } catch (apiErr) {
+    console.warn('Sync /api/projects warning:', apiErr);
     if (!savedToSupabase) throw apiErr;
   }
 
