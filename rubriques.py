@@ -56,7 +56,8 @@ def hub(items, render_projects=None):
 def pages(source, items, render_projects):
     header = source.split('<main id="contenu">', 1)[0]
     contact = source[source.index('<section class="contact-section"'):]
-    header = re.sub(r'href="styles\.css(\?v=[^"]*)?"', r'href="../styles.css\1"', header).replace('src="script.js"', 'src="../script.js"')
+    header = re.sub(r'href="styles\.css(\?v=[^"]*)?"', r'href="../styles.css\1"', header)
+    header = re.sub(r'src="script\.js(\?v=[^"]*)?"', r'src="../script.js\1"', header)
     header = header.replace('href="rubriques/tous-les-projets.html"', 'href="tous-les-projets.html"')
     header = re.sub(r'href="#(?!contenu)([^\"]+)"', r'href="../index.html#\1"', header)
     contact = re.sub(r'href="#([^\"]+)"', r'href="../index.html#\1"', contact)

@@ -179,9 +179,31 @@ function renderCard(p, n, total) {
     metaLabel = `${String(n).padStart(2, '0')} — ${e('category')}`;
     metaSub = e('technologies');
     const links = [];
-    if (p.site) links.push(`<a href="${e('site')}" target="_blank" rel="noopener noreferrer">Voir le site ↗<span class="sr-only"> (nouvel onglet)</span></a>`);
-    if (p.demo) links.push(`<a href="${e('demo')}" target="_blank" rel="noopener noreferrer">Essayer la démo ↗<span class="sr-only"> (nouvel onglet)</span></a>`);
-    if (p.github) links.push(`<a href="${e('github')}" target="_blank" rel="noopener noreferrer">Code source ↗<span class="sr-only"> (nouvel onglet)</span></a>`);
+    const siteUrl = (p.site || '').trim();
+    const demoUrl = (p.demo || '').trim();
+    const githubUrl = (p.github || '').trim();
+
+    const isInternal = (url) => url.startsWith('/') || url.startsWith('./') || (url.endsWith('.html') && !url.startsWith('http://') && !url.startsWith('https://')) || url.includes('benjaminminko.com');
+
+    const actionLinks = [];
+    if (siteUrl && demoUrl && siteUrl === demoUrl) {
+      actionLinks.push({ url: siteUrl, label: 'Essayer l’application' });
+    } else {
+      if (siteUrl) actionLinks.push({ url: siteUrl, label: 'Voir le site' });
+      if (demoUrl) actionLinks.push({ url: demoUrl, label: 'Essayer la démo' });
+    }
+    if (githubUrl) actionLinks.push({ url: githubUrl, label: 'Code source' });
+
+    for (const item of actionLinks) {
+      const eUrl = escapeHTML(item.url);
+      const eLabel = escapeHTML(item.label);
+      if (isInternal(item.url)) {
+        links.push(`<a href="${eUrl}">${eLabel} <span aria-hidden="true">→</span></a>`);
+      } else {
+        links.push(`<a href="${eUrl}" target="_blank" rel="noopener noreferrer">${eLabel} ↗<span class="sr-only"> (nouvel onglet)</span></a>`);
+      }
+    }
+
     if (p.document) links.push(`<button type="button" class="project-doc-btn" data-doc="${e('document')}" data-doc-title="${e('title')}">Lire le document d’étude ↗</button>`);
     if (links.length) bodyExtra += `<div class="project-links">${links.join('')}</div>`;
   }

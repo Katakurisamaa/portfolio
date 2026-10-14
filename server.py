@@ -244,9 +244,32 @@ def render_projects(items):
             meta_sub = e('technologies')
             details_label = 'Dans les coulisses'
             links = []
-            for key, label in [('site', 'Voir le site'), ('demo', 'Essayer la démo'), ('github', 'Code source')]:
-                if p.get(key):
-                    links.append(f'<a href="{e(key)}" target="_blank" rel="noopener noreferrer">{label} ↗<span class="sr-only"> (nouvel onglet)</span></a>')
+            site_url = p.get('site', '').strip()
+            demo_url = p.get('demo', '').strip()
+            github_url = p.get('github', '').strip()
+
+            def is_internal(url):
+                return url.startswith(('/', './')) or (url.endswith('.html') and not url.startswith(('http://', 'https://'))) or 'benjaminminko.com' in url
+
+            action_links = []
+            if site_url and demo_url and site_url == demo_url:
+                action_links.append((site_url, 'Essayer l’application'))
+            else:
+                if site_url:
+                    action_links.append((site_url, 'Voir le site'))
+                if demo_url:
+                    action_links.append((demo_url, 'Essayer la démo'))
+            if github_url:
+                action_links.append((github_url, 'Code source'))
+
+            for url, label in action_links:
+                e_url = escape(url, quote=True)
+                e_label = escape(label)
+                if is_internal(url):
+                    links.append(f'<a href="{e_url}">{e_label} <span aria-hidden="true">→</span></a>')
+                else:
+                    links.append(f'<a href="{e_url}" target="_blank" rel="noopener noreferrer">{e_label} ↗<span class="sr-only"> (nouvel onglet)</span></a>')
+
             if p.get('document'):
                 links.append(f'<button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire le document d’étude ↗</button>')
             if links:
