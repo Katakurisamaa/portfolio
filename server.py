@@ -423,7 +423,8 @@ class Handler(SimpleHTTPRequestHandler):
             '/admin.html', '/admin.css', '/admin.js',
             '/planificateur.html', '/planificateur.css', '/planificateur.js',
             '/lectio.html', '/lectio.css', '/lectio.js',
-            '/benjamin-portrait.jpg', '/benjamin-minko.jpg', '/artwork.json'
+            '/benjamin-portrait.jpg', '/benjamin-minko.jpg', '/artwork.json',
+            '/robots.txt', '/sitemap.xml'
         ) or bool(re.fullmatch(r'/uploads/[a-zA-Z0-9_.-]+\.(png|jpg|webp|jpeg)', path))
 
         if re.fullmatch(r'/rubriques/[a-z0-9-]+\.html', path):

@@ -16,6 +16,14 @@
     {
       "source": "/planificateur/",
       "destination": "/planificateur.html"
+    },
+    {
+      "source": "/lectio",
+      "destination": "/lectio.html"
+    },
+    {
+      "source": "/lectio/",
+      "destination": "/lectio.html"
     }
   ]
 }
