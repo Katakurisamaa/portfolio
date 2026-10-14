@@ -10,6 +10,31 @@
 // Constantes & Configurations
 // ==========================================================================
 const STORAGE_KEY = 'bm_rythme_planificateur';
+const WEEKS_STORAGE_KEY = STORAGE_KEY + '_weeks_v2';
+let plannerWeeks = {};
+let storageWritable = true;
+
+function emptyWeek() { return { intentions: ['', '', ''], slots: [] }; }
+
+function validateWeek(value) {
+  if (!value || !Array.isArray(value.slots) || !Array.isArray(value.intentions)) throw new Error('Format de semaine invalide');
+  const ids = new Set();
+  for (const s of value.slots) {
+    if (!s || typeof s.id !== 'string' || ids.has(s.id) || !Number.isInteger(s.day) || s.day < 0 || s.day > 6 ||
+      typeof s.title !== 'string' || !s.title.trim() || !Object.hasOwn(ENERGIES, s.energy) ||
+      !/^([01]\d|2[0-3]):[0-5]\d$/.test(s.start) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(s.end) || s.end <= s.start ||
+      (s.notes !== undefined && typeof s.notes !== 'string')) throw new Error('Créneau invalide');
+    ids.add(s.id);
+  }
+  if (value.intentions.some(x => typeof x !== 'string')) throw new Error('Intentions invalides');
+  return { intentions: [0, 1, 2].map(i => value.intentions[i] || ''), slots: value.slots.map(s => ({...s})) };
+}
+
+function changeWeek(offset) {
+  currentWeekOffset = offset;
+  plannerState = validateWeek(plannerWeeks[getWeekKey(offset)] || emptyWeek());
+  renderAll();
+}
 
 const ENERGIES = {
   deepwork: { label: 'Deep Work', icon: '⚡', color: '#a7422d', darkColor: '#e87c64', weight: 'Création' },
@@ -166,6 +191,7 @@ let plannerState = {
   slots: []
 };
 let editingSlotId = null;
+let lastDeletedSlot = null;
 
 // ==========================================================================
 // Système de Toast Notifications
@@ -276,26 +302,35 @@ function moveSlotToDay(slotId, targetDay) {
 // ==========================================================================
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.slots)) {
-        plannerState = parsed;
-        return;
+    const saved = localStorage.getItem(WEEKS_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed || parsed.version !== 2 || !parsed.weeks || typeof parsed.weeks !== 'object') throw new Error('Archive invalide');
+      for (const [key, week] of Object.entries(parsed.weeks)) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) throw new Error('Date invalide');
+        plannerWeeks[key] = validateWeek(week);
       }
+    } else {
+      const legacy = localStorage.getItem(STORAGE_KEY);
+      if (legacy) plannerWeeks[getWeekKey(0)] = validateWeek(JSON.parse(legacy));
     }
+    plannerState = validateWeek(plannerWeeks[getWeekKey(0)] || emptyWeek());
   } catch (e) {
-    console.warn('Erreur chargement state:', e);
+    storageWritable = false;
+    showToast('Sauvegarde inaccessible. Exporte tes changements avant de fermer cette page.', 'error', 8000);
   }
-  // Charger le preset "Chercheur & Actuaire" par défaut pour une démo immédiate impressionnante
-  loadPreset('chercheur', false);
 }
 
 function saveState() {
+  plannerWeeks[getWeekKey(currentWeekOffset)] = validateWeek(plannerState);
+  const status = document.getElementById('storage-status');
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(plannerState));
+    if (!storageWritable) throw new Error('Stockage protégé');
+    localStorage.setItem(WEEKS_STORAGE_KEY, JSON.stringify({ version: 2, weeks: plannerWeeks }));
+    if (status) status.textContent = 'Enregistré dans ce navigateur · exporte une copie pour la conserver ailleurs.';
   } catch (e) {
-    console.warn('Erreur sauvegarde state:', e);
+    if (status) status.textContent = 'Non sauvegardé : exporte cette semaine avant de quitter.';
+    showToast('Sauvegarde impossible. Utilise Télécharger pour conserver cette semaine.', 'error');
   }
 }
 
@@ -316,6 +351,7 @@ function loadPreset(name, shouldConfirm = true) {
 
   saveState();
   renderAll();
+  showToast('Modèle appliqué à cette semaine.', 'success');
 }
 
 // ==========================================================================
@@ -326,6 +362,7 @@ function renderAll() {
   renderIntentions();
   renderGrid();
   renderAnalytics();
+  renderDayNavigation();
 }
 
 function renderWeekHeader() {
@@ -349,7 +386,7 @@ function renderWeekHeader() {
   const totalHours = (totalMins / 60).toFixed(1);
 
   if (totalHoursBadge) {
-    totalHoursBadge.textContent = `✦ ${totalHours}h planifiées`;
+    totalHoursBadge.textContent = `✦ ${minutesToHoursStr(totalMins)} planifiées`;
     totalHoursBadge.hidden = false;
   }
 }
@@ -357,7 +394,11 @@ function renderWeekHeader() {
 function renderIntentions() {
   for (let i = 1; i <= 3; i++) {
     const el = document.getElementById(`intention-${i}`);
-    if (el) el.value = plannerState.intentions[i - 1] || '';
+    if (el) {
+      el.value = plannerState.intentions[i - 1] || '';
+      el.setAttribute('aria-label', `Priorité ${i} de la semaine`);
+      el.maxLength = 240;
+    }
   }
 }
 
@@ -602,6 +643,7 @@ function renderGrid() {
         // Clic ou clavier pour modifier
         card.addEventListener('click', () => openSlotModal(slot));
         card.addEventListener('keydown', (e) => {
+          if (e.target !== card) return;
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             openSlotModal(slot);
@@ -691,54 +733,23 @@ function renderAnalytics() {
     container.append(card);
   });
 
-  // Calcul de l'Indice d'Harmonie (Modèle actuariel multicritères)
-  let score = 70; // Score de base
-  const deepworkHours = energyMinutes.deepwork / 60;
-  const restAndSpirit = (energyMinutes.faith + energyMinutes.vitality + energyMinutes.reading) / 60;
-  const socialHours = energyMinutes.social / 60;
-
-  // Pénalité de surcharge mentale si > 35h de concentration pure
-  if (deepworkHours > 35) score -= 15;
-  else if (deepworkHours >= 12 && deepworkHours <= 28) score += 10;
-
-  // Bonus si présence de spiritualité / repos / santé
-  if (restAndSpirit >= 8) score += 12;
-  else if (restAndSpirit >= 4) score += 6;
-
-  // Bonus si présence de liens sociaux / famille
-  if (socialHours >= 5) score += 8;
-
-  score = Math.min(99, Math.max(30, score));
-
-  const scoreEl = document.getElementById('harmony-score');
-  const statusEl = document.getElementById('harmony-status');
-  const insightEl = document.getElementById('analytics-insight');
-  const ringProgress = document.getElementById('harmony-ring-progress');
-
-  if (scoreEl) scoreEl.textContent = `${score}%`;
-
-  if (ringProgress) {
-    const circumference = 238.76;
-    const offset = circumference * (1 - score / 100);
-    ringProgress.style.strokeDashoffset = offset;
-    ringProgress.style.stroke = score >= 85 ? 'var(--energy-faith)' : (score >= 70 ? 'var(--energy-data)' : 'var(--energy-deepwork)');
+  const occupiedDays = new Set(plannerState.slots.map(s => s.day)).size;
+  let conflicts = 0;
+  let busiest = 0;
+  for (let day = 0; day < 7; day++) {
+    const slots = plannerState.slots.filter(s => s.day === day);
+    conflicts += detectConflicts(slots).size;
+    busiest = Math.max(busiest, slots.reduce((n, s) => n + parseTimeToMinutes(s.end) - parseTimeToMinutes(s.start), 0));
   }
+  document.getElementById('harmony-score').textContent = String(plannerState.slots.length);
+  document.getElementById('harmony-status').textContent = 'créneaux planifiés';
+  const insight = document.getElementById('analytics-insight');
+  insight.textContent = totalMinutes === 0
+    ? 'Ta semaine est libre. Commence par une priorité et un premier créneau, ou choisis un modèle.'
+    : `${minutesToHoursStr(totalMinutes)} réparties sur ${occupiedDays} jours. Journée la plus remplie : ${minutesToHoursStr(busiest)}. ` +
+      (conflicts ? `${conflicts} créneaux se chevauchent : vérifie les cartes signalées. Les durées ci-dessus comptent chaque créneau séparément.` : 'Aucun chevauchement horaire. Les plages non planifiées restent disponibles.') +
+      ' Ces repères décrivent ton agenda, pas ton niveau de fatigue ni ton équilibre personnel.';
 
-  if (statusEl && insightEl) {
-    if (score >= 85) {
-      statusEl.textContent = 'Rythme très harmonieux';
-      statusEl.style.color = 'var(--energy-faith)';
-      insightEl.innerHTML = `<strong>✦ Analyse actuarielle du rythme :</strong> Semaine remarquablement équilibrée (${totalHours.toFixed(1)}h planifiées). Concentration profonde et espaces de ressourcement spirituel et corporel sont en juste proportion.`;
-    } else if (score >= 70) {
-      statusEl.textContent = 'Rythme actif & soutenable';
-      statusEl.style.color = 'var(--energy-data)';
-      insightEl.innerHTML = `<strong>✦ Analyse actuarielle du rythme :</strong> Bonne intensité globale (${totalHours.toFixed(1)}h). Veille à préserver tes créneaux de respiration et de marche en fin de journée pour maintenir ton énergie intacte.`;
-    } else {
-      statusEl.textContent = 'Attention à la surcharge';
-      statusEl.style.color = 'var(--energy-deepwork)';
-      insightEl.innerHTML = `<strong>✦ Analyse actuarielle du rythme :</strong> La charge de travail est très dense. Pense à insérer 1 ou 2 plages de silence, de lecture ou de repos pour éviter la fatigue cognitive.`;
-    }
-  }
 }
 
 // ==========================================================================
@@ -777,6 +788,10 @@ function closeSlotModal() {
 }
 
 function deleteSlot(id) {
+  const removed = plannerState.slots.find(s => s.id === id);
+  if (!removed) return;
+  lastDeletedSlot = { week: getWeekKey(currentWeekOffset), slot: {...removed} };
+  document.getElementById('undo-delete').hidden = false;
   plannerState.slots = plannerState.slots.filter(s => s.id !== id);
   saveState();
   renderAll();
@@ -796,11 +811,14 @@ if (slotForm) {
     const notes = document.getElementById('slot-notes').value.trim();
     const energy = slotForm.querySelector('input[name="energy-type"]:checked')?.value || 'deepwork';
 
+    if (!title) { showToast('Donne un titre à ce créneau.', 'warning'); return; }
+
     if (parseTimeToMinutes(end) <= parseTimeToMinutes(start)) {
       alert('L’heure de fin doit être postérieure à l’heure de début.');
       return;
     }
 
+    const wasEditing = Boolean(editingSlotId);
     const newSlot = { id, day, title, start, end, energy, notes };
 
     // Vérifier les chevauchements horaires
@@ -819,12 +837,23 @@ if (slotForm) {
     if (overlaps.length > 0) {
       showToast('Créneau enregistré (attention au chevauchement d\'horaires).', 'warning');
     } else {
-      showToast(editingSlotId ? 'Créneau modifié avec succès !' : 'Nouveau créneau ajouté !', 'success');
+      showToast(wasEditing ? 'Créneau modifié avec succès !' : 'Nouveau créneau ajouté !', 'success');
     }
   });
 }
 
 document.getElementById('close-slot-dialog')?.addEventListener('click', closeSlotModal);
+document.getElementById('undo-delete')?.addEventListener('click', () => {
+  if (!lastDeletedSlot) return;
+  const {week, slot} = lastDeletedSlot;
+  const target = week === getWeekKey(currentWeekOffset) ? plannerState : plannerWeeks[week];
+  if (target && !target.slots.some(s => s.id === slot.id)) target.slots.push(slot);
+  saveState();
+  lastDeletedSlot = null;
+  document.getElementById('undo-delete').hidden = true;
+  renderAll();
+  showToast('Créneau restauré dans sa semaine d’origine.', 'success');
+});
 document.getElementById('cancel-slot-dialog')?.addEventListener('click', closeSlotModal);
 document.getElementById('delete-slot-btn')?.addEventListener('click', () => {
   if (editingSlotId && window.confirm('Supprimer définitivement ce créneau ?')) {
@@ -1045,7 +1074,7 @@ function exportJSON() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'planning_rythme.json';
+  a.download = `rythme-${getWeekKey(currentWeekOffset)}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1096,21 +1125,15 @@ function initTheme() {
 function initEvents() {
   // Navigation semaine
   document.getElementById('prev-week')?.addEventListener('click', () => {
-    currentWeekOffset--;
-    renderWeekHeader();
-    renderGrid();
+    changeWeek(currentWeekOffset - 1);
   });
 
   document.getElementById('next-week')?.addEventListener('click', () => {
-    currentWeekOffset++;
-    renderWeekHeader();
-    renderGrid();
+    changeWeek(currentWeekOffset + 1);
   });
 
   document.getElementById('today-btn')?.addEventListener('click', () => {
-    currentWeekOffset = 0;
-    renderWeekHeader();
-    renderGrid();
+    changeWeek(0);
     showToast('Semaine en cours affichée', 'info');
   });
 
@@ -1156,7 +1179,7 @@ function initEvents() {
         const p = btn.dataset.preset;
         loadPreset(p);
         presetMenu.hidden = true;
-        showToast('Modèle d\'inspiration appliqué', 'success');
+        
       });
     });
   }
@@ -1189,13 +1212,16 @@ function initEvents() {
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      if (file.size > 2000000) { showToast('Fichier trop volumineux (2 Mo maximum).', 'error'); e.target.value = ''; return; }
 
       const reader = new FileReader();
       reader.onload = (event) => {
         try {
           const parsed = JSON.parse(event.target.result);
           if (parsed && Array.isArray(parsed.slots)) {
-            plannerState = parsed;
+            const imported = validateWeek(parsed);
+            if ((plannerState.slots.length || plannerState.intentions.some(Boolean)) && !window.confirm('Remplacer uniquement la semaine affichée par ce fichier ?')) return;
+            plannerState = imported;
             saveState();
             renderAll();
             showToast('Planning importé avec succès !', 'success');
@@ -1239,7 +1265,7 @@ function initEvents() {
   // Raccourcis Clavier Globaux Pro (N, P, T, Flèches, ?)
   window.addEventListener('keydown', (e) => {
     const activeTag = document.activeElement?.tagName?.toLowerCase();
-    if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
+    if (document.querySelector('dialog[open]') || e.ctrlKey || e.metaKey || e.altKey || activeTag === 'button' || activeTag === 'a' || activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
       return; // Ne pas intercepter la saisie de texte
     }
 
@@ -1251,20 +1277,14 @@ function initEvents() {
       if (presetMenu) presetMenu.hidden = !presetMenu.hidden;
     } else if (e.key === 't' || e.key === 'T') {
       e.preventDefault();
-      currentWeekOffset = 0;
-      renderWeekHeader();
-      renderGrid();
+      changeWeek(0);
       showToast('Aujourd\'hui', 'info');
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      currentWeekOffset--;
-      renderWeekHeader();
-      renderGrid();
+      changeWeek(currentWeekOffset - 1);
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      currentWeekOffset++;
-      renderWeekHeader();
-      renderGrid();
+      changeWeek(currentWeekOffset + 1);
     } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
       e.preventDefault();
       if (shortcutsDialog?.open) shortcutsDialog.close();
@@ -1278,6 +1298,33 @@ function initEvents() {
     if (exportMenu && !exportMenu.hidden && !exportMenu.contains(e.target)) exportMenu.hidden = true;
   });
 }
+
+
+function renderDayNavigation() {
+  const nav = document.getElementById('day-navigation');
+  if (!nav) return;
+  nav.replaceChildren();
+  getWeekDates(currentWeekOffset).forEach(date => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+    button.addEventListener('click', () => {
+      const column = document.querySelector(`.day-column[data-day="${date.getDay()}"]`);
+      column?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'nearest', inline: 'start' });
+    });
+    nav.append(button);
+  });
+}
+
+document.getElementById('copy-previous-week')?.addEventListener('click', () => {
+  const previous = plannerWeeks[getWeekKey(currentWeekOffset - 1)];
+  if (!previous || !previous.slots.length) { showToast('La semaine précédente ne contient aucun créneau.', 'info'); return; }
+  if ((plannerState.slots.length || plannerState.intentions.some(Boolean)) && !window.confirm('Remplacer cette semaine par une copie de la précédente ?')) return;
+  plannerState = validateWeek(previous);
+  saveState();
+  renderAll();
+  showToast('Semaine précédente copiée. Tu peux adapter ses créneaux.', 'success');
+});
 
 // Démarrage
 document.addEventListener('DOMContentLoaded', () => {

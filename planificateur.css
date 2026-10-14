@@ -119,6 +119,23 @@ body {
   background: rgba(20, 23, 18, 0.94);
   border-bottom-color: var(--planner-line);
 }
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-group .brand {
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.8px;
+  text-decoration: none;
+  color: var(--planner-ink);
+}
+
+.brand-group .brand b {
+  color: var(--energy-deepwork);
+}
 
 .badge-app-tag {
   display: inline-flex;
@@ -132,6 +149,11 @@ body {
   background: #272d22;
   color: #f7f4ec;
   border: 1px solid var(--planner-line);
+}
+
+[data-theme="dark"] .badge-app-tag {
+  background: #232a1f;
+  color: #e9ece0;
 }
 
 .planner-nav-actions {
@@ -162,6 +184,10 @@ body {
   border-color: var(--energy-deepwork);
   color: var(--energy-deepwork);
   transform: translateY(-1px);
+}
+
+.theme-toggle-btn {
+  padding: 7px 12px;
 }
 
 /* ==========================================================================
@@ -272,6 +298,18 @@ body {
 .week-selector-group {
   display: flex;
   align-items: center;
+  gap: 14px;
+}
+
+.week-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.week-meta-bar {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
@@ -353,6 +391,12 @@ body {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.toolbar-secondary-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .dropdown-wrapper {
@@ -1499,7 +1543,446 @@ kbd {
   display: none;
 }
 
+/* ==========================================================================
+   Harmonisation Éditoriale & Navigation
+   ========================================================================== */
+.planner-hero { align-items: start; }
+.planner-title { font-size: clamp(34px, 4vw, 52px); }
+.planner-subtitle { max-width: 58ch; }
+
+.week-storage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px dashed var(--planner-line-subtle);
+  margin-top: 16px;
+}
+.week-storage-row p, .grid-help {
+  font-size: 12.5px;
+  color: var(--planner-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.grid-help {
+  margin: 6px 0 16px;
+}
+
+/* Navigation rapide par jour (Mobile & Desktop) */
+.day-navigation {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 0 12px;
+  margin-top: 18px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.day-navigation::-webkit-scrollbar {
+  display: none;
+}
+.day-navigation button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid var(--planner-line);
+  border-radius: var(--radius-pill);
+  background: var(--planner-card);
+  color: var(--planner-ink);
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+.day-navigation button:hover,
+.day-navigation button.is-active {
+  border-color: var(--energy-deepwork);
+  color: var(--energy-deepwork);
+  background: var(--energy-deepwork-bg);
+}
+.day-navigation button.is-today {
+  border-color: var(--energy-deepwork);
+  font-weight: 700;
+}
+
+.planner-grid-wrapper {
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.day-column {
+  scroll-snap-align: start;
+}
+.slot-title {
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+  overflow-wrap: anywhere;
+}
+.slot-actions {
+  opacity: 1;
+}
+
+.harmony-ring-svg { display: none; }
+.harmony-ring-center { position: static; transform: none; }
+.harmony-ring-wrap {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 1px solid var(--planner-line);
+  border-radius: 18px;
+  background: var(--planner-card-subtle);
+}
+.harmony-score { color: var(--planner-ink); }
+.harmony-status { color: var(--planner-muted); }
+.planner-dialog h2, .analytics-card h2 { letter-spacing: -0.6px; }
+
+/* ==========================================================================
+   Optimisations Écran Mobile & Tactile (<= 760px)
+   ========================================================================== */
+@media (max-width: 760px) {
+  /* 1. Header & Navigation : 1 seule ligne, aérée, sans cassure */
+  .header .nav {
+    min-height: 58px !important;
+    height: 58px !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  .brand-group .brand {
+    font-size: 17px !important;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+  }
+  .badge-app-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+  .planner-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .top-pill-link {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 12px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .theme-toggle-btn {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    flex-shrink: 0;
+  }
+  #theme-icon {
+    font-size: 15px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 2. Hero Mobile */
+  .planner-hero {
+    margin-bottom: 20px;
+  }
+  .hero-card-guide {
+    display: none;
+  }
+  .planner-title {
+    font-size: 32px;
+    line-height: 1.12;
+  }
+  .planner-subtitle {
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  /* 3. Carte Outils & Navigation de Semaine */
+  .planner-toolbar-card {
+    padding: 16px 14px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+  }
+  .toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .week-selector-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .week-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .week-nav-row .tool-btn-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .week-display {
+    text-align: center;
+    align-items: center;
+    min-width: 0;
+  }
+  .week-label-sub {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+  }
+  .week-dates {
+    font-size: 16.5px;
+    letter-spacing: -0.2px;
+  }
+  .week-meta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2px 2px 8px;
+    border-bottom: 1px solid var(--planner-line-subtle);
+  }
+  .week-total-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  /* 4. Actions structurées en grille harmonieuse */
+  .toolbar-actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .toolbar-main-cta {
+    width: 100%;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px !important;
+    font-weight: 600;
+  }
+  .toolbar-secondary-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 40px;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+  }
+  .toolbar-secondary-group .dropdown-wrapper {
+    width: 100%;
+    min-width: 0;
+  }
+  .toolbar-secondary-group .tool-btn-outline,
+  .toolbar-secondary-group .export-cta {
+    width: 100%;
+    height: 40px;
+    padding: 0 8px !important;
+    justify-content: center;
+    font-size: 12.5px !important;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .toolbar-secondary-group .reset-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 16px;
+    justify-self: end;
+  }
+
+  /* 5. Sauvegarde & Historique */
+  .week-storage-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .week-storage-row p {
+    font-size: 11.5px;
+    text-align: center;
+    line-height: 1.45;
+  }
+  #copy-previous-week {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  #undo-delete {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  /* 6. Intentions */
+  .week-intentions-block {
+    margin-top: 16px;
+    padding-top: 14px;
+  }
+  .intentions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .intentions-label {
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    line-height: 1.35;
+    white-space: normal;
+  }
+  .intentions-hint {
+    font-size: 11.5px;
+  }
+  .intentions-inputs {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .intention-input-wrap {
+    height: 42px;
+    padding: 0 12px;
+  }
+  .intention-input {
+    font-size: 13.5px !important;
+  }
+
+  /* 7. Dropdown Popovers en Bottom-Sheet coulissante sur Mobile */
+  .dropdown-popover {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    padding: 20px 16px 32px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUpSheet 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* 8. Carrousel Mobile de la Grille de Semaine */
+  .planner-grid-wrapper {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: -14px;
+    padding-inline: 14px;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+  }
+  .planner-grid-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .planner-grid {
+    grid-template-columns: repeat(7, minmax(280px, 86vw));
+    gap: 14px;
+    width: max-content;
+  }
+  .day-column {
+    scroll-snap-align: center;
+    min-height: 300px;
+    border-radius: 16px;
+  }
+
+  /* 9. Dashboard d'Analyse */
+  .analytics-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+  .analytics-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .harmony-badge-box {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 16px;
+  }
+  .harmony-ring-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+  }
+  .harmony-score {
+    font-size: 18px;
+  }
+  .harmony-status {
+    margin-top: 0;
+    font-size: 12px;
+    text-align: left;
+  }
+  .analytics-bars {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 440px) {
+  .badge-studio-suffix {
+    display: none;
+  }
+  .brand-group .brand {
+    font-size: 16px !important;
+  }
+  .top-pill-link {
+    padding: 0 9px;
+  }
+}
+
 @media print {
+  .day-navigation, .grid-help, .week-storage-row { display: none; }
   @page {
     size: A4 landscape;
     margin: 10mm 12mm;

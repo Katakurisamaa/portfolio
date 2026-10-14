@@ -32,12 +32,15 @@
     <nav class="nav wrap" aria-label="Navigation Rythme">
       <div class="brand-group">
         <a class="brand" href="/" aria-label="Retour au portfolio">Benjamin Minko<b>.</b></a>
-        <span class="badge-app-tag">Rythme · Studio</span>
+        <span class="badge-app-tag">Rythme<span class="badge-studio-suffix"> · Studio</span></span>
       </div>
 
       <div class="planner-nav-actions">
-        <a class="top-pill-link" href="/" title="Retourner à l'accueil du portfolio"><span>←</span> Mon portfolio</a>
-        <button type="button" id="theme-toggle" class="top-pill-link" aria-label="Basculer le thème">
+        <a class="top-pill-link" href="/" title="Retourner à l'accueil du portfolio">
+          <span aria-hidden="true">←</span> 
+          <span class="nav-portfolio-text"><span class="desktop-only-inline">Mon </span>portfolio</span>
+        </a>
+        <button type="button" id="theme-toggle" class="top-pill-link theme-toggle-btn" aria-label="Basculer le thème">
           <span id="theme-icon">🌙</span> <span id="theme-text" class="desktop-only-inline">Thème</span>
         </button>
       </div>
@@ -50,11 +53,10 @@
     <section class="planner-hero">
       <div class="hero-left">
         <p class="eyebrow"><span class="small-dot"></span> ARCHITECTURE DU TEMPS · OUTIL EN LIGNE</p>
-        <h1 class="planner-title">Rythme<br><em>l'Épure hebdomadaire.</em></h1>
+        <h1 class="planner-title">Rythme<br><em>Une semaine à ta mesure.</em></h1>
         <p class="planner-subtitle">
-          Ne subis plus tes journées : structure ta semaine avec clarté, intention et discernement. 
-          Équilibre ton travail profond, tes analyses, tes lectures et ta vie spirituelle. 
-          Personnalise chaque journée, évalue ton harmonie en temps réel et télécharge ton planning prêt à l'emploi.
+          Fais une place à ce qui compte : tes projets, tes études, ta foi et tes moments de repos.
+          Choisis trois priorités, organise tes créneaux et garde de la place pour l’imprévu.
         </p>
       </div>
 
@@ -72,108 +74,122 @@
     </section>
 
     <!-- Barre d'outils & Contrôles de la Semaine -->
-    <section class="planner-toolbar-card" aria-label="Gestion de la semaine">
+    <section class="planner-toolbar-card" aria-label="Gestion de la semaine" id="ma-semaine">
       <div class="toolbar-top">
         
         <!-- Navigation temporelle -->
         <div class="week-selector-group">
-          <button type="button" id="prev-week" class="tool-btn-icon" aria-label="Semaine précédente" title="Semaine précédente">‹</button>
-          <div class="week-display">
-            <span class="week-label-sub" id="week-sublabel">Semaine actuelle</span>
-            <strong class="week-dates" id="week-dates-display">12 — 18 Octobre 2026</strong>
+          <div class="week-nav-row">
+            <button type="button" id="prev-week" class="tool-btn-icon" aria-label="Semaine précédente" title="Semaine précédente">‹</button>
+            <div class="week-display">
+              <span class="week-label-sub" id="week-sublabel">Semaine actuelle</span>
+              <strong class="week-dates" id="week-dates-display">12 — 18 Octobre 2026</strong>
+            </div>
+            <button type="button" id="next-week" class="tool-btn-icon" aria-label="Semaine suivante" title="Semaine suivante">›</button>
           </div>
-          <button type="button" id="next-week" class="tool-btn-icon" aria-label="Semaine suivante" title="Semaine suivante">›</button>
-          <button type="button" id="today-btn" class="tool-btn-subtle">Aujourd'hui</button>
-          <span class="week-total-badge" id="week-total-hours" hidden></span>
+          <div class="week-meta-bar">
+            <button type="button" id="today-btn" class="tool-btn-subtle">Aujourd'hui</button>
+            <span class="week-total-badge" id="week-total-hours" hidden></span>
+          </div>
         </div>
 
         <!-- Presets et Actions -->
         <div class="toolbar-actions">
-          <!-- Dropdown Presets -->
-          <div class="dropdown-wrapper">
-            <button type="button" id="preset-btn" class="tool-btn-outline" aria-expanded="false" aria-haspopup="true">
-              <span>🪄</span> Presets d'inspiration ▾
-            </button>
-            <div id="preset-menu" class="dropdown-popover" hidden>
-              <div class="popover-title">Choisis une architecture de semaine :</div>
-              <button type="button" class="preset-option" data-preset="chercheur">
-                <strong>🔬 Chercheur & Actuaire</strong>
-                <small>Stacking bayésien, analyse de données, lecture de papiers et modélisation.</small>
-              </button>
-              <button type="button" class="preset-option" data-preset="developpeur">
-                <strong>💻 Bâtisseur & Développeur</strong>
-                <small>Deep work intense, code d'applications, revue d'architecture et déploiements.</small>
-              </button>
-              <button type="button" class="preset-option" data-preset="equilibre">
-                <strong>✝ Équilibre & Foi</strong>
-                <small>Méditation matinale, travail ciblé, lectures nourricières et temps partagé.</small>
-              </button>
-              <button type="button" class="preset-option" data-preset="minimaliste">
-                <strong>🌿 Minimaliste Essentiel</strong>
-                <small>Seulement 2 à 3 blocs d'impact par jour. Priorité absolue au calme mental.</small>
-              </button>
-            </div>
-          </div>
-
-          <!-- Bouton Ajouter créneau -->
-          <button type="button" id="add-slot-btn" class="button primary-cta">
+          <!-- Bouton Ajouter créneau (Action Principale) -->
+          <button type="button" id="add-slot-btn" class="button primary-cta toolbar-main-cta">
             <span>＋</span> Nouveau créneau
           </button>
 
-          <!-- Bouton Télécharger Dropdown -->
-          <div class="dropdown-wrapper">
-            <button type="button" id="export-dropdown-btn" class="button export-cta" aria-expanded="false" aria-haspopup="true">
-              <span>📥</span> Télécharger ▾
-            </button>
-            <div id="export-menu" class="dropdown-popover" hidden>
-              <div class="popover-title">Formater et exporter ma semaine :</div>
-              <button type="button" class="export-item" id="export-pdf">
-                <span class="export-icon">📄</span>
-                <div>
-                  <strong>Imprimer ou Enregistrer en PDF A4</strong>
-                  <small>Mise en page éditoriale prête pour le papier ou tablette.</small>
-                </div>
+          <!-- Groupe d'actions secondaires -->
+          <div class="toolbar-secondary-group">
+            <!-- Dropdown Presets -->
+            <div class="dropdown-wrapper dropdown-flex">
+              <button type="button" id="preset-btn" class="tool-btn-outline" aria-expanded="false" aria-haspopup="true">
+                <span>🪄</span> <span class="action-btn-text">Modèles</span> ▾
               </button>
-              <button type="button" class="export-item" id="export-ics">
-                <span class="export-icon">📅</span>
-                <div>
-                  <strong>Exporter en Calendrier (.ics)</strong>
-                  <small>S'intègre d'un clic dans Google Calendar, Apple & Outlook.</small>
-                </div>
-              </button>
-              <button type="button" class="export-item" id="export-png">
-                <span class="export-icon">🖼️</span>
-                <div>
-                  <strong>Télécharger l'Image Haute Résolution (PNG)</strong>
-                  <small>Idéal pour fond d'écran ou aperçu rapide.</small>
-                </div>
-              </button>
-              <button type="button" class="export-item" id="export-json">
-                <span class="export-icon">💾</span>
-                <div>
-                  <strong>Sauvegarder le planning (Fichier JSON)</strong>
-                  <small>Pour recharger ou archiver ta configuration.</small>
-                </div>
-              </button>
-              <button type="button" class="export-item import-item" id="import-json">
-                <span class="export-icon">📂</span>
-                <div>
-                  <strong>Importer un planning sauvegardé (.json)</strong>
-                  <small>Recharger une configuration précédemment exportée.</small>
-                </div>
-              </button>
+              <div id="preset-menu" class="dropdown-popover" hidden>
+                <div class="popover-title">Choisis une architecture de semaine :</div>
+                <button type="button" class="preset-option" data-preset="chercheur">
+                  <strong>🔬 Chercheur & Actuaire</strong>
+                  <small>Stacking bayésien, analyse de données, lecture de papiers et modélisation.</small>
+                </button>
+                <button type="button" class="preset-option" data-preset="developpeur">
+                  <strong>💻 Bâtisseur & Développeur</strong>
+                  <small>Deep work intense, code d'applications, revue d'architecture et déploiements.</small>
+                </button>
+                <button type="button" class="preset-option" data-preset="equilibre">
+                  <strong>✝ Équilibre & Foi</strong>
+                  <small>Méditation matinale, travail ciblé, lectures nourricières et temps partagé.</small>
+                </button>
+                <button type="button" class="preset-option" data-preset="minimaliste">
+                  <strong>🌿 Minimaliste Essentiel</strong>
+                  <small>Seulement 2 à 3 blocs d'impact par jour. Priorité absolue au calme mental.</small>
+                </button>
+              </div>
             </div>
+
+            <!-- Bouton Télécharger Dropdown -->
+            <div class="dropdown-wrapper dropdown-flex">
+              <button type="button" id="export-dropdown-btn" class="button export-cta" aria-expanded="false" aria-haspopup="true">
+                <span>📥</span> <span class="action-btn-text">Exporter</span> ▾
+              </button>
+              <div id="export-menu" class="dropdown-popover" hidden>
+                <div class="popover-title">Formater et exporter ma semaine :</div>
+                <button type="button" class="export-item" id="export-pdf">
+                  <span class="export-icon">📄</span>
+                  <div>
+                    <strong>Imprimer ou Enregistrer en PDF A4</strong>
+                    <small>Mise en page éditoriale prête pour le papier ou tablette.</small>
+                  </div>
+                </button>
+                <button type="button" class="export-item" id="export-ics">
+                  <span class="export-icon">📅</span>
+                  <div>
+                    <strong>Exporter en Calendrier (.ics)</strong>
+                    <small>S'intègre d'un clic dans Google Calendar, Apple & Outlook.</small>
+                  </div>
+                </button>
+                <button type="button" class="export-item" id="export-png">
+                  <span class="export-icon">🖼️</span>
+                  <div>
+                    <strong>Télécharger l'Image Haute Résolution (PNG)</strong>
+                    <small>Idéal pour fond d'écran ou aperçu rapide.</small>
+                  </div>
+                </button>
+                <button type="button" class="export-item" id="export-json">
+                  <span class="export-icon">💾</span>
+                  <div>
+                    <strong>Sauvegarder le planning (Fichier JSON)</strong>
+                    <small>Pour recharger ou archiver ta configuration.</small>
+                  </div>
+                </button>
+                <button type="button" class="export-item import-item" id="import-json">
+                  <span class="export-icon">📂</span>
+                  <div>
+                    <strong>Importer un planning sauvegardé (.json)</strong>
+                    <small>Recharger une configuration précédemment exportée.</small>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bouton Raccourcis (Desktop uniquement) -->
+            <button type="button" id="shortcuts-btn" class="tool-btn-subtle desktop-only-inline" title="Raccourcis clavier (touche ?)">⌨ Raccourcis</button>
+
+            <!-- Bouton Réinitialiser -->
+            <button type="button" id="reset-week-btn" class="tool-btn-icon reset-btn" title="Réinitialiser la semaine" aria-label="Réinitialiser la semaine">✕</button>
           </div>
-
-          <!-- Bouton Raccourcis -->
-          <button type="button" id="shortcuts-btn" class="tool-btn-subtle desktop-only-inline" title="Raccourcis clavier (touche ?)">⌨ Raccourcis</button>
-
-          <!-- Bouton Réinitialiser -->
-          <button type="button" id="reset-week-btn" class="tool-btn-icon reset-btn" title="Réinitialiser la semaine" aria-label="Réinitialiser la semaine">✕</button>
         </div>
 
       </div>
 
+      </div>
+
+      <div class="week-storage-row">
+        <p id="storage-status" role="status">Sauvegarde locale dans ce navigateur · chaque semaine est indépendante.</p>
+        <button type="button" id="copy-previous-week" class="tool-btn-subtle">Copier la semaine précédente</button>
+        <button type="button" id="undo-delete" class="tool-btn-subtle" hidden>Annuler la suppression</button>
+      </div>
       <!-- Les 3 Intentions majeures de la semaine -->
       <div class="week-intentions-block">
         <div class="intentions-header">
@@ -211,6 +227,8 @@
     </section>
 
     <!-- GRILLE PRINCIPALE DE LA SEMAINE (Lundi à Dimanche) -->
+    <nav id="day-navigation" class="day-navigation" aria-label="Aller à un jour"></nav>
+    <p class="grid-help">Sélectionne un créneau pour le modifier. Sur ordinateur, tu peux aussi le déplacer vers un autre jour.</p>
     <section class="planner-grid-wrapper" aria-label="Grille de la semaine">
       <div class="planner-grid" id="planner-grid">
         <!-- Rendu dynamique en JS : 7 colonnes pour les 7 jours de la semaine -->
@@ -222,9 +240,9 @@
       <div class="analytics-card">
         <div class="analytics-top">
           <div>
-            <p class="eyebrow">DIAGNOSTIC & ÉQUILIBRE</p>
-            <h2 id="analytics-heading">Harmonie de ta semaine</h2>
-            <p class="analytics-sub">Mesure de la charge mentale, du travail profond et des espaces de respiration.</p>
+            <p class="eyebrow">UNE VUE D’ENSEMBLE</p>
+            <h2 id="analytics-heading">Où va ton temps ?</h2>
+            <p class="analytics-sub">Durée prévue par activité et chevauchements à vérifier.</p>
           </div>
           <div class="harmony-badge-box" id="harmony-badge-container">
             <div class="harmony-ring-wrap">
@@ -233,10 +251,10 @@
                 <circle id="harmony-ring-progress" class="harmony-ring-progress" cx="50" cy="50" r="38" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="23.87" />
               </svg>
               <div class="harmony-ring-center">
-                <span class="harmony-score" id="harmony-score">92%</span>
+                <span class="harmony-score" id="harmony-score">0</span>
               </div>
             </div>
-            <div class="harmony-status" id="harmony-status">Rythme harmonieux</div>
+            <div class="harmony-status" id="harmony-status">créneaux planifiés</div>
           </div>
         </div>
 
@@ -248,8 +266,7 @@
         <!-- Analyse qualitative & maxime -->
         <div class="analytics-footer">
           <div class="analytics-insight" id="analytics-insight">
-            <strong>✦ Analyse du rythme :</strong> 
-            <span>Un excellent équilibre entre concentration exigeante et temps de respiration intellectuelle et spirituelle.</span>
+            <span>Ajoute un créneau pour découvrir la répartition de ta semaine.</span>
           </div>
           <blockquote class="planner-quote" id="planner-quote">
             « Enseigne-nous à bien compter nos jours, afin que nous appliquions notre cœur à la sagesse. »
