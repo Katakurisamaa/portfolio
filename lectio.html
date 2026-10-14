@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f5f2e9">
+<title>Lectio — Synthétiseur Intelligent de Documents</title>
+<meta name="description" content="Lectio transforme vos documents en synthèses structurées grâce à l'intelligence artificielle. Résumé, questions clés, carte conceptuelle et mode méditation biblique.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="lectio.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="lec-header">
+  <nav class="lec-nav">
+    <a class="lec-brand" href="index.html" aria-label="Retour au portfolio">
+      <span class="lec-brand-icon" aria-hidden="true">✦</span>
+      Lectio<b>.</b>
+    </a>
+    <div class="lec-nav-center">
+      <span class="lec-tagline">Synthétiseur Intelligent de Documents</span>
+    </div>
+    <div class="lec-nav-actions">
+      <button type="button" id="theme-toggle" class="lec-icon-btn" title="Basculer thème sombre / clair" aria-label="Thème sombre">
+        <span id="theme-icon">🌙</span>
+      </button>
+      <a href="index.html" class="lec-back-link">Portfolio <span aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
+</header>
+
+<main id="contenu">
+
+  <!-- Hero / Drop Zone -->
+  <section class="lec-hero" id="hero-section">
+    <div class="lec-hero-inner">
+      <p class="lec-eyebrow"><span class="lec-dot"></span> INTELLIGENCE ARTIFICIELLE · LECTURE AUGMENTÉE</p>
+      <h1 class="lec-title">
+        Dépose un texte.<br>
+        <em>L'essentiel émerge.</em>
+      </h1>
+      <p class="lec-subtitle">Lectio analyse vos documents et en extrait un résumé structuré, les questions clés, les concepts principaux et les connexions entre idées.</p>
+
+      <!-- Drop Zone -->
+      <div class="lec-drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Déposer ou coller un texte à analyser">
+        <div class="lec-drop-content" id="drop-content">
+          <div class="lec-drop-icon" aria-hidden="true">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <rect x="4" y="8" width="48" height="40" rx="6" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
+              <path d="M28 18v20M18 28h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="lec-drop-label">Glisse un fichier <strong>.txt</strong> ou <strong>.pdf</strong> ici</p>
+          <p class="lec-drop-or">— ou —</p>
+          <div class="lec-drop-actions">
+            <button type="button" class="lec-btn lec-btn-primary" id="paste-btn">
+              <span aria-hidden="true">📋</span> Coller un texte
+            </button>
+            <label class="lec-btn lec-btn-secondary" for="file-input">
+              <span aria-hidden="true">📁</span> Parcourir
+            </label>
+            <input type="file" id="file-input" accept=".txt,.pdf,.md" class="sr-only">
+          </div>
+          <p class="lec-drop-hint">Le texte est analysé localement. Seule la synthèse passe par l'IA.</p>
+        </div>
+        <!-- Paste textarea (hidden by default) -->
+        <div class="lec-paste-area" id="paste-area" hidden>
+          <textarea id="paste-textarea" class="lec-textarea" placeholder="Collez votre texte ici..." rows="10"></textarea>
+          <div class="lec-paste-actions">
+            <button type="button" class="lec-btn lec-btn-secondary" id="cancel-paste">Annuler</button>
+            <button type="button" class="lec-btn lec-btn-primary" id="confirm-paste">Analyser ce texte</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode selector -->
+      <div class="lec-modes" id="mode-selector">
+        <span class="lec-modes-label">Mode d'analyse :</span>
+        <div class="lec-mode-pills" role="radiogroup" aria-label="Mode d'analyse">
+          <button type="button" class="lec-mode active" data-mode="academic" role="radio" aria-checked="true">
+            <span aria-hidden="true">🎓</span> Académique
+          </button>
+          <button type="button" class="lec-mode" data-mode="general" role="radio" aria-checked="false">
+            <span aria-hidden="true">📄</span> Général
+          </button>
+          <button type="button" class="lec-mode" data-mode="meditation" role="radio" aria-checked="false">
+            <span aria-hidden="true">✝</span> Méditation
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick interactive samples -->
+      <div class="lec-samples" id="samples-selector">
+        <span class="lec-samples-label">Ou explorer un exemple interactif sans clé API :</span>
+        <div class="lec-samples-list">
+          <button type="button" class="lec-sample-btn" data-sample="actuariat">
+            <span class="lec-sample-icon" aria-hidden="true">∑</span>
+            <span>Mortalité & Stacking (Actuariat)</span>
+          </button>
+          <button type="button" class="lec-sample-btn" data-sample="philosophie">
+            <span class="lec-sample-icon" aria-hidden="true">⌛</span>
+            <span>Architecture du Temps (Sénèque)</span>
+          </button>
+          <button type="button" class="lec-sample-btn" data-sample="foi">
+            <span class="lec-sample-icon" aria-hidden="true">✝</span>
+            <span>Compter nos jours (Psaume 90)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Processing State -->
+  <section class="lec-processing" id="processing-section" hidden>
+    <div class="lec-processing-inner">
+      <div class="lec-spinner-ring" aria-hidden="true">
+        <svg viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" stroke-width="3" fill="none" stroke="#d7d5ca" />
+          <circle cx="40" cy="40" r="34" stroke-width="3" fill="none" stroke="#a7422d" stroke-dasharray="60 154" stroke-linecap="round" class="lec-spinner-arc"/>
+        </svg>
+      </div>
+      <h2 class="lec-processing-title">Lectio analyse votre document...</h2>
+      <p class="lec-processing-sub" id="processing-status">Extraction du contenu en cours</p>
+      <div class="lec-progress-bar">
+        <div class="lec-progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="lec-results" id="results-section" hidden>
+    <div class="lec-results-inner">
+
+      <!-- Document Info Bar -->
+      <div class="lec-doc-bar">
+        <div class="lec-doc-info">
+          <span class="lec-doc-icon" aria-hidden="true">📄</span>
+          <div>
+            <strong id="doc-name">Document</strong>
+            <span id="doc-stats" class="lec-doc-stats"></span>
+          </div>
+        </div>
+        <div class="lec-doc-actions">
+          <button type="button" class="lec-btn lec-btn-ghost" id="copy-all-btn">
+            <span aria-hidden="true">📋</span> Copier tout
+          </button>
+          <button type="button" class="lec-btn lec-btn-ghost" id="new-analysis-btn">
+            <span aria-hidden="true">✦</span> Nouvelle analyse
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="lec-tabs" role="tablist" aria-label="Sections de l'analyse">
+        <button type="button" class="lec-tab active" role="tab" data-tab="summary" aria-selected="true" id="tab-summary">Synthèse</button>
+        <button type="button" class="lec-tab" role="tab" data-tab="questions" aria-selected="false" id="tab-questions">Questions clés</button>
+        <button type="button" class="lec-tab" role="tab" data-tab="concepts" aria-selected="false" id="tab-concepts">Concepts</button>
+        <button type="button" class="lec-tab" role="tab" data-tab="connections" aria-selected="false" id="tab-connections">Connexions</button>
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="lec-panel active" id="panel-summary" role="tabpanel" aria-labelledby="tab-summary">
+        <div class="lec-card">
+          <div class="lec-card-header">
+            <span class="lec-card-badge">✦ SYNTHÈSE STRUCTURÉE</span>
+            <button type="button" class="lec-copy-section" data-section="summary" title="Copier la synthèse">⧉</button>
+          </div>
+          <div class="lec-card-body" id="summary-content">
+            <!-- AI generated content -->
+          </div>
+        </div>
+      </div>
+
+      <div class="lec-panel" id="panel-questions" role="tabpanel" aria-labelledby="tab-questions" hidden>
+        <div class="lec-card">
+          <div class="lec-card-header">
+            <span class="lec-card-badge">❓ QUESTIONS CLÉS</span>
+            <button type="button" class="lec-copy-section" data-section="questions" title="Copier les questions">⧉</button>
+          </div>
+          <div class="lec-card-body" id="questions-content">
+          </div>
+        </div>
+      </div>
+
+      <div class="lec-panel" id="panel-concepts" role="tabpanel" aria-labelledby="tab-concepts" hidden>
+        <div class="lec-card">
+          <div class="lec-card-header">
+            <span class="lec-card-badge">🧩 CONCEPTS PRINCIPAUX</span>
+            <button type="button" class="lec-copy-section" data-section="concepts" title="Copier les concepts">⧉</button>
+          </div>
+          <div class="lec-card-body" id="concepts-content">
+          </div>
+        </div>
+      </div>
+
+      <div class="lec-panel" id="panel-connections" role="tabpanel" aria-labelledby="tab-connections" hidden>
+        <div class="lec-card">
+          <div class="lec-card-header">
+            <span class="lec-card-badge">🔗 CONNEXIONS ENTRE IDÉES</span>
+            <button type="button" class="lec-copy-section" data-section="connections" title="Copier les connexions">⧉</button>
+          </div>
+          <div class="lec-card-body" id="connections-content">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast -->
+<div class="lec-toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- API Key Dialog -->
+<dialog id="api-key-dialog" class="lec-dialog">
+  <div class="lec-dialog-body">
+    <span class="lec-dialog-icon" aria-hidden="true">🔑</span>
+    <h2 class="lec-dialog-title">Clé API Gemini</h2>
+    <p class="lec-dialog-desc">Pour analyser vos documents, Lectio utilise l'API Gemini (gratuite). Votre clé est stockée uniquement dans votre navigateur.</p>
+    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="lec-dialog-link">Obtenir une clé gratuite sur AI Studio ↗</a>
+    <input type="password" id="api-key-input" class="lec-input" placeholder="Collez votre clé API ici..." autocomplete="off">
+    <div class="lec-dialog-actions">
+      <button type="button" class="lec-btn lec-btn-secondary" id="cancel-api-key">Annuler</button>
+      <button type="button" class="lec-btn lec-btn-secondary" id="dialog-sample-btn">Tester un exemple sans clé ✦</button>
+      <button type="button" class="lec-btn lec-btn-primary" id="save-api-key">Enregistrer</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Footer -->
+<footer class="lec-footer">
+  <a class="lec-footer-brand" href="index.html">bm.</a>
+  <span>© <span id="year">2026</span> Benjamin Minko · Lectio — Synthétiseur Intelligent</span>
+  <a href="index.html#contact">Contact ↗</a>
+</footer>
+
+<script src="lectio.js"></script>
+</body>
+</html>

@@ -1,0 +1,831 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   Lectio — Design System & Variables
+   ========================================================================== */
+:root {
+  --lec-paper: #f5f2e9;
+  --lec-ink: #292c25;
+  --lec-muted: #64665c;
+  --lec-accent: #a7422d;
+  --lec-accent-hover: #8e3726;
+  --lec-line: #d7d5ca;
+  --lec-card-bg: #ffffff;
+  --lec-card-border: #e0ddd0;
+  --lec-hover-bg: #ece9de;
+  --lec-success: #5a7c52;
+  --lec-gold: #c79f58;
+  --lec-faith-bg: #f8f0e4;
+  --lec-sage: #e3e7d9;
+  --lec-sand: #ede7d5;
+  --lec-serif: Georgia, 'Times New Roman', serif;
+  --lec-sans: 'Segoe UI', Arial, sans-serif;
+  --lec-radius: 12px;
+  --lec-shadow: 0 4px 20px rgba(41, 44, 37, 0.06);
+  --lec-shadow-lg: 0 12px 40px rgba(41, 44, 37, 0.1);
+}
+
+/* Dark Theme */
+body.dark {
+  --lec-paper: #1a1e1a;
+  --lec-ink: #e8e5dc;
+  --lec-muted: #9a9c92;
+  --lec-line: #3a3d36;
+  --lec-card-bg: #242824;
+  --lec-card-border: #3a3d36;
+  --lec-hover-bg: #2e322e;
+  --lec-faith-bg: #2a2520;
+  --lec-sage: #2a2e26;
+  --lec-sand: #2e2a22;
+  --lec-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --lec-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Reset & Base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--lec-paper);
+  color: var(--lec-ink);
+  font-family: var(--lec-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--lec-accent);
+  outline-offset: 3px;
+}
+::selection { background: #d9b69a; color: var(--lec-ink); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+[hidden] { display: none !important; }
+
+em { font-style: italic; color: var(--lec-accent); }
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.lec-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(245, 242, 233, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--lec-line);
+  transition: background 0.3s;
+}
+
+body.dark .lec-header {
+  background: rgba(26, 30, 26, 0.95);
+}
+
+.lec-nav {
+  width: min(1180px, calc(100% - 64px));
+  margin-inline: auto;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.lec-brand {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lec-brand b { color: var(--lec-accent); }
+.lec-brand-icon {
+  color: var(--lec-accent);
+  font-size: 14px;
+  animation: lecPulse 2s ease-in-out infinite;
+}
+
+@keyframes lecPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.lec-tagline {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--lec-muted);
+  font-weight: 600;
+}
+
+.lec-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lec-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+.lec-icon-btn:hover { background: var(--lec-hover-bg); }
+
+.lec-back-link {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 1px solid var(--lec-line);
+  border-radius: 8px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.lec-back-link:hover { border-color: var(--lec-accent); color: var(--lec-accent); }
+
+/* ==========================================================================
+   Hero / Drop Zone
+   ========================================================================== */
+.lec-hero {
+  padding: 60px 0 40px;
+}
+
+.lec-hero-inner {
+  width: min(800px, calc(100% - 64px));
+  margin-inline: auto;
+  text-align: center;
+}
+
+.lec-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--lec-muted);
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lec-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lec-accent);
+}
+
+.lec-title {
+  font-family: var(--lec-serif);
+  font-weight: 400;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -3px;
+  margin: 0 0 20px;
+}
+
+.lec-subtitle {
+  font-size: 15px;
+  color: var(--lec-muted);
+  max-width: 540px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+/* Drop Zone */
+.lec-drop-zone {
+  border: 2px dashed var(--lec-line);
+  border-radius: var(--lec-radius);
+  padding: 48px 32px;
+  transition: border-color 0.25s, background 0.25s, transform 0.25s;
+  cursor: pointer;
+  position: relative;
+}
+
+.lec-drop-zone:hover,
+.lec-drop-zone:focus-visible {
+  border-color: var(--lec-accent);
+  background: rgba(167, 66, 45, 0.03);
+}
+
+.lec-drop-zone.drag-over {
+  border-color: var(--lec-accent);
+  background: rgba(167, 66, 45, 0.06);
+  transform: scale(1.01);
+}
+
+.lec-drop-icon {
+  color: var(--lec-muted);
+  margin-bottom: 16px;
+  transition: color 0.2s;
+}
+.lec-drop-zone:hover .lec-drop-icon { color: var(--lec-accent); }
+
+.lec-drop-label {
+  font-size: 16px;
+  margin: 0 0 8px;
+  color: var(--lec-ink);
+}
+.lec-drop-label strong { color: var(--lec-accent); }
+
+.lec-drop-or {
+  font-size: 12px;
+  color: var(--lec-muted);
+  margin: 12px 0;
+}
+
+.lec-drop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lec-drop-hint {
+  font-size: 11px;
+  color: var(--lec-muted);
+  margin: 20px 0 0;
+  opacity: 0.7;
+}
+
+/* Paste Area */
+.lec-paste-area { text-align: left; }
+
+.lec-textarea {
+  width: 100%;
+  background: var(--lec-card-bg);
+  border: 1px solid var(--lec-card-border);
+  border-radius: 8px;
+  padding: 16px;
+  font: 14px/1.7 var(--lec-sans);
+  color: var(--lec-ink);
+  resize: vertical;
+  min-height: 180px;
+  transition: border-color 0.2s;
+}
+.lec-textarea:focus { border-color: var(--lec-accent); outline: none; }
+
+.lec-paste-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* Buttons */
+.lec-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.lec-btn-primary {
+  background: var(--lec-ink);
+  color: var(--lec-paper);
+}
+.lec-btn-primary:hover { background: var(--lec-accent); transform: translateY(-1px); }
+
+.lec-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--lec-line);
+  color: var(--lec-ink);
+}
+.lec-btn-secondary:hover { border-color: var(--lec-accent); color: var(--lec-accent); }
+
+.lec-btn-ghost {
+  background: transparent;
+  color: var(--lec-muted);
+  padding: 8px 14px;
+  font-size: 12px;
+}
+.lec-btn-ghost:hover { color: var(--lec-accent); background: var(--lec-hover-bg); border-radius: 8px; }
+
+/* Mode Selector */
+.lec-modes {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lec-modes-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lec-muted);
+  letter-spacing: 0.5px;
+}
+
+.lec-mode-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.lec-mode {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--lec-line);
+  border-radius: 25px;
+  transition: all 0.2s;
+}
+.lec-mode:hover { border-color: var(--lec-ink); }
+.lec-mode.active {
+  background: var(--lec-ink);
+  color: var(--lec-paper);
+  border-color: var(--lec-ink);
+}
+
+/* Quick Samples */
+.lec-samples {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--lec-line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.lec-samples-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--lec-muted);
+  text-transform: uppercase;
+}
+
+.lec-samples-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.lec-sample-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--lec-card-bg);
+  border: 1px solid var(--lec-card-border);
+  color: var(--lec-ink);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(41, 44, 37, 0.04);
+}
+
+.lec-sample-btn:hover {
+  border-color: var(--lec-accent);
+  color: var(--lec-accent);
+  transform: translateY(-1px);
+  box-shadow: var(--lec-shadow);
+}
+
+.lec-sample-icon {
+  font-size: 13px;
+  color: var(--lec-accent);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Processing State
+   ========================================================================== */
+.lec-processing {
+  padding: 100px 0;
+  text-align: center;
+}
+
+.lec-processing-inner {
+  width: min(500px, calc(100% - 64px));
+  margin-inline: auto;
+}
+
+.lec-spinner-ring {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 28px;
+}
+.lec-spinner-ring svg { width: 100%; height: 100%; }
+.lec-spinner-arc {
+  animation: lecSpin 1.2s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes lecSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+.lec-processing-title {
+  font-family: var(--lec-serif);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin: 0 0 12px;
+}
+
+.lec-processing-sub {
+  font-size: 14px;
+  color: var(--lec-muted);
+  margin: 0 0 24px;
+}
+
+.lec-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--lec-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.lec-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lec-accent), var(--lec-gold));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* ==========================================================================
+   Results Section
+   ========================================================================== */
+.lec-results { padding: 0 0 80px; }
+
+.lec-results-inner {
+  width: min(900px, calc(100% - 64px));
+  margin-inline: auto;
+}
+
+/* Document Bar */
+.lec-doc-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--lec-card-bg);
+  border: 1px solid var(--lec-card-border);
+  border-radius: var(--lec-radius);
+  margin-bottom: 24px;
+  box-shadow: var(--lec-shadow);
+  flex-wrap: wrap;
+}
+
+.lec-doc-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lec-doc-icon { font-size: 24px; }
+
+.lec-doc-info strong {
+  display: block;
+  font-size: 14px;
+}
+
+.lec-doc-stats {
+  font-size: 11px;
+  color: var(--lec-muted);
+}
+
+.lec-doc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Tabs */
+.lec-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--lec-line);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lec-tab {
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lec-muted);
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.lec-tab:hover { color: var(--lec-ink); }
+.lec-tab.active {
+  color: var(--lec-accent);
+  border-bottom-color: var(--lec-accent);
+}
+
+/* Card / Panel */
+.lec-panel { display: none; animation: lecFadeIn 0.35s ease; }
+.lec-panel.active { display: block; }
+
+@keyframes lecFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.lec-card {
+  background: var(--lec-card-bg);
+  border: 1px solid var(--lec-card-border);
+  border-radius: var(--lec-radius);
+  box-shadow: var(--lec-shadow);
+  overflow: hidden;
+}
+
+.lec-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--lec-card-border);
+}
+
+.lec-card-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--lec-muted);
+}
+
+.lec-copy-section {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--lec-muted);
+  transition: background 0.2s, color 0.2s;
+}
+.lec-copy-section:hover { background: var(--lec-hover-bg); color: var(--lec-accent); }
+
+.lec-card-body {
+  padding: 28px 24px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--lec-ink);
+}
+
+.lec-card-body h3 {
+  font-family: var(--lec-serif);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  margin: 28px 0 12px;
+  color: var(--lec-ink);
+}
+.lec-card-body h3:first-child { margin-top: 0; }
+
+.lec-card-body p { margin: 0 0 16px; }
+
+.lec-card-body ul, .lec-card-body ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+}
+.lec-card-body li { margin-bottom: 8px; }
+
+.lec-card-body blockquote {
+  border-left: 3px solid var(--lec-accent);
+  margin: 20px 0;
+  padding: 12px 20px;
+  background: rgba(167, 66, 45, 0.04);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--lec-serif);
+  font-style: italic;
+  color: var(--lec-muted);
+}
+
+body.dark .lec-card-body blockquote { background: rgba(167, 66, 45, 0.08); }
+
+.lec-card-body strong { color: var(--lec-accent); font-weight: 600; }
+
+.lec-card-body code {
+  background: var(--lec-hover-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Concept Tags */
+.lec-concept-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.lec-concept-tag {
+  padding: 10px 18px;
+  background: var(--lec-sage);
+  border: 1px solid var(--lec-line);
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.lec-concept-tag:hover { border-color: var(--lec-accent); color: var(--lec-accent); }
+body.dark .lec-concept-tag { background: var(--lec-hover-bg); }
+
+/* Connection Lines */
+.lec-connection {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--lec-line);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.lec-connection:last-child { border-bottom: none; }
+
+.lec-connection-arrow {
+  color: var(--lec-accent);
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.lec-connection-text { font-size: 14px; }
+.lec-connection-text strong { display: block; margin-bottom: 4px; }
+
+/* ==========================================================================
+   Dialog
+   ========================================================================== */
+.lec-dialog {
+  border: none;
+  border-radius: var(--lec-radius);
+  padding: 0;
+  max-width: 460px;
+  width: calc(100% - 40px);
+  box-shadow: var(--lec-shadow-lg);
+  background: var(--lec-card-bg);
+  color: var(--lec-ink);
+}
+
+.lec-dialog::backdrop {
+  background: rgba(41, 44, 37, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lec-dialog-body {
+  padding: 36px 32px;
+  text-align: center;
+}
+
+.lec-dialog-icon { font-size: 40px; display: block; margin-bottom: 16px; }
+
+.lec-dialog-title {
+  font-family: var(--lec-serif);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 12px;
+}
+
+.lec-dialog-desc {
+  font-size: 13px;
+  color: var(--lec-muted);
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+
+.lec-dialog-link {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lec-accent);
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--lec-accent);
+  padding-bottom: 2px;
+}
+.lec-dialog-link:hover { opacity: 0.8; }
+
+.lec-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--lec-card-border);
+  border-radius: 8px;
+  font: 14px var(--lec-sans);
+  color: var(--lec-ink);
+  background: var(--lec-paper);
+  transition: border-color 0.2s;
+}
+.lec-input:focus { border-color: var(--lec-accent); outline: none; }
+
+.lec-dialog-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+.lec-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--lec-ink);
+  color: var(--lec-paper);
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--lec-shadow-lg);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.lec-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.lec-footer {
+  width: min(1180px, calc(100% - 64px));
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  font-size: 10px;
+  color: var(--lec-muted);
+  border-top: 1px solid var(--lec-line);
+}
+
+.lec-footer-brand {
+  font-family: var(--lec-serif);
+  font-size: 24px;
+  color: var(--lec-ink);
+}
+
+.lec-footer a:hover { color: var(--lec-accent); }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 760px) {
+  .lec-nav {
+    width: calc(100% - 40px);
+    min-height: 60px;
+    gap: 10px;
+  }
+  .lec-nav-center { display: none; }
+  .lec-back-link { display: none; }
+
+  .lec-hero { padding: 40px 0 24px; }
+  .lec-hero-inner { width: calc(100% - 40px); }
+  .lec-title { font-size: clamp(36px, 8vw, 52px); letter-spacing: -2px; }
+  .lec-subtitle { font-size: 14px; margin-bottom: 28px; }
+
+  .lec-drop-zone { padding: 32px 20px; }
+
+  .lec-modes { flex-direction: column; gap: 8px; }
+
+  .lec-results-inner { width: calc(100% - 40px); }
+
+  .lec-doc-bar { flex-direction: column; align-items: flex-start; }
+
+  .lec-tabs { gap: 0; }
+  .lec-tab { padding: 12px 14px; font-size: 12px; }
+
+  .lec-card-body { padding: 20px 18px; }
+
+  .lec-footer { width: calc(100% - 40px); flex-wrap: wrap; gap: 10px; }
+  .lec-footer > span { order: 3; width: 100%; }
+}
+
+@media (max-width: 380px) {
+  .lec-title { font-size: 32px; }
+  .lec-drop-actions { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

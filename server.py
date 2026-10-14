@@ -411,7 +411,9 @@ class Handler(SimpleHTTPRequestHandler):
             '/admin': '/admin.html',
             '/admin/': '/admin.html',
             '/planificateur': '/planificateur.html',
-            '/planificateur/': '/planificateur.html'
+            '/planificateur/': '/planificateur.html',
+            '/lectio': '/lectio.html',
+            '/lectio/': '/lectio.html'
         }
         path = routes.get(path, path)
         
@@ -420,6 +422,7 @@ class Handler(SimpleHTTPRequestHandler):
             '/index.html', '/styles.css', '/script.js',
             '/admin.html', '/admin.css', '/admin.js',
             '/planificateur.html', '/planificateur.css', '/planificateur.js',
+            '/lectio.html', '/lectio.css', '/lectio.js',
             '/benjamin-portrait.jpg', '/benjamin-minko.jpg', '/artwork.json'
         ) or bool(re.fullmatch(r'/uploads/[a-zA-Z0-9_.-]+\.(png|jpg|webp|jpeg)', path))
 

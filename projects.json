@@ -41,6 +41,48 @@
       "bibleref": "Psaume 90:12",
       "versetext": "",
       "created_at": "2026-10-14T08:20:00+00:00"
+    },
+    {
+      "id": "8aaa0c3a-6be7-4c6d-9754-f92de84fd108",
+      "title": "Restaurez votre âme et enclenchez le changement !",
+      "category": "Lectures",
+      "type": "lecture",
+      "description": "Ce livre vous invite à sortir du découragement, de l’amertume, des frustrations et des blessures intérieures qui freinent votre épanouissement. À travers des enseignements fondés sur la Parole de Dieu et des exemples pratiques, Jacques Mbalanda vous donne les clés pour restaurer votre âme, redécouvrir votre identité et transformer durablement votre manière de penser et de vivre.",
+      "details": "Je suis encore en pleine lecture de ce livre. Une mise à jour sera faite bientôt",
+      "technologies": "",
+      "site": "",
+      "demo": "",
+      "github": "",
+      "image": "https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/1791967257139-kn4es5.png",
+      "imagealt": "",
+      "artwork": "",
+      "author": "JACQUES MBALANDA",
+      "booktitle": "JE DÉCIDE DE RESTAURER MON ÂME !",
+      "quote": "Le changement est possible, mais tout commence par une décision : celle de restaurer votre âme !",
+      "bibleref": "",
+      "versetext": "",
+      "created_at": "2026-10-14T08:40:59.272753+00:00"
+    },
+    {
+      "id": "a2c7e3f1-8b4d-4e9a-b1f6-d5a8c3e7f2b9",
+      "title": "Lectio — Synthétiseur Intelligent",
+      "category": "IA",
+      "type": "projet",
+      "description": "Lectio transforme vos lectures, articles et documents d'étude en synthèses vivantes grâce à l'intelligence artificielle. Résumé exécutif, questions critiques, carte de concepts et connexions transversales en un clic.",
+      "details": "Conçu pour les étudiants, chercheurs et passionnés de savoir approfondi :\n\n- Analyse multi-angulaire : mode académique (rigueur & méthodologie), général (clarté & concision), ou méditation (réflexion profonde & résonance biblique).\n- 4 angles d'exploration : Synthèse structurée, Questions clés stimulantes, Cartographie des concepts essentiels, Connexions transversales.\n- Respect strict de la confidentialité : analyse en mémoire, aucune donnée persistée, moteur local ou API directe.",
+      "technologies": "Vanilla JS · Google Gemini API · Architecture CSS Éditorial · Analyseur sémantique",
+      "site": "/lectio.html",
+      "demo": "/lectio.html",
+      "github": "https://github.com/Katakurisamaa/portfolio.git",
+      "image": "https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/lectio-hero.jpg",
+      "imagealt": "Lectio — Synthétiseur Intelligent de Documents par Benjamin Minko",
+      "artwork": "",
+      "author": "Benjamin Minko",
+      "booktitle": "",
+      "quote": "L'intelligence consiste non pas à accumuler les textes, mais à en dégager la substance.",
+      "bibleref": "",
+      "versetext": "",
+      "created_at": "2026-10-14T11:00:00+00:00"
     }
   ]
 }
