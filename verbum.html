@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f2e9">
+<title>Verbum — Mémorisation & Maîtrise des Écritures | Benjamin Minko</title>
+<meta name="description" content="Verbum est un atelier interactif d'assimilation et de mémorisation biblique par Benjamin Minko. Dictée mot à mot avec analyse intelligente, recherche de références et flash quiz.">
+<meta name="author" content="Benjamin Minko">
+<meta name="keywords" content="Verbum, mémorisation biblique, verset biblique, méditation chrétienne, Louis Segond, Parole de Vie, quizz biblique, Benjamin Minko, IA chrétienne, étude biblique">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://benjaminminko.com/verbum.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Verbum — Mémorisation & Maîtrise des Écritures | Benjamin Minko">
+<meta property="og:description" content="Grave la Parole dans ton cœur. Mémorisation mot à mot, détection de références et flash quiz bibliques.">
+<meta property="og:url" content="https://benjaminminko.com/verbum.html">
+<meta property="og:site_name" content="Benjamin Minko">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:image" content="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/verbum-hero.jpg">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Verbum — Mémorisation & Maîtrise des Écritures">
+<meta name="twitter:description" content="Grave la Parole dans ton cœur : atelier de mémorisation guidée, devinettes de références et quiz interactifs.">
+<meta name="twitter:image" content="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/verbum-hero.jpg">
+
+<!-- Structured Data JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Verbum — Mémorisation & Maîtrise des Écritures",
+  "url": "https://benjaminminko.com/verbum.html",
+  "description": "Application interactive d'étude et de mémorisation des textes bibliques avec analyse sémantique, modes d'entraînement progressifs et quiz.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "creator": {
+    "@type": "Person",
+    "name": "Benjamin Minko",
+    "url": "https://benjaminminko.com/"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='24' y='73' font-size='68' font-family='Georgia' fill='%23f5f2e9'%3EV%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="verbum.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="vb-header">
+  <nav class="vb-nav">
+    <a class="vb-brand" href="index.html#projets" aria-label="Retour au portfolio">
+      <span class="vb-brand-icon" aria-hidden="true">📖</span>
+      Verbum<b>.</b>
+    </a>
+    <div class="vb-nav-center">
+      <span class="vb-tagline">Mémorisation &amp; Maîtrise des Écritures</span>
+    </div>
+    <div class="vb-nav-actions">
+      <button type="button" id="theme-toggle" class="vb-icon-btn" title="Basculer thème sombre / clair" aria-label="Thème sombre">
+        <span id="theme-icon">🌙</span>
+      </button>
+      <a href="index.html#projets" class="vb-back-link"><span aria-hidden="true">←</span> Portfolio</a>
+    </div>
+  </nav>
+</header>
+
+<main id="contenu">
+
+  <!-- Hero Banner -->
+  <section class="vb-hero" id="hero-section">
+    <div class="vb-hero-inner">
+      <p class="vb-eyebrow"><span class="vb-dot"></span> ATELIER BIBLIQUE INTELLIGENT · ANCIEN &amp; NOUVEAU TESTAMENT</p>
+      <h1 class="vb-title">
+        Grave la Parole.<br>
+        <em>Maîtrise chaque verset.</em>
+      </h1>
+      <p class="vb-subtitle">
+        <em>« Ta parole est une lampe à mes pieds, et une lumière sur mon sentier. »</em> (Psaume 119:105).
+        Choisis ton livre et ta version, mémorise mot à mot avec analyse intelligente des écarts, résous les énigmes de références et teste tes réflexes en flash quiz.
+      </p>
+
+      <!-- Quick Metrics Ribbon -->
+      <div class="vb-stats-ribbon" id="stats-ribbon">
+        <div class="vb-stat-item">
+          <span class="vb-stat-num" id="ribbon-count">0</span>
+          <span class="vb-stat-lbl">Versets gravés</span>
+        </div>
+        <div class="vb-stat-divider" aria-hidden="true"></div>
+        <div class="vb-stat-item">
+          <span class="vb-stat-num" id="ribbon-accuracy">100%</span>
+          <span class="vb-stat-lbl">Précision moyenne</span>
+        </div>
+        <div class="vb-stat-divider" aria-hidden="true"></div>
+        <div class="vb-stat-item">
+          <span class="vb-stat-num" id="ribbon-streak">🔥 0</span>
+          <span class="vb-stat-lbl">Série actuelle</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Navigation Tabs -->
+  <section class="vb-tabs-section">
+    <div class="vb-tabs-wrapper" role="tablist" aria-label="Modes d'entraînement Verbum">
+      <button type="button" class="vb-tab active" id="tab-graver" role="tab" aria-selected="true" aria-controls="panel-graver" tabindex="0">
+        <span class="vb-tab-icon" aria-hidden="true">✍️</span>
+        <span class="vb-tab-text">Graver <em>(Dictée &amp; Mémorisation)</em></span>
+      </button>
+      <button type="button" class="vb-tab" id="tab-detective" role="tab" aria-selected="false" aria-controls="panel-detective" tabindex="-1">
+        <span class="vb-tab-icon" aria-hidden="true">🎯</span>
+        <span class="vb-tab-text">Détective <em>(Deviner la référence)</em></span>
+      </button>
+      <button type="button" class="vb-tab" id="tab-quiz" role="tab" aria-selected="false" aria-controls="panel-quiz" tabindex="-1">
+        <span class="vb-tab-icon" aria-hidden="true">⚡</span>
+        <span class="vb-tab-text">Flash Quizz <em>(4 propositions)</em></span>
+      </button>
+      <button type="button" class="vb-tab" id="tab-biblio" role="tab" aria-selected="false" aria-controls="panel-biblio" tabindex="-1">
+        <span class="vb-tab-icon" aria-hidden="true">📚</span>
+        <span class="vb-tab-text">Bibliothèque <em>(Index des versets)</em></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       PANEL 1 : MODE GRAVER (Dictée & Mémorisation mot à mot)
+       ========================================================================= -->
+  <section class="vb-panel active" id="panel-graver" role="tabpanel" aria-labelledby="tab-graver">
+    <div class="vb-container">
+      
+      <!-- Selection Bar -->
+      <div class="vb-filter-bar">
+        <div class="vb-filter-group">
+          <label for="graver-book-select">Livre :</label>
+          <select id="graver-book-select" class="vb-select">
+            <option value="all">Tous les livres</option>
+          </select>
+        </div>
+
+        <div class="vb-filter-group">
+          <label for="graver-theme-select">Thématique :</label>
+          <select id="graver-theme-select" class="vb-select">
+            <option value="all">Toutes les thématiques</option>
+          </select>
+        </div>
+
+        <div class="vb-filter-group">
+          <label for="graver-version-select">Version :</label>
+          <select id="graver-version-select" class="vb-select">
+            <option value="lsg">Louis Segond 1910</option>
+            <option value="pdv">Parole de Vie (Français courant)</option>
+          </select>
+        </div>
+
+        <button type="button" id="graver-random-btn" class="vb-btn vb-btn-outline" title="Proposer un autre verset">
+          <span aria-hidden="true">🎲</span> Aléatoire
+        </button>
+        <button type="button" id="graver-custom-toggle-btn" class="vb-btn vb-btn-ghost" title="Coller mon propre verset personnalisé">
+          <span aria-hidden="true">✏️</span> Verset personnalisé
+        </button>
+      </div>
+
+      <!-- Custom Verse Collapse -->
+      <div class="vb-custom-box" id="custom-verse-box" hidden>
+        <div class="vb-custom-box-inner">
+          <p class="vb-custom-box-title">Entrez votre propre verset à mémoriser :</p>
+          <div class="vb-custom-inputs">
+            <input type="text" id="custom-ref-input" class="vb-input" placeholder="Référence (ex: Jérémie 33:3)" aria-label="Référence du verset personnalisé">
+            <textarea id="custom-text-input" class="vb-textarea" rows="2" placeholder="Collez ici le texte exact du verset..." aria-label="Texte du verset personnalisé"></textarea>
+          </div>
+          <div class="vb-custom-actions">
+            <button type="button" id="custom-apply-btn" class="vb-btn vb-btn-primary">Charger ce verset</button>
+            <button type="button" id="custom-cancel-btn" class="vb-btn vb-btn-ghost">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Verse Card -->
+      <div class="vb-verse-card" id="verse-card">
+        <div class="vb-verse-header">
+          <div class="vb-verse-meta">
+            <span class="vb-badge vb-badge-accent" id="verse-ref">Psaumes 91:1</span>
+            <span class="vb-badge vb-badge-neutral" id="verse-theme-tag">Paix &amp; Protection</span>
+            <span class="vb-badge vb-badge-soft" id="verse-version-tag">Louis Segond 1910</span>
+          </div>
+          <div class="vb-verse-tools">
+            <button type="button" id="audio-speak-btn" class="vb-tool-btn" title="Écouter la récitation audio" aria-label="Écouter le verset">
+              <span aria-hidden="true">🔊</span> Écouter
+            </button>
+            <button type="button" id="copy-ref-btn" class="vb-tool-btn" title="Copier la référence et le verset" aria-label="Copier le verset">
+              <span aria-hidden="true">📋</span> Copier
+            </button>
+          </div>
+        </div>
+
+        <!-- Assistance Mode Level Selectors -->
+        <div class="vb-assistance-levels" role="group" aria-label="Niveau d'aide mnémotechnique">
+          <span class="vb-assist-label">Niveau d'aide :</span>
+          <button type="button" class="vb-pill active" data-assist="open" title="Le verset reste visible pour la lecture et mémorisation">
+            👁️ Découverte
+          </button>
+          <button type="button" class="vb-pill" data-assist="first-letters" title="Affiche uniquement la première lettre de chaque mot">
+            🔤 Premières lettres
+          </button>
+          <button type="button" class="vb-pill" data-assist="cloze" title="Masque les mots-clés théologiques">
+            🧩 Texte à trous
+          </button>
+          <button type="button" class="vb-pill" data-assist="blank" title="Page blanche complète : verset totalement masqué">
+            📜 Page blanche
+          </button>
+        </div>
+
+        <!-- Verse Prompt Display (adapts according to assistance level) -->
+        <div class="vb-verse-prompt" id="verse-prompt-container">
+          <blockquote id="verse-prompt-text" class="vb-prompt-text">
+            « Celui qui demeure sous l'abri du Très-Haut repose à l'ombre du Tout-Puissant. »
+          </blockquote>
+        </div>
+
+        <div class="vb-verse-context" id="verse-context">
+          <small id="verse-context-text">Un psaume de refuge inébranlable et de confiance absolue en la protection divine.</small>
+        </div>
+      </div>
+
+      <!-- Practice Typing Area -->
+      <div class="vb-typing-area">
+        <div class="vb-typing-header">
+          <label for="practice-input" class="vb-typing-label">
+            <strong>Votre restitution mot à mot :</strong>
+            <span class="vb-typing-hint">Écrivez le verset fidèlement de mémoire, puis cliquez sur Analyser.</span>
+          </label>
+          <div class="vb-typing-counter">
+            <span id="char-count">0</span> car. · <span id="word-count">0</span> mots
+          </div>
+        </div>
+
+        <textarea id="practice-input" class="vb-input-box" rows="4" placeholder="Tapez ici le verset de mémoire mot pour mot... (insensible à la casse mais la fidélité des mots sera analysée)" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+
+        <div class="vb-typing-actions">
+          <button type="button" id="analyze-btn" class="vb-btn vb-btn-primary vb-btn-lg">
+            <span>✨</span> Analyser &amp; Corriger
+          </button>
+          <button type="button" id="clear-input-btn" class="vb-btn vb-btn-ghost">
+            Effacer
+          </button>
+          <button type="button" id="show-solution-btn" class="vb-btn vb-btn-outline">
+            Voir le modèle
+          </button>
+        </div>
+      </div>
+
+      <!-- Analysis & Diff Results Section -->
+      <div class="vb-analysis-card" id="analysis-card" hidden>
+        <div class="vb-analysis-header">
+          <div class="vb-analysis-score-wrap">
+            <div class="vb-score-circle" id="score-circle">
+              <span class="vb-score-percent" id="score-percent">100%</span>
+            </div>
+            <div>
+              <h2 class="vb-analysis-title" id="score-verdict">Parfaitement gravé !</h2>
+              <p class="vb-analysis-sub" id="score-summary">Aucune faute, exactitude mot à mot remarquable.</p>
+            </div>
+          </div>
+          <div class="vb-analysis-badges" id="score-badges">
+            <span class="vb-tag-badge vb-tag-success" id="stat-exact-words">0 mots exacts</span>
+            <span class="vb-tag-badge vb-tag-warning" id="stat-typos">0 coquilles</span>
+            <span class="vb-tag-badge vb-tag-danger" id="stat-missing">0 oublis / erreurs</span>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="vb-diff-legend">
+          <span class="vb-legend-item"><span class="vb-dot vb-dot-ok"></span> Mot exact</span>
+          <span class="vb-legend-item"><span class="vb-dot vb-dot-warn"></span> Coquille / accent</span>
+          <span class="vb-legend-item"><span class="vb-dot vb-dot-err"></span> Manquant ou différent</span>
+        </div>
+
+        <!-- Word-by-word diff output -->
+        <div class="vb-diff-container">
+          <div class="vb-diff-box">
+            <p class="vb-diff-label">Votre texte annoté :</p>
+            <div class="vb-diff-content" id="diff-user-output"></div>
+          </div>
+          <div class="vb-diff-box">
+            <p class="vb-diff-label">Texte authentique de référence :</p>
+            <div class="vb-diff-content vb-diff-canonical" id="diff-canonical-output"></div>
+          </div>
+        </div>
+
+        <!-- Next Verse / Re-practice CTA -->
+        <div class="vb-analysis-cta">
+          <button type="button" id="retry-verse-btn" class="vb-btn vb-btn-outline">
+            🔄 Recommencer ce verset
+          </button>
+          <button type="button" id="next-verse-btn" class="vb-btn vb-btn-primary">
+            Verset suivant ➔
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       PANEL 2 : MODE DÉTECTIVE (Deviner la référence d'un verset)
+       ========================================================================= -->
+  <section class="vb-panel" id="panel-detective" role="tabpanel" aria-labelledby="tab-detective" hidden>
+    <div class="vb-container">
+
+      <div class="vb-detective-intro">
+        <div class="vb-detective-badge">Épreuve de Maîtrise</div>
+        <h2 class="vb-section-heading">Quel est ce verset ? Retrouve sa référence exacte.</h2>
+        <p class="vb-section-sub">Lis le passage ci-dessous et identifie le <strong>Livre</strong>, le <strong>Chapitre</strong> et le <strong>Verset</strong>. Utilise les indices si nécessaire.</p>
+      </div>
+
+      <!-- Detective Verse Display -->
+      <div class="vb-mystery-card">
+        <span class="vb-mystery-mark" aria-hidden="true">« »</span>
+        <blockquote class="vb-mystery-quote" id="detective-quote">
+          « Car je connais les projets que j'ai formés sur vous, dit l'Éternel, projets de paix et non de malheur, afin de vous donner un avenir et de l'espérance. »
+        </blockquote>
+        <div class="vb-mystery-tags">
+          <span class="vb-badge vb-badge-soft" id="detective-version-tag">Louis Segond 1910</span>
+          <span class="vb-badge vb-badge-neutral" id="detective-theme-tag">Espérance</span>
+        </div>
+      </div>
+
+      <!-- Clues System (Progressive) -->
+      <div class="vb-clues-section">
+        <div class="vb-clues-header">
+          <span>Besoin d'un coup de pouce ?</span>
+          <button type="button" id="detective-clue-btn" class="vb-btn vb-btn-ghost vb-btn-sm">
+            💡 Demander un indice (<span id="clues-left-count">3 restants</span>)
+          </button>
+        </div>
+        <div class="vb-clues-list" id="detective-clues-list"></div>
+      </div>
+
+      <!-- Guess Input Form -->
+      <div class="vb-guess-card">
+        <h3 class="vb-guess-title">Votre réponse :</h3>
+
+        <!-- Mode de saisie : Deux options intuitives -->
+        <div class="vb-guess-inputs-grid">
+          <div class="vb-field-group">
+            <label for="detective-book-input">Livre :</label>
+            <input type="text" id="detective-book-input" class="vb-input" list="bible-books-datalist" placeholder="Ex: Psaumes, Romains, Jérémie..." autocomplete="off">
+            <datalist id="bible-books-datalist"></datalist>
+          </div>
+
+          <div class="vb-field-group">
+            <label for="detective-chapter-input">Chapitre :</label>
+            <input type="number" id="detective-chapter-input" class="vb-input" min="1" max="150" placeholder="Ex: 91">
+          </div>
+
+          <div class="vb-field-group">
+            <label for="detective-verse-input">Verset :</label>
+            <input type="number" id="detective-verse-input" class="vb-input" min="1" max="176" placeholder="Ex: 1">
+          </div>
+        </div>
+
+        <div class="vb-guess-direct-bar">
+          <span class="vb-or-separator">OU saisie directe rapide :</span>
+          <input type="text" id="detective-direct-input" class="vb-input" placeholder="Ex: Jean 3:16 ou Ps 91 1" aria-label="Saisie rapide de la référence">
+        </div>
+
+        <div class="vb-guess-actions">
+          <button type="button" id="detective-validate-btn" class="vb-btn vb-btn-primary vb-btn-lg">
+            🔍 Valider ma réponse
+          </button>
+          <button type="button" id="detective-giveup-btn" class="vb-btn vb-btn-outline">
+            Donner ma langue au chat
+          </button>
+          <button type="button" id="detective-next-btn" class="vb-btn vb-btn-ghost" hidden>
+            Verset suivant ➔
+          </button>
+        </div>
+
+        <!-- Detective Feedback Banner -->
+        <div class="vb-feedback-banner" id="detective-feedback" hidden></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       PANEL 3 : FLASH QUIZZ (4 propositions de versets pour une référence)
+       ========================================================================= -->
+  <section class="vb-panel" id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+    <div class="vb-container">
+
+      <div class="vb-quiz-wrapper">
+        <div class="vb-quiz-header">
+          <div class="vb-quiz-progress-wrap">
+            <div class="vb-quiz-progress-bar">
+              <div class="vb-quiz-progress-fill" id="quiz-progress-fill" style="width: 10%;"></div>
+            </div>
+            <div class="vb-quiz-stats">
+              <span>Question <strong id="quiz-current-q">1</strong> / 10</span>
+              <span>Score : <strong id="quiz-current-score">0</strong> pts</span>
+              <span>Série : <strong id="quiz-streak">🔥 0</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Question Card -->
+        <div class="vb-quiz-card">
+          <p class="vb-quiz-prompt-label">À quel texte correspond cette référence biblique ?</p>
+          <div class="vb-quiz-target-ref" id="quiz-target-ref">Romains 8:28</div>
+          <div class="vb-quiz-theme-hint" id="quiz-theme-hint">Thématique : Souveraineté &amp; Bienveillance</div>
+        </div>
+
+        <!-- 4 Options Grid -->
+        <div class="vb-quiz-options" id="quiz-options-container" role="radiogroup" aria-label="Choix de verset">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Quiz Explanation / Next Button -->
+        <div class="vb-quiz-footer" id="quiz-footer" hidden>
+          <div class="vb-quiz-explanation" id="quiz-explanation-text"></div>
+          <button type="button" id="quiz-next-btn" class="vb-btn vb-btn-primary vb-btn-lg">
+            Question suivante ➔
+          </button>
+        </div>
+
+        <!-- Quiz Results Modal / Card -->
+        <div class="vb-quiz-results-card" id="quiz-results-card" hidden>
+          <div class="vb-quiz-trophy" id="quiz-trophy">🏆</div>
+          <h2 class="vb-quiz-results-title" id="quiz-final-title">Session terminée !</h2>
+          <p class="vb-quiz-results-score" id="quiz-final-score">Score final : 8 / 10 (800 pts)</p>
+          <p class="vb-quiz-results-msg" id="quiz-final-msg">Excellente connaissance des Écritures !</p>
+          <div class="vb-quiz-results-actions">
+            <button type="button" id="quiz-restart-btn" class="vb-btn vb-btn-primary vb-btn-lg">
+              Relancer une série de 10
+            </button>
+            <button type="button" class="vb-btn vb-btn-outline" onclick="document.getElementById('tab-graver').click();">
+              Passer en mode Graver ✍️
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       PANEL 4 : BIBLIOTHÈQUE & STATISTIQUES
+       ========================================================================= -->
+  <section class="vb-panel" id="panel-biblio" role="tabpanel" aria-labelledby="tab-biblio" hidden>
+    <div class="vb-container">
+
+      <!-- Stats Overview Cards -->
+      <div class="vb-stats-grid">
+        <div class="vb-overview-card">
+          <span class="vb-card-icon" aria-hidden="true">📜</span>
+          <div class="vb-overview-num" id="stat-total-practiced">0</div>
+          <div class="vb-overview-label">Versets étudiés</div>
+        </div>
+        <div class="vb-overview-card">
+          <span class="vb-card-icon" aria-hidden="true">🎯</span>
+          <div class="vb-overview-num" id="stat-avg-accuracy">0%</div>
+          <div class="vb-overview-label">Exactitude globale</div>
+        </div>
+        <div class="vb-overview-card">
+          <span class="vb-card-icon" aria-hidden="true">🔥</span>
+          <div class="vb-overview-num" id="stat-best-streak">0</div>
+          <div class="vb-overview-label">Meilleure série</div>
+        </div>
+        <div class="vb-overview-card">
+          <span class="vb-card-icon" aria-hidden="true">🎖️</span>
+          <div class="vb-overview-num" id="stat-mastery-level">Initié</div>
+          <div class="vb-overview-label">Rang de Maîtrise</div>
+        </div>
+      </div>
+
+      <!-- Verses Directory -->
+      <div class="vb-biblio-header">
+        <div>
+          <h2 class="vb-section-heading">Index des Versets Disponibles</h2>
+          <p class="vb-section-sub">Parcourez le corpus biblique intégré, filtrez par livre ou thématique, et entraînez-vous directement.</p>
+        </div>
+        <div class="vb-biblio-search-wrap">
+          <input type="search" id="biblio-search" class="vb-input" placeholder="Rechercher un mot, un livre ou une référence...">
+        </div>
+      </div>
+
+      <!-- Verses Table / Cards List -->
+      <div class="vb-verses-list" id="biblio-verses-list">
+        <!-- Dynamically populated -->
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="vb-footer">
+  <div class="vb-footer-inner">
+    <div class="vb-footer-brand">
+      <span class="vb-brand-icon" aria-hidden="true">📖</span>
+      <span><strong>Verbum</strong> — Mémorisation &amp; Architecture des Écritures</span>
+    </div>
+    <div class="vb-footer-copy">
+      Conçu et développé par <a href="index.html">Benjamin Minko</a> · Actuariat, Data, Web &amp; IA.
+    </div>
+    <div class="vb-footer-links">
+      <a href="index.html#projets">Tous les projets</a>
+      <a href="rubriques/intelligence-artificielle.html">Rubrique IA</a>
+      <a href="planificateur.html">Rythme Planner</a>
+      <a href="lectio.html">Lectio</a>
+    </div>
+  </div>
+</footer>
+
+<script src="verbum.js"></script>
+</body>
+</html>

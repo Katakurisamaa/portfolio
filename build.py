@@ -42,6 +42,12 @@ def generate_sitemap(projects):
     <priority>0.9</priority>
   </url>""",
         f"""  <url>
+    <loc>{base}/verbum.html</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>""",
+        f"""  <url>
     <loc>{base}/rubriques/tous-les-projets.html</loc>
     <lastmod>{today}</lastmod>
     <changefreq>weekly</changefreq>

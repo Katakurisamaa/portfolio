@@ -83,6 +83,27 @@
       "bibleref": "",
       "versetext": "",
       "created_at": "2026-10-14T11:00:00+00:00"
+    },
+    {
+      "id": "c4e1a8b2-5f3d-4c7e-9a6b-8d1e2f3a4b5c",
+      "title": "Verbum — Mémorisation des Écritures",
+      "category": "IA",
+      "type": "projet",
+      "description": "Un atelier biblique interactif pour graver la Parole dans son cœur. Mémorisation mot à mot avec analyse intelligente des écarts, jeu d'enquête pour identifier la référence d'un texte et flash quiz interactifs pour tester sa maîtrise des Écritures.",
+      "details": "Verbum allie rigueur linguistique et foi vivante pour aider toute personne désireuse de maîtriser sa Bible :\n\n- Mode Graver (Dictée & Mémorisation) : choix du livre et de la version (Louis Segond 1910 ou Parole de Vie), avec niveaux progressifs (découverte, premières lettres, texte à trous, page blanche). L'algorithme NLP analyse la fidélité mot à mot, isole les coquilles et affiche un diff coloré instantané.\n- Mode Détective : un verset est proposé sans contexte ; l'utilisateur mobilise sa mémoire pour en retrouver le livre, le chapitre et le verset, assisté d'indices historiques et théologiques.\n- Flash Quizz : QCM stimulant avec 4 propositions de versets pour une référence donnée, carillon de validation et série de victoires.\n- Récitation audio intégrée et suivi des progrès en local (LocalStorage).",
+      "technologies": "Vanilla JS · Algorithme NLP Diff (Levenshtein/LCS) · Web Speech & Audio API · LocalStorage",
+      "site": "/verbum.html",
+      "demo": "/verbum.html",
+      "github": "https://github.com/Katakurisamaa/portfolio.git",
+      "image": "https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/verbum-hero.jpg",
+      "imagealt": "Verbum — Mémorisation et Maîtrise des Écritures par Benjamin Minko",
+      "artwork": "",
+      "author": "Benjamin Minko",
+      "booktitle": "",
+      "quote": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
+      "bibleref": "Psaume 119:105",
+      "versetext": "",
+      "created_at": "2026-10-14T13:30:00+00:00"
     }
   ]
 }
