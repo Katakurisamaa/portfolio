@@ -1142,15 +1142,24 @@ function initEvents() {
     openSlotModal();
   });
 
-  // Réinitialiser la semaine
+  // Modale personnalisée de Réinitialisation de la semaine
+  const resetConfirmDialog = document.getElementById('reset-confirm-dialog');
   document.getElementById('reset-week-btn')?.addEventListener('click', () => {
-    if (window.confirm('Effacer tous les créneaux et réinitialiser la semaine ?')) {
-      plannerState.slots = [];
-      plannerState.intentions = ['', '', ''];
-      saveState();
-      renderAll();
-      showToast('Semaine réinitialisée.', 'info');
-    }
+    resetConfirmDialog?.showModal();
+  });
+  document.getElementById('close-reset-dialog')?.addEventListener('click', () => {
+    resetConfirmDialog?.close();
+  });
+  document.getElementById('cancel-reset-dialog')?.addEventListener('click', () => {
+    resetConfirmDialog?.close();
+  });
+  document.getElementById('confirm-reset-btn')?.addEventListener('click', () => {
+    plannerState.slots = [];
+    plannerState.intentions = ['', '', ''];
+    saveState();
+    renderAll();
+    resetConfirmDialog?.close();
+    showToast('Semaine réinitialisée.', 'info');
   });
 
   // Écoute des 3 intentions
@@ -1250,7 +1259,7 @@ function initEvents() {
   });
 
   // Fermer les modales au clic sur le backdrop
-  [dialog, shortcutsDialog].forEach(d => {
+  [dialog, shortcutsDialog, resetConfirmDialog].forEach(d => {
     if (!d) return;
     d.addEventListener('click', (e) => {
       const rect = d.getBoundingClientRect();

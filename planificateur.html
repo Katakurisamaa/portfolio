@@ -413,6 +413,32 @@
     </div>
   </dialog>
 
+  <!-- MODALE PERSONNALISÉE : CONFIRMATION DE RÉINITIALISATION -->
+  <dialog id="reset-confirm-dialog" class="planner-dialog" aria-labelledby="reset-dialog-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="reset-dialog-title">Réinitialiser la semaine</h2>
+        <button type="button" id="close-reset-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
+      </div>
+      <div class="confirm-dialog-body">
+        <div class="confirm-dialog-icon" aria-hidden="true">🗑️</div>
+        <div class="confirm-dialog-message">
+          <p class="confirm-main-question">Effacer tous les créneaux et réinitialiser la semaine ?</p>
+          <p class="confirm-sub-text">
+            Cette action supprimera tous les créneaux planifiés ainsi que vos 3 intentions pour cette semaine. 
+            Cette opération est irréversible.
+          </p>
+        </div>
+      </div>
+      <div class="dialog-actions confirm-dialog-actions">
+        <button type="button" id="cancel-reset-dialog" class="tool-btn-subtle">Annuler</button>
+        <button type="button" id="confirm-reset-btn" class="button danger-cta">
+          <span>✕</span> Effacer et réinitialiser
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Toast de confirmation -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 

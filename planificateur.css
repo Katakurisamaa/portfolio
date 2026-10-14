@@ -1400,6 +1400,75 @@ body {
   color: #ffffff !important;
 }
 
+.danger-cta {
+  background: linear-gradient(180deg, #b94b34 0%, #9a3a25 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(167, 66, 45, 0.28) !important;
+  padding: 9px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.danger-cta:hover {
+  background: linear-gradient(180deg, #c7533b 0%, #a7412b 100%) !important;
+  transform: translateY(-1px);
+}
+
+/* Modale de Confirmation Personnalisée */
+.confirm-dialog-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 0 6px;
+}
+
+.confirm-dialog-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--energy-deepwork-bg);
+  border: 1px solid var(--energy-deepwork-line);
+  font-size: 20px;
+}
+
+.confirm-dialog-message {
+  flex: 1;
+}
+
+.confirm-main-question {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--planner-ink);
+  line-height: 1.35;
+  margin: 0 0 8px;
+  letter-spacing: -0.2px;
+}
+
+.confirm-sub-text {
+  font-size: 13px;
+  color: var(--planner-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.confirm-dialog-actions {
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 /* ==========================================================================
    Modale Raccourcis & Éléments Kbd
    ========================================================================== */
