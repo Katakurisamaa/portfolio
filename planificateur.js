@@ -758,13 +758,92 @@ function renderAnalytics() {
 const dialog = document.getElementById('slot-dialog');
 const slotForm = document.getElementById('slot-form');
 
+// Gestion du sélecteur de jour sur-mesure (Custom Day Select)
+function setCustomDaySelect(dayValue) {
+  const select = document.getElementById('slot-day');
+  const triggerVal = document.getElementById('day-select-value');
+  const options = document.querySelectorAll('#day-select-dropdown .custom-select-option');
+  const numVal = parseInt(dayValue, 10);
+
+  if (select) select.value = String(numVal);
+
+  options.forEach(opt => {
+    const isTarget = parseInt(opt.dataset.value, 10) === numVal;
+    opt.classList.toggle('is-selected', isTarget);
+    opt.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    if (isTarget && triggerVal) {
+      triggerVal.textContent = opt.querySelector('.day-opt-name')?.textContent || 'Lundi';
+    }
+  });
+}
+
+function initCustomDaySelect() {
+  const wrapper = document.getElementById('custom-day-select');
+  const trigger = document.getElementById('day-select-trigger');
+  const dropdown = document.getElementById('day-select-dropdown');
+  const options = dropdown?.querySelectorAll('.custom-select-option');
+
+  if (!wrapper || !trigger || !dropdown) return;
+
+  function toggleDropdown(open) {
+    const shouldOpen = typeof open === 'boolean' ? open : dropdown.hidden;
+    dropdown.hidden = !shouldOpen;
+    wrapper.classList.toggle('is-open', shouldOpen);
+    trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+  }
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  options?.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const val = opt.dataset.value;
+      setCustomDaySelect(val);
+      toggleDropdown(false);
+      trigger.focus();
+    });
+
+    opt.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        opt.click();
+      }
+    });
+  });
+
+  // Clavier sur le trigger
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleDropdown(true);
+      const selected = dropdown.querySelector('.custom-select-option.is-selected') || options?.[0];
+      selected?.focus();
+    } else if (e.key === 'Escape') {
+      toggleDropdown(false);
+    }
+  });
+
+  // Fermer au clic extérieur
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      toggleDropdown(false);
+    }
+  });
+}
+
 function openSlotModal(slot = null, defaultDay = 1) {
   if (!dialog || !slotForm) return;
 
   editingSlotId = slot ? slot.id : null;
   document.getElementById('slot-dialog-title').textContent = slot ? 'Modifier le créneau' : 'Nouveau bloc de temps';
   document.getElementById('slot-id').value = slot ? slot.id : '';
-  document.getElementById('slot-day').value = slot ? String(slot.day) : String(defaultDay);
+  
+  const targetDay = slot ? slot.day : defaultDay;
+  setCustomDaySelect(targetDay);
+
   document.getElementById('slot-title').value = slot ? slot.title : '';
   document.getElementById('slot-start').value = slot ? slot.start : '09:00';
   document.getElementById('slot-end').value = slot ? slot.end : '12:00';
@@ -814,7 +893,7 @@ if (slotForm) {
     if (!title) { showToast('Donne un titre à ce créneau.', 'warning'); return; }
 
     if (parseTimeToMinutes(end) <= parseTimeToMinutes(start)) {
-      alert('L’heure de fin doit être postérieure à l’heure de début.');
+      showToast('L’heure de fin doit être postérieure à l’heure de début.', 'warning');
       return;
     }
 
@@ -855,9 +934,25 @@ document.getElementById('undo-delete')?.addEventListener('click', () => {
   showToast('Créneau restauré dans sa semaine d’origine.', 'success');
 });
 document.getElementById('cancel-slot-dialog')?.addEventListener('click', closeSlotModal);
+
+// Modale personnalisée de confirmation pour la suppression d'un créneau
+const deleteSlotConfirmDialog = document.getElementById('delete-slot-confirm-dialog');
 document.getElementById('delete-slot-btn')?.addEventListener('click', () => {
-  if (editingSlotId && window.confirm('Supprimer définitivement ce créneau ?')) {
-    deleteSlot(editingSlotId);
+  if (editingSlotId) {
+    deleteSlotConfirmDialog?.showModal();
+  }
+});
+document.getElementById('close-delete-slot-dialog')?.addEventListener('click', () => {
+  deleteSlotConfirmDialog?.close();
+});
+document.getElementById('cancel-delete-slot-dialog')?.addEventListener('click', () => {
+  deleteSlotConfirmDialog?.close();
+});
+document.getElementById('confirm-delete-slot-btn')?.addEventListener('click', () => {
+  if (editingSlotId) {
+    const id = editingSlotId;
+    deleteSlotConfirmDialog?.close();
+    deleteSlot(id);
   }
 });
 
@@ -1259,7 +1354,7 @@ function initEvents() {
   });
 
   // Fermer les modales au clic sur le backdrop
-  [dialog, shortcutsDialog, resetConfirmDialog].forEach(d => {
+  [dialog, shortcutsDialog, resetConfirmDialog, deleteSlotConfirmDialog].forEach(d => {
     if (!d) return;
     d.addEventListener('click', (e) => {
       const rect = d.getBoundingClientRect();
@@ -1339,6 +1434,7 @@ document.getElementById('copy-previous-week')?.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadState();
+  initCustomDaySelect();
   initEvents();
   renderAll();
 });

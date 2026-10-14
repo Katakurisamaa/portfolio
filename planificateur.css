@@ -1328,6 +1328,135 @@ body {
   background: var(--planner-card);
 }
 
+/* ==========================================================================
+   Sélecteur de Jour Sur-Mesure (Custom Select)
+   ========================================================================== */
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1.5px solid var(--planner-line);
+  border-radius: var(--radius-sm);
+  background: var(--planner-card-subtle);
+  color: var(--planner-ink);
+  font: 500 14px/1.5 var(--sans);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--energy-deepwork);
+  background: var(--planner-card);
+}
+
+.custom-select-trigger:focus-visible,
+.custom-select-wrapper.is-open .custom-select-trigger {
+  border-color: var(--energy-deepwork);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(167, 66, 45, 0.18);
+  background: var(--planner-card);
+}
+
+.custom-select-chevron {
+  font-size: 13px;
+  color: var(--energy-deepwork);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.custom-select-wrapper.is-open .custom-select-chevron {
+  transform: rotate(180deg);
+}
+
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 250;
+  background: var(--planner-card);
+  border: 1px solid var(--planner-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--planner-line) transparent;
+  animation: fadeInPop 0.16s ease-out;
+}
+
+.custom-select-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: var(--planner-line);
+  border-radius: 4px;
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--planner-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  user-select: none;
+}
+
+.custom-select-option:hover,
+.custom-select-option:focus-visible {
+  background: var(--planner-card-subtle);
+  color: var(--energy-deepwork);
+}
+
+.custom-select-option.is-selected {
+  background: var(--energy-deepwork-bg);
+  color: var(--energy-deepwork);
+  font-weight: 600;
+}
+
+.day-opt-check {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--energy-deepwork);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.custom-select-option.is-selected .day-opt-check {
+  opacity: 1;
+}
+
+[data-theme="dark"] .custom-select-dropdown {
+  background: #1f241c;
+  border-color: #3d4637;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] .custom-select-option.is-selected {
+  background: #301b18;
+  color: #e87c64;
+}
+
 .dialog-two-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
