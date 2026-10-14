@@ -2,13 +2,23 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f6f3ea">
   <title>L'Atelier — Gestion des publications — Benjamin Minko</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261013">
   <link rel="stylesheet" href="admin.css?v=20261013">
+  <script>
+    (function() {
+      try {
+        var theme = localStorage.getItem('bm_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta && theme === 'dark') meta.setAttribute('content', '#151713');
+      } catch (e) {}
+    })();
+  </script>
   <script src="admin.js?v=20261013" defer></script>
 </head>
 <body class="mobile-mode-list">
@@ -48,6 +58,9 @@
       <!-- Liens bureau -->
       <div class="admin-top-links desktop-only">
         <a class="top-pill-link" href="/" target="_blank" rel="noopener"><span>↗</span> Voir mon site</a>
+        <button type="button" id="theme-toggle" class="top-pill-link" aria-label="Passer au mode sombre" title="Passer au mode sombre">
+          <span id="theme-toggle-icon">🌙</span> <span id="theme-toggle-text">Sombre</span>
+        </button>
         <button type="button" id="open-sync-dialog" class="top-pill-link"><span>⚡</span> Supabase</button>
         <button type="button" id="open-change-pw" class="top-pill-link"><span>🔑</span> Mot de passe</button>
         <button type="button" id="logout-btn" class="top-pill-link danger-link"><span>✕</span> Déconnexion</button>
@@ -56,6 +69,7 @@
       <!-- Bouton Menu Mobile -->
       <div class="mobile-only mobile-header-actions">
         <a class="top-pill-link-mobile" href="/" target="_blank" rel="noopener" title="Voir le site">↗</a>
+        <button type="button" id="theme-toggle-mobile" class="top-pill-link-mobile" aria-label="Changer de thème" title="Changer de thème">🌙</button>
         <button type="button" id="mobile-menu-toggle" class="top-pill-link-mobile" aria-label="Menu des options">⚙️</button>
       </div>
     </nav>
@@ -63,6 +77,7 @@
     <!-- Menu déroulant options mobile -->
     <div id="mobile-dropdown-menu" class="mobile-dropdown" hidden>
       <div class="mobile-dropdown-inner wrap">
+        <button type="button" id="mobile-theme-toggle" class="mobile-menu-item"><span id="mobile-dropdown-theme-icon">🌙</span> <span id="mobile-dropdown-theme-text">Passer au mode sombre</span></button>
         <button type="button" id="mobile-open-sync" class="mobile-menu-item"><span>⚡</span> État synchronisation Supabase</button>
         <button type="button" id="mobile-open-pw" class="mobile-menu-item"><span>🔑</span> Modifier le mot de passe</button>
         <button type="button" id="mobile-logout" class="mobile-menu-item danger"><span>✕</span> Déconnexion</button>
@@ -123,7 +138,7 @@
         </div>
         <div class="list-search-box">
           <span class="list-search-icon" aria-hidden="true">🔍</span>
-          <input type="search" id="project-search" class="list-search-input" placeholder="Filtrer une publication..." autocomplete="off">
+          <input type="search" id="project-search" class="list-search-input" aria-label="Filtrer les publications" placeholder="Filtrer une publication..." autocomplete="off">
         </div>
         <div id="project-list" class="project-list"></div>
       </aside>
@@ -234,10 +249,61 @@
               <div id="fields-foi" class="type-fields-group" hidden>
                 <div class="field-section">
                   <h3>Méditation & Foi</h3>
-                  <label for="bibleRef">Référence biblique</label>
-                  <input id="bibleRef" name="bibleRef" maxlength="150" placeholder="Ex. Jean 15:5 ou Psaumes 23:1-3">
-                  <label for="verseText">Texte du verset ou passage</label>
-                  <textarea id="verseText" name="verseText" rows="3" maxlength="1500" placeholder="« Je suis le cep, vous êtes les sarments... »"></textarea>
+                  
+                  <!-- Assistant Biblique Intégré (LSG & Parole de Vie 2017) -->
+                  <div class="bible-assistant-box">
+                    <div class="bible-box-top">
+                      <span class="bible-box-badge">📖 ASSISTANT BIBLIQUE INTÉGRÉ</span>
+                      <div class="bible-version-pills" role="radiogroup" aria-label="Version de la Bible">
+                        <button type="button" class="bible-ver-pill active" data-ver="FRLSG" aria-pressed="true">Segond 1910 (LSG)</button>
+                        <button type="button" class="bible-ver-pill" data-ver="FRPDV17" aria-pressed="false">Parole de Vie 2017 (PDV)</button>
+                      </div>
+                    </div>
+
+                    <div class="bible-input-group">
+                      <div class="bible-ref-wrap">
+                        <label for="bibleRef">Référence biblique</label>
+                        <input id="bibleRef" name="bibleRef" maxlength="150" placeholder="Ex. Jean 3:16, Psaumes 23:1-3, Romains 8:28">
+                      </div>
+                      <div class="bible-btn-wrap">
+                        <button type="button" id="bible-fetch-btn" class="bible-action-btn primary" title="Récupérer le texte du verset dans la version sélectionnée">
+                          ✨ Insérer verset
+                        </button>
+                        <button type="button" id="bible-compare-btn" class="bible-action-btn secondary" title="Comparer Segond 1910 et Parole de Vie 2017">
+                          ⚖ Comparer LSG & PDV
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="bible-status" class="bible-status" hidden></div>
+
+                    <!-- Comparateur côte-à-côte -->
+                    <div id="bible-compare-drawer" class="bible-compare-drawer" hidden>
+                      <div class="compare-header">
+                        <span>Comparaison des versions pour ta méditation :</span>
+                        <button type="button" id="close-compare-drawer" class="close-compare-btn">✕ Fermer</button>
+                      </div>
+                      <div class="compare-grid">
+                        <div class="compare-card">
+                          <div class="compare-card-top">
+                            <strong>Louis Segond (LSG 1910)</strong>
+                            <button type="button" class="use-ver-btn" data-target="FRLSG">Utiliser LSG ↗</button>
+                          </div>
+                          <div id="compare-text-lsg" class="compare-text">En attente...</div>
+                        </div>
+                        <div class="compare-card">
+                          <div class="compare-card-top">
+                            <strong>Parole de Vie 2017 (PDV)</strong>
+                            <button type="button" class="use-ver-btn" data-target="FRPDV17">Utiliser PDV ↗</button>
+                          </div>
+                          <div id="compare-text-pdv" class="compare-text">En attente...</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <label for="verseText">Texte du verset ou passage biblique</label>
+                  <textarea id="verseText" name="verseText" rows="3" maxlength="1500" placeholder="Le texte du verset apparaîtra ici ou saisis-le manuellement..."></textarea>
                 </div>
               </div>
 

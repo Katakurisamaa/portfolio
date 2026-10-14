@@ -8,6 +8,14 @@
     {
       "source": "/admin/",
       "destination": "/admin.html"
+    },
+    {
+      "source": "/planificateur",
+      "destination": "/planificateur.html"
+    },
+    {
+      "source": "/planificateur/",
+      "destination": "/planificateur.html"
     }
   ]
 }

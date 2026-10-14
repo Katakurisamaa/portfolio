@@ -5,12 +5,16 @@
 <title>Benjamin Minko — Un esprit curieux, un chemin ouvert.</title>
 <meta name="description" content="Étudiant en sciences actuarielles, passionné de programmation, de lecture et d’IA. Mes projets, mes découvertes et ma foi en Jésus.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="styles.css?v=20261013"><script src="script.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 <header class="header"><nav class="nav wrap" aria-label="Navigation principale">
 <a class="brand" href="#accueil" aria-label="Benjamin Minko, accueil">Benjamin Minko<b>.</b></a>
+<div class="nav-tools"><button type="button" class="nav-tool-btn" id="search-trigger" title="Rechercher (Ctrl+K)" aria-label="Rechercher"><span aria-hidden="true">🔍</span> <kbd class="nav-kbd">Ctrl K</kbd></button><button type="button" class="nav-tool-btn" id="theme-toggle" title="Basculer thème sombre / clair" aria-label="Thème sombre">🌙</button></div>
 <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" hidden>Menu <span aria-hidden="true">＋</span></button>
 <div class="nav-links" id="navigation"><a href="#accueil">Accueil</a><a href="#apropos">À propos</a><a href="#carnet">Le carnet</a><a class="nav-contact" href="#contact">On échange ? <span aria-hidden="true">↗</span></a></div>
 </nav></header>
@@ -31,7 +35,30 @@
 <div class="section-heading reveal"><p class="eyebrow">01 / EXPLORER & FAIRE</p><div class="heading-row"><h2 id="projects-title">Mes projets<br><em>et mes réalisations.</em></h2><p>Découvre directement mes projets ci-dessous avec les filtres par catégorie, ou explore une rubrique dédiée pour approfondir.</p></div></div>
 <div class="filters" role="group" aria-label="Filtrer les projets" hidden></div><p class="sr-only" id="filter-status" role="status"></p>
 <!-- PROJECTS:START -->
-<div class="projects"><article class="project reveal" data-category="Actuariat &amp; data"><img class="project-image" src="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/1791920222601-mp9icj.png" alt="M?moire" loading="lazy" width="800" height="500"><div class="project-meta"><span>01 — Actuariat &amp; data</span><span>R - STAN</span></div><h3>M?moire</h3><p>Et si la cl? d?une meilleure pr?vision de la mortalit? ne r?sidait pas dans le choix d?un seul mod?le ?</p><details><summary>Dans les coulisses <span aria-hidden="true">+</span></summary><div class="detail-body">D?tails du travail de recherche en sciences actuarielles.</div></details></article></div>
+<div class="projects"><article class="project reveal" data-category="Actuariat &amp; data"><img class="project-image" src="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/1791920222601-mp9icj.png" alt="Mémoire de fin d&#x27;étude en vue de l&#x27;obtention d&#x27;un master de spécialisation en sciences actuarielles" loading="lazy" width="800" height="500"><div class="project-meta"><span>01 — Actuariat &amp; data</span><span>R - STAN</span></div><h3>Mémoire</h3><p>Et si la clé d&#x27;une meilleure prévision de la mortalité ne résidait pas dans le choix d&#x27;un seul modèle ?
+
+Chaque modèle de mortalité possède ses forces et ses limites, qui peuvent varier selon l&#x27;âge et l&#x27;horizon de prévision.
+
+Dans ce travail, j&#x27;explore une approche de stacking bayésien hiérarchique qui permet de combiner plusieurs modèles en adaptant leur importance au contexte, sans compromettre la stabilité des prévisions.
+
+Appliquée à la mortalité belge, cette approche offre des résultats encourageants pour une meilleure évaluation du risque de longévité, un enjeu essentiel pour les assureurs et les fonds de pension.</p><div class="project-links"><a href="https://github.com/Katakurisamaa/contextual-bayesian-mortality-stacking.git" target="_blank" rel="noopener noreferrer">Code source ↗<span class="sr-only"> (nouvel onglet)</span></a><button type="button" class="project-doc-btn" data-doc="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/doc-1791920221395-MINKO_83531900_2026.pdf" data-doc-title="Mémoire">Lire le document d’étude ↗</button></div><details><summary>Dans les coulisses <span aria-hidden="true">+</span></summary><div class="detail-body">Ce travail est né d’une réflexion : pourquoi se limiter à un seul modèle de mortalité lorsque leurs performances varient selon l’âge et l’horizon de prévision ?
+
+Pour répondre à cette question, j’ai étudié cinq modèles stochastiques de mortalité et développé une extension du stacking bayésien intégrant une pondération contextuelle et une régularisation hiérarchique.
+
+La démarche a reposé sur des simulations, une validation temporelle rigoureuse et une application aux données belges de mortalité de 1970 à 2024.
+
+L’un des principaux défis a été de trouver un équilibre entre flexibilité et stabilité : permettre aux modèles de s’adapter au contexte sans introduire de variations artificielles.
+
+Ce projet m’a surtout permis d’approfondir ma compréhension de l’incertitude prédictive et de réaliser qu’en modélisation, la complexité n’est pas une fin en soi : c’est la pertinence des choix méthodologiques qui fait la différence.</div></details></article>
+<article class="project reveal" data-category="Web"><img class="project-image" src="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/rythme-planner.jpg" alt="Rythme — Planificateur hebdomadaire et architecture du temps par Benjamin Minko" loading="lazy" width="800" height="500"><div class="project-meta"><span>02 — Web</span><span>JavaScript · CSS Éditorial · iCalendar RFC 5545 · Canvas HD · LocalStorage</span></div><h3>Rythme — Architecture de la Semaine</h3><p>Un planificateur hebdomadaire interactif, épuré et sophistiqué. Conçu pour équilibrer travail profond (deep work), modélisation, lectures et foi. Teste en direct et télécharge ton planning en PDF d&#x27;art, en fichier calendrier (.ics) ou en image haute définition.</p><div class="project-links"><a href="/planificateur.html" target="_blank" rel="noopener noreferrer">Voir le site ↗<span class="sr-only"> (nouvel onglet)</span></a><a href="/planificateur.html" target="_blank" rel="noopener noreferrer">Essayer la démo ↗<span class="sr-only"> (nouvel onglet)</span></a><a href="https://github.com/Katakurisamaa/portfolio.git" target="_blank" rel="noopener noreferrer">Code source ↗<span class="sr-only"> (nouvel onglet)</span></a></div><details><summary>Dans les coulisses <span aria-hidden="true">+</span></summary><div class="detail-body">Rythme est né du désir de ne plus subir la dispersion moderne : structurer le temps non pas comme une suite de contraintes, mais comme une composition d’énergies complémentaires.
+
+L&#x27;application propose :
+- Une catégorisation intuitive par natures d&#x27;énergie (Deep Work, Analyse &amp; Actuariat, Lectures, Alignement spirituel, Vitalité, Partage).
+- Un diagnostic d&#x27;harmonie en temps réel inspiré de l&#x27;équilibre des risques actuariels.
+- 4 architectures inspirantes préconfigurées (Chercheur, Bâtisseur, Équilibre, Minimaliste).
+- Un triple moteur d&#x27;exportation : PDF imprimable format A4, fichier calendrier universel (.ics) pour Google Calendar &amp; Apple, et image PNG haute résolution.
+
+Entièrement codé en Vanilla JavaScript et CSS pur avec gestion soignée du mode sombre.</div></details></article></div>
 <div class="hub-rubrics-block">
   <div class="browse-header">
     <h3 class="browse-label">Explorer par univers & partages</h3>
@@ -58,7 +85,7 @@
   <h3 class="card-title">Programmation</h3>
   <p class="card-desc">Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.</p>
   <div class="section-card-bottom">
-    <span class="card-count-pill">0 projets</span>
+    <span class="card-count-pill">1 projet</span>
     <span class="card-btn">Voir les projets <span aria-hidden="true">→</span></span>
   </div>
 </a><a class="section-card tone-sand" href="rubriques/intelligence-artificielle.html">
@@ -130,6 +157,57 @@
           <span>Ouverture du document en cours...</span>
         </div>
         <iframe id="doc-viewer-frame" class="doc-viewer-frame" src="about:blank" title="Document d’étude" loading="lazy"></iframe>
+      </div>
+    </div>
+  </dialog>
+  <!-- Liseuse Biblique Complète (Louis Segond 1910 & Parole de Vie 2017) -->
+  <dialog id="bible-reader-modal" class="bible-modal" aria-labelledby="bible-modal-title">
+    <div class="bible-modal-container">
+      <div class="bible-modal-header">
+        <div class="bible-modal-info">
+          <span class="bible-modal-badge">✦ ÉCRITURES SAINTES · CONTEXTE BIBLIQUE</span>
+          <h2 id="bible-modal-title" class="bible-modal-title">Chapitre biblique</h2>
+          <p class="bible-modal-sub" id="bible-modal-sub">Méditation du chapitre complet</p>
+        </div>
+        <div class="bible-modal-actions">
+          <div class="bible-modal-versions" role="radiogroup" aria-label="Version de lecture">
+            <button type="button" class="bible-modal-ver active" data-ver="FRLSG">Segond 1910</button>
+            <button type="button" class="bible-modal-ver" data-ver="FRPDV17">Parole de Vie 2017</button>
+          </div>
+          <button type="button" class="bible-modal-close" id="close-bible-modal" aria-label="Fermer la Bible">✕ Fermer</button>
+        </div>
+      </div>
+      <div class="bible-modal-body" id="bible-modal-body">
+        <div class="bible-modal-loading" id="bible-modal-loading">
+          <span class="bible-spinner" aria-hidden="true"></span>
+          <span>Chargement du chapitre...</span>
+        </div>
+        <div class="bible-chapter-content" id="bible-chapter-content"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Palette de Recherche Instantanée (Ctrl+K / Cmd+K) -->
+  <dialog id="search-palette-modal" class="search-palette" aria-labelledby="search-palette-title">
+    <div class="search-palette-container">
+      <div class="search-palette-header">
+        <span class="search-palette-icon" aria-hidden="true">🔍</span>
+        <input type="search" id="search-palette-input" class="search-palette-input" placeholder="Rechercher un projet, formule, verset, livre, mot-clé..." autocomplete="off">
+        <button type="button" id="close-search-palette" class="close-search-btn" aria-label="Fermer la recherche">✕</button>
+      </div>
+      <div class="search-palette-filters">
+        <button type="button" class="search-filter-pill active" data-cat="">Tout</button>
+        <button type="button" class="search-filter-pill" data-cat="Actuariat & data">Actuariat & data</button>
+        <button type="button" class="search-filter-pill" data-cat="Web">Programmation</button>
+        <button type="button" class="search-filter-pill" data-cat="IA">IA</button>
+        <button type="button" class="search-filter-pill" data-cat="Lectures">Lectures</button>
+        <button type="button" class="search-filter-pill" data-cat="Foi">Foi & Bible</button>
+      </div>
+      <div class="search-palette-body" id="search-palette-results">
+        <p class="search-empty-hint">Tape un mot-clé pour explorer instantanément tout le portfolio.</p>
+      </div>
+      <div class="search-palette-footer">
+        <span>Navigation : <kbd>↑</kbd> <kbd>↓</kbd> pour naviguer · <kbd>Entrée</kbd> pour ouvrir · <kbd>Échap</kbd> pour fermer</span>
       </div>
     </div>
   </dialog>

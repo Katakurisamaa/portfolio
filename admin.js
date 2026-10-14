@@ -316,13 +316,17 @@ function renderPreview() {
   if (type === 'projet') {
     for (const [key, label] of [['site', 'Voir le site ↗'], ['demo', 'Démo ↗'], ['github', 'Code source ↗']]) {
       try {
-        const url = new URL($(key).value);
-        if (['http:', 'https:'].includes(url.protocol)) {
-          const a = document.createElement('a');
-          a.href = url.href;
-          a.textContent = label;
-          a.target = '_blank';
-          $('preview-links').append(a);
+        const val = ($(key)?.value || '').trim();
+        if (val) {
+          const url = new URL(val, window.location.origin);
+          if (['http:', 'https:'].includes(url.protocol)) {
+            const a = document.createElement('a');
+            a.href = val.startsWith('/') || val.startsWith('http') ? val : url.href;
+            a.textContent = label;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            $('preview-links').append(a);
+          }
         }
       } catch {}
     }
@@ -790,8 +794,7 @@ async function persist(next) {
           booktitle: p.bookTitle || p.booktitle || '',
           quote: p.quote || '',
           bibleref: p.bibleRef || p.bibleref || '',
-          versetext: p.verseText || p.versetext || '',
-          updated_at: new Date().toISOString()
+          versetext: p.verseText || p.versetext || ''
         };
       });
 
@@ -863,15 +866,13 @@ if (dropzone) {
   ['dragenter', 'dragover'].forEach(name => {
     dropzone.addEventListener(name, (e) => {
       e.preventDefault();
-      dropzone.style.borderColor = 'var(--admin-accent)';
-      dropzone.style.background = '#ffffff';
+      dropzone.classList.add('is-dragover');
     });
   });
   ['dragleave', 'drop'].forEach(name => {
     dropzone.addEventListener(name, (e) => {
       e.preventDefault();
-      dropzone.style.borderColor = '#cfcbba';
-      dropzone.style.background = 'var(--admin-surface-soft)';
+      dropzone.classList.remove('is-dragover');
     });
   });
   dropzone.addEventListener('drop', (e) => {
@@ -1108,3 +1109,336 @@ if ($('category')) {
   $('category').addEventListener('input', syncTypeFromCategory);
   $('category').addEventListener('change', syncTypeFromCategory);
 }
+
+// ==========================================================================
+// Assistant Biblique Intégré (Louis Segond 1910 & Parole de Vie 2017)
+// ==========================================================================
+
+const BIBLE_BOOKS = {
+  'genese': 1, 'gen': 1, 'gn': 1,
+  'exode': 2, 'ex': 2,
+  'levitique': 3, 'lev': 3, 'lv': 3,
+  'nombres': 4, 'nb': 4,
+  'deuteronome': 5, 'dt': 5, 'deut': 5,
+  'josue': 6, 'jos': 6,
+  'juges': 7, 'jug': 7, 'jg': 7,
+  'ruth': 8, 'rt': 8,
+  '1 samuel': 9, '1samuel': 9, '1s': 9, '1sam': 9,
+  '2 samuel': 10, '2samuel': 10, '2s': 10, '2sam': 10,
+  '1 rois': 11, '1rois': 11, '1r': 11,
+  '2 rois': 12, '2rois': 12, '2r': 12,
+  '1 chroniques': 13, '1ch': 13, '1chr': 13,
+  '2 chroniques': 14, '2ch': 14, '2chr': 14,
+  'esdras': 15, 'esd': 15,
+  'nehemie': 16, 'neh': 16,
+  'esther': 17, 'est': 17,
+  'job': 18, 'jb': 18,
+  'psaumes': 19, 'psaume': 19, 'ps': 19, 'psm': 19,
+  'proverbes': 20, 'prov': 20, 'pr': 20,
+  'ecclesiaste': 21, 'eccl': 21, 'ecc': 21,
+  'cantique': 22, 'cantique des cantiques': 22, 'ct': 22,
+  'esaie': 23, 'es': 23, 'is': 23,
+  'jeremie': 24, 'jer': 24,
+  'lamentations': 25, 'lam': 25,
+  'ezekiel': 26, 'ez': 26,
+  'daniel': 27, 'dan': 27, 'dn': 27,
+  'osee': 28, 'os': 28,
+  'joel': 29, 'jl': 29,
+  'amos': 30, 'am': 30,
+  'abdias': 31, 'ab': 31,
+  'jonas': 32, 'jon': 32,
+  'michee': 33, 'mic': 33,
+  'nahum': 34, 'nah': 34,
+  'habacuc': 35, 'hab': 35,
+  'sophonie': 36, 'so': 36,
+  'aggee': 37, 'ag': 37,
+  'zacharie': 38, 'zac': 38,
+  'malachie': 39, 'mal': 39,
+  'matthieu': 40, 'mat': 40, 'mt': 40,
+  'marc': 41, 'mc': 41,
+  'luc': 42, 'lc': 42,
+  'jean': 43, 'jn': 43,
+  'actes': 44, 'act': 44, 'ac': 44,
+  'romains': 45, 'rom': 45, 'rm': 45,
+  '1 corinthiens': 46, '1cor': 46, '1co': 46,
+  '2 corinthiens': 47, '2cor': 47, '2co': 47,
+  'galates': 48, 'gal': 48, 'ga': 48,
+  'ephesiens': 49, 'eph': 49,
+  'philippiens': 50, 'phil': 50, 'ph': 50,
+  'colossiens': 51, 'col': 51,
+  '1 thessaloniciens': 52, '1th': 52, '1thess': 52,
+  '2 thessaloniciens': 53, '2th': 53, '2thess': 53,
+  '1 timothee': 54, '1tim': 54, '1tm': 54,
+  '2 timothee': 55, '2tim': 55, '2tm': 55,
+  'tite': 56, 'tt': 56,
+  'philemon': 57, 'phm': 57,
+  'hebreux': 58, 'heb': 58,
+  'jacques': 59, 'jac': 59, 'jc': 59,
+  '1 pierre': 60, '1pi': 60, '1p': 60,
+  '2 pierre': 61, '2pi': 61, '2p': 61,
+  '1 jean': 62, '1jn': 62, '1j': 62,
+  '2 jean': 63, '2jn': 63, '2j': 63,
+  '3 jean': 64, '3jn': 64, '3j': 64,
+  'jude': 65, 'jud': 65,
+  'apocalypse': 66, 'apoc': 66, 'ap': 66
+};
+
+let activeBibleVersion = 'FRLSG'; // FRLSG ou FRPDV17
+
+function parseBibleRef(raw) {
+  if (!raw) return null;
+  const clean = raw.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Match format: 1 jean 3:16, psaumes 23:1-4, romains 8:28, jean 3 16
+  const regex = /^([1-3]?\s*[a-z]+)\s*(\d+)[\s:;,.]+(\d+)(?:\s*[-–]\s*(\d+))?$/;
+  const match = clean.match(regex);
+  if (match) {
+    const bookStr = match[1].trim();
+    const bookId = BIBLE_BOOKS[bookStr];
+    if (!bookId) return null;
+    const chapter = parseInt(match[2], 10);
+    const startVerse = parseInt(match[3], 10);
+    const endVerse = match[4] ? parseInt(match[4], 10) : startVerse;
+    return { bookId, chapter, startVerse, endVerse };
+  }
+  // Chapter only (ex: psaume 23)
+  const regexCh = /^([1-3]?\s*[a-z]+)\s*(\d+)$/;
+  const matchCh = clean.match(regexCh);
+  if (matchCh) {
+    const bookId = BIBLE_BOOKS[matchCh[1].trim()];
+    if (!bookId) return null;
+    return { bookId, chapter: parseInt(matchCh[2], 10), startVerse: 1, endVerse: 999 };
+  }
+  return null;
+}
+
+async function fetchBibleVerses(translation, bookId, chapter, startVerse, endVerse) {
+  const url = `https://bolls.life/get-chapter/${translation}/${bookId}/${chapter}/`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Impossible de contacter l'API Biblique (${res.status})`);
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error('Format de réponse invalide');
+
+  const selected = data.filter(v => v.verse >= startVerse && v.verse <= endVerse);
+  if (!selected.length) throw new Error(`Verset introuvable dans le chapitre ${chapter}.`);
+
+  return selected.map(v => v.text.replace(/<[^>]+>/g, '').trim()).join(' ');
+}
+
+// Gestion des boutons de version
+document.querySelectorAll('.bible-ver-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeBibleVersion = btn.dataset.ver;
+    document.querySelectorAll('.bible-ver-pill').forEach(b => {
+      const active = b === btn;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-pressed', String(active));
+    });
+  });
+});
+
+// Bouton Insérer le verset
+const bibleFetchBtn = $('bible-fetch-btn');
+if (bibleFetchBtn) {
+  bibleFetchBtn.addEventListener('click', async () => {
+    const refInput = $('bibleRef');
+    const status = $('bible-status');
+    const ref = refInput?.value?.trim();
+    if (!ref) {
+      if (status) {
+        status.className = 'bible-status error';
+        status.textContent = 'Indique d’abord une référence (ex. Jean 3:16 ou Psaumes 23:1-3).';
+        status.hidden = false;
+      }
+      return;
+    }
+
+    const parsed = parseBibleRef(ref);
+    if (!parsed) {
+      if (status) {
+        status.className = 'bible-status error';
+        status.textContent = `Référence non reconnue. Exemple valide : « Jean 3:16 » ou « Psaumes 23:1-3 ».`;
+        status.hidden = false;
+      }
+      return;
+    }
+
+    if (status) {
+      status.className = 'bible-status loading';
+      status.textContent = `⚡ Recherche du verset dans ${activeBibleVersion === 'FRLSG' ? 'Louis Segond 1910' : 'Parole de Vie 2017'}...`;
+      status.hidden = false;
+    }
+
+    try {
+      const text = await fetchBibleVerses(activeBibleVersion, parsed.bookId, parsed.chapter, parsed.startVerse, parsed.endVerse);
+      $('verseText').value = text;
+      markDirty();
+      renderPreview();
+      if (status) {
+        const verLabel = activeBibleVersion === 'FRLSG' ? 'Segond 1910' : 'Parole de Vie 2017';
+        status.className = 'bible-status success';
+        status.textContent = `✓ Verset inséré avec succès (${verLabel}) !`;
+        status.hidden = false;
+      }
+    } catch (err) {
+      if (status) {
+        status.className = 'bible-status error';
+        status.textContent = `Erreur : ${err.message}`;
+        status.hidden = false;
+      }
+    }
+  });
+}
+
+// Bouton Comparer LSG & PDV
+const bibleCompareBtn = $('bible-compare-btn');
+const compareDrawer = $('bible-compare-drawer');
+if (bibleCompareBtn && compareDrawer) {
+  bibleCompareBtn.addEventListener('click', async () => {
+    const ref = $('bibleRef')?.value?.trim();
+    const status = $('bible-status');
+    if (!ref) {
+      if (status) {
+        status.className = 'bible-status error';
+        status.textContent = 'Indique une référence biblique à comparer.';
+        status.hidden = false;
+      }
+      return;
+    }
+
+    const parsed = parseBibleRef(ref);
+    if (!parsed) {
+      if (status) {
+        status.className = 'bible-status error';
+        status.textContent = 'Référence invalide pour la comparaison.';
+        status.hidden = false;
+      }
+      return;
+    }
+
+    compareDrawer.hidden = false;
+    $('compare-text-lsg').textContent = 'Chargement de Louis Segond...';
+    $('compare-text-pdv').textContent = 'Chargement de Parole de Vie...';
+
+    try {
+      const [lsg, pdv] = await Promise.all([
+        fetchBibleVerses('FRLSG', parsed.bookId, parsed.chapter, parsed.startVerse, parsed.endVerse),
+        fetchBibleVerses('FRPDV17', parsed.bookId, parsed.chapter, parsed.startVerse, parsed.endVerse)
+      ]);
+      $('compare-text-lsg').textContent = lsg;
+      $('compare-text-pdv').textContent = pdv;
+    } catch (err) {
+      $('compare-text-lsg').textContent = `Erreur : ${err.message}`;
+      $('compare-text-pdv').textContent = `Erreur : ${err.message}`;
+    }
+  });
+
+  const closeCompare = $('close-compare-drawer');
+  if (closeCompare) closeCompare.addEventListener('click', () => { compareDrawer.hidden = true; });
+
+  document.querySelectorAll('.use-ver-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const text = target === 'FRLSG' ? $('compare-text-lsg').textContent : $('compare-text-pdv').textContent;
+      if (text && !text.startsWith('Erreur') && !text.startsWith('Chargement')) {
+        $('verseText').value = text;
+        activeBibleVersion = target;
+        document.querySelectorAll('.bible-ver-pill').forEach(b => {
+          const active = b.dataset.ver === target;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', String(active));
+        });
+        compareDrawer.hidden = true;
+        markDirty();
+        renderPreview();
+        const status = $('bible-status');
+        if (status) {
+          status.className = 'bible-status success';
+          status.textContent = `✓ Version ${target === 'FRLSG' ? 'Segond 1910' : 'Parole de Vie 2017'} sélectionnée et insérée !`;
+          status.hidden = false;
+        }
+      }
+    });
+  });
+}
+
+// ==========================================================================
+// Mode Sombre Éditorial — Atelier Admin
+// ==========================================================================
+function applyAdminTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('bm_theme', theme); } catch {}
+
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', isDark ? '#141712' : '#f6f3ea');
+
+  const desktopBtn = $('theme-toggle');
+  const desktopIcon = $('theme-toggle-icon');
+  const desktopText = $('theme-toggle-text');
+  if (desktopBtn) {
+    desktopBtn.setAttribute('title', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
+    desktopBtn.setAttribute('aria-label', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
+  }
+  if (desktopIcon) desktopIcon.textContent = isDark ? '☀️' : '🌙';
+  if (desktopText) desktopText.textContent = isDark ? 'Clair' : 'Sombre';
+
+  const mobileBtn = $('theme-toggle-mobile');
+  if (mobileBtn) {
+    mobileBtn.textContent = isDark ? '☀️' : '🌙';
+    mobileBtn.setAttribute('title', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
+    mobileBtn.setAttribute('aria-label', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
+  }
+
+  const dropdownIcon = $('mobile-dropdown-theme-icon');
+  const dropdownText = $('mobile-dropdown-theme-text');
+  if (dropdownIcon) dropdownIcon.textContent = isDark ? '☀️' : '🌙';
+  if (dropdownText) dropdownText.textContent = isDark ? 'Passer au mode clair' : 'Passer au mode sombre';
+}
+
+function initAdminTheme() {
+  let savedTheme = 'light';
+  try {
+    savedTheme = localStorage.getItem('bm_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  } catch {}
+  applyAdminTheme(savedTheme);
+
+  const toggleHandler = () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyAdminTheme(nextTheme);
+  };
+
+  const desktopBtn = $('theme-toggle');
+  if (desktopBtn) desktopBtn.addEventListener('click', toggleHandler);
+
+  const mobileBtn = $('theme-toggle-mobile');
+  if (mobileBtn) mobileBtn.addEventListener('click', toggleHandler);
+
+  const dropdownBtn = $('mobile-theme-toggle');
+  if (dropdownBtn) {
+    dropdownBtn.addEventListener('click', () => {
+      toggleHandler();
+      const mobileDropdown = $('mobile-dropdown-menu');
+      if (mobileDropdown) mobileDropdown.hidden = true;
+    });
+  }
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      try {
+        if (!localStorage.getItem('bm_theme')) {
+          applyAdminTheme(e.matches ? 'dark' : 'light');
+        }
+      } catch {}
+    });
+  }
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'bm_theme' && e.newValue) {
+      applyAdminTheme(e.newValue);
+    }
+  });
+}
+
+initAdminTheme();
+

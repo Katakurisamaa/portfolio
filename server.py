@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from html import escape
 from datetime import datetime, timezone
-import argparse, base64, hashlib, json, os, re, secrets, socket, threading, time, uuid, webbrowser
+import argparse, base64, hashlib, json, os, re, secrets, socket, threading, time, urllib.request, uuid, webbrowser
 from rubriques import SECTIONS, catalog, hub, pages
 
 ROOT = Path(__file__).resolve().parent
@@ -163,9 +163,12 @@ def validate_projects(items):
         # Validation des liens et documents
         for key in ('site', 'demo', 'github', 'document'):
             if p[key]:
-                url = urlsplit(p[key])
-                if url.scheme not in ('https', 'http') or not url.hostname or url.username or url.password or any(c.isspace() for c in p[key]):
-                    raise ValueError('Les liens doivent être des adresses http:// ou https:// valides.')
+                if p[key].startswith(('/', './')) or p[key].endswith('.html'):
+                    pass
+                else:
+                    url = urlsplit(p[key])
+                    if url.scheme not in ('https', 'http') or not url.hostname or url.username or url.password or any(c.isspace() for c in p[key]):
+                        raise ValueError('Les liens doivent être des adresses http:// ou https:// valides.')
         ident = item.get('id', '')
         if not isinstance(ident, str) or not re.fullmatch(r'[a-zA-Z0-9-]{1,80}', ident) or ident in ids:
             raise ValueError('Identifiant de publication invalide ou dupliqué.')
@@ -177,7 +180,7 @@ def validate_projects(items):
         if image:
             if image.startswith(('https://', 'http://')):
                 pass
-            elif re.fullmatch(r'uploads/[a-f0-9]{32}\.(png|jpg|webp|jpeg)', image):
+            elif re.fullmatch(r'uploads/[a-zA-Z0-9_.-]+\.(png|jpg|webp|jpeg)', image):
                 pass
             else:
                 raise ValueError('Image inconnue.')
@@ -228,8 +231,13 @@ def render_projects(items):
             if verse_val:
                 ref_span = f'<span class="verse-ref">{escape(ref_val, quote=True)}</span>' if ref_val else ''
                 body_extra += f'<blockquote class="faith-quote">{ref_span}« {escape(verse_val, quote=True)} »</blockquote>'
+            foi_links = []
+            if ref_val:
+                foi_links.append(f'<button type="button" class="bible-chapter-btn" data-bible-ref="{escape(ref_val, quote=True)}">📖 Lire le chapitre entier (contexte) ↗</button>')
             if p.get('document'):
-                body_extra += f'<div class="project-links"><button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire le partage ↗</button></div>'
+                foi_links.append(f'<button type="button" class="project-doc-btn" data-doc="{e("document")}" data-doc-title="{e("title")}">Lire le partage ↗</button>')
+            if foi_links:
+                body_extra += f'<div class="project-links">{"".join(foi_links)}</div>'
             details_label = 'Méditation & partage'
         else:
             meta_label = f'{n+1:02d} — {e("category")}'
@@ -398,15 +406,22 @@ class Handler(SimpleHTTPRequestHandler):
             })
 
         # 3. Routes HTML et fichiers statiques
-        routes = {'/': '/index.html', '/admin': '/admin.html', '/admin/': '/admin.html'}
+        routes = {
+            '/': '/index.html',
+            '/admin': '/admin.html',
+            '/admin/': '/admin.html',
+            '/planificateur': '/planificateur.html',
+            '/planificateur/': '/planificateur.html'
+        }
         path = routes.get(path, path)
         
         # Liste blanche pour fichiers publics
         allowed = path in (
             '/index.html', '/styles.css', '/script.js',
             '/admin.html', '/admin.css', '/admin.js',
+            '/planificateur.html', '/planificateur.css', '/planificateur.js',
             '/benjamin-portrait.jpg', '/benjamin-minko.jpg', '/artwork.json'
-        ) or bool(re.fullmatch(r'/uploads/[a-f0-9]{32}\.(png|jpg|webp)', path))
+        ) or bool(re.fullmatch(r'/uploads/[a-zA-Z0-9_.-]+\.(png|jpg|webp|jpeg)', path))
 
         if re.fullmatch(r'/rubriques/[a-z0-9-]+\.html', path):
             data, _ = read_data()

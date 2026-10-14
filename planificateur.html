@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f3eb">
+  <title>Rythme — Planificateur Hebdomadaire & Architecture du Temps — Benjamin Minko</title>
+  <meta name="description" content="Planificateur hebdomadaire interactif, épuré et sophistiqué. Conçois ta semaine par énergies (deep work, actuariat, lecture, foi, vitalité), teste en direct et télécharge en PDF, Calendrier .ics ou Image.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
+  
+  <!-- Polices et styles globaux du portfolio -->
+  <link rel="stylesheet" href="styles.css?v=20261013">
+  <link rel="stylesheet" href="planificateur.css?v=20261014">
+
+  <!-- Script d'initialisation du thème sans scintillement -->
+  <script>
+    (function() {
+      try {
+        var theme = localStorage.getItem('bm_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta && theme === 'dark') meta.setAttribute('content', '#141712');
+      } catch (e) {}
+    })();
+  </script>
+  <script src="planificateur.js?v=20261014" defer></script>
+</head>
+<body>
+
+  <!-- Navigation Principale -->
+  <header class="header">
+    <nav class="nav wrap" aria-label="Navigation Rythme">
+      <div class="brand-group">
+        <a class="brand" href="/" aria-label="Retour au portfolio">Benjamin Minko<b>.</b></a>
+        <span class="badge-app-tag">Rythme · Studio</span>
+      </div>
+
+      <div class="planner-nav-actions">
+        <a class="top-pill-link" href="/" title="Retourner à l'accueil du portfolio"><span>←</span> Mon portfolio</a>
+        <button type="button" id="theme-toggle" class="top-pill-link" aria-label="Basculer le thème">
+          <span id="theme-icon">🌙</span> <span id="theme-text" class="desktop-only-inline">Thème</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap planner-main" id="contenu">
+
+    <!-- En-tête éditorial du projet -->
+    <section class="planner-hero">
+      <div class="hero-left">
+        <p class="eyebrow"><span class="small-dot"></span> ARCHITECTURE DU TEMPS · OUTIL EN LIGNE</p>
+        <h1 class="planner-title">Rythme<br><em>l'Épure hebdomadaire.</em></h1>
+        <p class="planner-subtitle">
+          Ne subis plus tes journées : structure ta semaine avec clarté, intention et discernement. 
+          Équilibre ton travail profond, tes analyses, tes lectures et ta vie spirituelle. 
+          Personnalise chaque journée, évalue ton harmonie en temps réel et télécharge ton planning prêt à l'emploi.
+        </p>
+      </div>
+
+      <!-- Carte d'instructions & points forts -->
+      <aside class="hero-card-guide">
+        <div class="guide-header">
+          <span class="guide-badge">✦ COMMENT ÇA MARCHE</span>
+        </div>
+        <ul class="guide-list">
+          <li><strong>Organise par Énergies :</strong> Deep work, analyse, lecture, foi, vitalité ou partages.</li>
+          <li><strong>Teste en un clic :</strong> Découvre nos 4 architectures types (chercheur, bâtisseur, équilibre, minimaliste).</li>
+          <li><strong>Télécharge et emporte :</strong> Exporte en PDF haute résolution, fichier calendrier (.ics) ou image.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- Barre d'outils & Contrôles de la Semaine -->
+    <section class="planner-toolbar-card" aria-label="Gestion de la semaine">
+      <div class="toolbar-top">
+        
+        <!-- Navigation temporelle -->
+        <div class="week-selector-group">
+          <button type="button" id="prev-week" class="tool-btn-icon" aria-label="Semaine précédente" title="Semaine précédente">‹</button>
+          <div class="week-display">
+            <span class="week-label-sub" id="week-sublabel">Semaine actuelle</span>
+            <strong class="week-dates" id="week-dates-display">12 — 18 Octobre 2026</strong>
+          </div>
+          <button type="button" id="next-week" class="tool-btn-icon" aria-label="Semaine suivante" title="Semaine suivante">›</button>
+          <button type="button" id="today-btn" class="tool-btn-subtle">Aujourd'hui</button>
+          <span class="week-total-badge" id="week-total-hours" hidden></span>
+        </div>
+
+        <!-- Presets et Actions -->
+        <div class="toolbar-actions">
+          <!-- Dropdown Presets -->
+          <div class="dropdown-wrapper">
+            <button type="button" id="preset-btn" class="tool-btn-outline" aria-expanded="false" aria-haspopup="true">
+              <span>🪄</span> Presets d'inspiration ▾
+            </button>
+            <div id="preset-menu" class="dropdown-popover" hidden>
+              <div class="popover-title">Choisis une architecture de semaine :</div>
+              <button type="button" class="preset-option" data-preset="chercheur">
+                <strong>🔬 Chercheur & Actuaire</strong>
+                <small>Stacking bayésien, analyse de données, lecture de papiers et modélisation.</small>
+              </button>
+              <button type="button" class="preset-option" data-preset="developpeur">
+                <strong>💻 Bâtisseur & Développeur</strong>
+                <small>Deep work intense, code d'applications, revue d'architecture et déploiements.</small>
+              </button>
+              <button type="button" class="preset-option" data-preset="equilibre">
+                <strong>✝ Équilibre & Foi</strong>
+                <small>Méditation matinale, travail ciblé, lectures nourricières et temps partagé.</small>
+              </button>
+              <button type="button" class="preset-option" data-preset="minimaliste">
+                <strong>🌿 Minimaliste Essentiel</strong>
+                <small>Seulement 2 à 3 blocs d'impact par jour. Priorité absolue au calme mental.</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bouton Ajouter créneau -->
+          <button type="button" id="add-slot-btn" class="button primary-cta">
+            <span>＋</span> Nouveau créneau
+          </button>
+
+          <!-- Bouton Télécharger Dropdown -->
+          <div class="dropdown-wrapper">
+            <button type="button" id="export-dropdown-btn" class="button export-cta" aria-expanded="false" aria-haspopup="true">
+              <span>📥</span> Télécharger ▾
+            </button>
+            <div id="export-menu" class="dropdown-popover" hidden>
+              <div class="popover-title">Formater et exporter ma semaine :</div>
+              <button type="button" class="export-item" id="export-pdf">
+                <span class="export-icon">📄</span>
+                <div>
+                  <strong>Imprimer ou Enregistrer en PDF A4</strong>
+                  <small>Mise en page éditoriale prête pour le papier ou tablette.</small>
+                </div>
+              </button>
+              <button type="button" class="export-item" id="export-ics">
+                <span class="export-icon">📅</span>
+                <div>
+                  <strong>Exporter en Calendrier (.ics)</strong>
+                  <small>S'intègre d'un clic dans Google Calendar, Apple & Outlook.</small>
+                </div>
+              </button>
+              <button type="button" class="export-item" id="export-png">
+                <span class="export-icon">🖼️</span>
+                <div>
+                  <strong>Télécharger l'Image Haute Résolution (PNG)</strong>
+                  <small>Idéal pour fond d'écran ou aperçu rapide.</small>
+                </div>
+              </button>
+              <button type="button" class="export-item" id="export-json">
+                <span class="export-icon">💾</span>
+                <div>
+                  <strong>Sauvegarder le planning (Fichier JSON)</strong>
+                  <small>Pour recharger ou archiver ta configuration.</small>
+                </div>
+              </button>
+              <button type="button" class="export-item import-item" id="import-json">
+                <span class="export-icon">📂</span>
+                <div>
+                  <strong>Importer un planning sauvegardé (.json)</strong>
+                  <small>Recharger une configuration précédemment exportée.</small>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bouton Raccourcis -->
+          <button type="button" id="shortcuts-btn" class="tool-btn-subtle desktop-only-inline" title="Raccourcis clavier (touche ?)">⌨ Raccourcis</button>
+
+          <!-- Bouton Réinitialiser -->
+          <button type="button" id="reset-week-btn" class="tool-btn-icon reset-btn" title="Réinitialiser la semaine" aria-label="Réinitialiser la semaine">✕</button>
+        </div>
+
+      </div>
+
+      <!-- Les 3 Intentions majeures de la semaine -->
+      <div class="week-intentions-block">
+        <div class="intentions-header">
+          <span class="intentions-label">3 INTENTIONS MAÎTRESSES POUR CETTE SEMAINE :</span>
+          <span class="intentions-hint">Qu'est-ce qui fera de cette semaine une réussite essentielle ?</span>
+        </div>
+        <div class="intentions-inputs">
+          <div class="intention-input-wrap">
+            <span class="intention-num">1</span>
+            <input type="text" id="intention-1" class="intention-input" placeholder="Ex. Finaliser la validation temporelle du modèle de stacking...">
+          </div>
+          <div class="intention-input-wrap">
+            <span class="intention-num">2</span>
+            <input type="text" id="intention-2" class="intention-input" placeholder="Ex. Programmer 2 sessions de deep work ininterrompues de 3h...">
+          </div>
+          <div class="intention-input-wrap">
+            <span class="intention-num">3</span>
+            <input type="text" id="intention-3" class="intention-input" placeholder="Ex. Méditer Psaume 90 et préserver les soirées de ressourcement...">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Légende des Énergies (Filtres interactifs) -->
+    <section class="energy-legend-bar" aria-label="Légende des catégories d'énergie">
+      <span class="legend-title">ÉNERGIES :</span>
+      <div class="legend-pills">
+        <span class="energy-pill tone-deepwork"><i class="energy-dot"></i> Deep Work</span>
+        <span class="energy-pill tone-data"><i class="energy-dot"></i> Analyse & Actuariat</span>
+        <span class="energy-pill tone-reading"><i class="energy-dot"></i> Lecture & Esprit</span>
+        <span class="energy-pill tone-faith"><i class="energy-dot"></i> Foi & Alignement</span>
+        <span class="energy-pill tone-vitality"><i class="energy-dot"></i> Vitalité & Santé</span>
+        <span class="energy-pill tone-social"><i class="energy-dot"></i> Liens & Partage</span>
+      </div>
+    </section>
+
+    <!-- GRILLE PRINCIPALE DE LA SEMAINE (Lundi à Dimanche) -->
+    <section class="planner-grid-wrapper" aria-label="Grille de la semaine">
+      <div class="planner-grid" id="planner-grid">
+        <!-- Rendu dynamique en JS : 7 colonnes pour les 7 jours de la semaine -->
+      </div>
+    </section>
+
+    <!-- TABLEAU DE BORD D'ANALYSE & ÉQUILIBRE ACTUARIEL -->
+    <section class="planner-analytics-section" aria-labelledby="analytics-heading">
+      <div class="analytics-card">
+        <div class="analytics-top">
+          <div>
+            <p class="eyebrow">DIAGNOSTIC & ÉQUILIBRE</p>
+            <h2 id="analytics-heading">Harmonie de ta semaine</h2>
+            <p class="analytics-sub">Mesure de la charge mentale, du travail profond et des espaces de respiration.</p>
+          </div>
+          <div class="harmony-badge-box" id="harmony-badge-container">
+            <div class="harmony-ring-wrap">
+              <svg class="harmony-ring-svg" viewBox="0 0 100 100" width="84" height="84" aria-hidden="true">
+                <circle class="harmony-ring-bg" cx="50" cy="50" r="38" stroke-width="7" fill="none" />
+                <circle id="harmony-ring-progress" class="harmony-ring-progress" cx="50" cy="50" r="38" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="23.87" />
+              </svg>
+              <div class="harmony-ring-center">
+                <span class="harmony-score" id="harmony-score">92%</span>
+              </div>
+            </div>
+            <div class="harmony-status" id="harmony-status">Rythme harmonieux</div>
+          </div>
+        </div>
+
+        <!-- Barres de répartition des énergies -->
+        <div class="analytics-bars" id="analytics-bars">
+          <!-- Injecté dynamiquement en JavaScript -->
+        </div>
+
+        <!-- Analyse qualitative & maxime -->
+        <div class="analytics-footer">
+          <div class="analytics-insight" id="analytics-insight">
+            <strong>✦ Analyse du rythme :</strong> 
+            <span>Un excellent équilibre entre concentration exigeante et temps de respiration intellectuelle et spirituelle.</span>
+          </div>
+          <blockquote class="planner-quote" id="planner-quote">
+            « Enseigne-nous à bien compter nos jours, afin que nous appliquions notre cœur à la sagesse. »
+            <cite>— Psaume 90:12</cite>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALE : AJOUTER OU MODIFIER UN CRÉNEAU -->
+  <dialog id="slot-dialog" class="planner-dialog" aria-labelledby="slot-dialog-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="slot-dialog-title">Nouveau bloc de temps</h2>
+        <button type="button" id="close-slot-dialog" class="dialog-close-btn" aria-label="Fermer la boîte de dialogue">✕</button>
+      </div>
+
+      <form id="slot-form">
+        <input type="hidden" id="slot-id">
+
+        <!-- Sélection du jour -->
+        <label for="slot-day">Jour de la semaine</label>
+        <select id="slot-day" required>
+          <option value="1">Lundi</option>
+          <option value="2">Mardi</option>
+          <option value="3">Mercredi</option>
+          <option value="4">Jeudi</option>
+          <option value="5">Vendredi</option>
+          <option value="6">Samedi</option>
+          <option value="0">Dimanche</option>
+        </select>
+
+        <!-- Titre du bloc -->
+        <label for="slot-title">Intention ou Activité <span>*</span></label>
+        <input type="text" id="slot-title" required maxlength="120" placeholder="Ex. Stacking bayésien — rédaction, Lecture Gounelle, Prière...">
+
+        <!-- Horaires (Début & Fin) -->
+        <div class="dialog-two-fields">
+          <div>
+            <label for="slot-start">Heure de début <span>*</span></label>
+            <input type="time" id="slot-start" required value="09:00">
+          </div>
+          <div>
+            <label for="slot-end">Heure de fin <span>*</span></label>
+            <input type="time" id="slot-end" required value="12:00">
+          </div>
+        </div>
+
+        <!-- Choix de l'énergie / catégorie -->
+        <label>Nature de l'énergie</label>
+        <div class="energy-selector-grid" role="radiogroup" aria-label="Catégorie d'énergie">
+          <label class="energy-radio-card tone-deepwork">
+            <input type="radio" name="energy-type" value="deepwork" checked>
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>⚡ Deep Work</strong>
+              <small>Code, recherche, écriture</small>
+            </div>
+          </label>
+
+          <label class="energy-radio-card tone-data">
+            <input type="radio" name="energy-type" value="data">
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>📊 Analyse & Chiffres</strong>
+              <small>Actuariat, modèles, rigueur</small>
+            </div>
+          </label>
+
+          <label class="energy-radio-card tone-reading">
+            <input type="radio" name="energy-type" value="reading">
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>📖 Lecture & Esprit</strong>
+              <small>Livres, veille, études</small>
+            </div>
+          </label>
+
+          <label class="energy-radio-card tone-faith">
+            <input type="radio" name="energy-type" value="faith">
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>✝ Foi & Alignement</strong>
+              <small>Méditation, prière, silence</small>
+            </div>
+          </label>
+
+          <label class="energy-radio-card tone-vitality">
+            <input type="radio" name="energy-type" value="vitality">
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>🌿 Vitalité & Corps</strong>
+              <small>Sport, marche, repos</small>
+            </div>
+          </label>
+
+          <label class="energy-radio-card tone-social">
+            <input type="radio" name="energy-type" value="social">
+            <span class="radio-custom"></span>
+            <div class="energy-card-info">
+              <strong>🤝 Liens & Partage</strong>
+              <small>Famille, amis, échanges</small>
+            </div>
+          </label>
+        </div>
+
+        <!-- Note complémentaire -->
+        <label for="slot-notes">Précision ou objectif du créneau <small>(facultatif)</small></label>
+        <textarea id="slot-notes" rows="2" maxlength="300" placeholder="Ex. Isoler le smartphone et avancer le chapitre 3 sans interruption..."></textarea>
+
+        <!-- Actions -->
+        <div class="dialog-actions">
+          <button type="button" id="delete-slot-btn" class="button danger-btn" hidden>Supprimer</button>
+          <div class="dialog-right-actions">
+            <button type="button" id="cancel-slot-dialog" class="tool-btn-subtle">Annuler</button>
+            <button type="submit" class="button primary-cta">Valider le créneau ↗</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- MODALE : RACCOURCIS CLAVIER -->
+  <dialog id="shortcuts-dialog" class="planner-dialog" aria-labelledby="shortcuts-dialog-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="shortcuts-dialog-title">⌨ Raccourcis Clavier Pro</h2>
+        <button type="button" id="close-shortcuts-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item"><kbd>N</kbd> <span>Nouveau créneau</span></div>
+        <div class="shortcut-item"><kbd>P</kbd> <span>Ouvrir les Presets d'inspiration</span></div>
+        <div class="shortcut-item"><kbd>T</kbd> <span>Revenir à Aujourd'hui</span></div>
+        <div class="shortcut-item"><kbd>←</kbd> <span>Semaine précédente</span></div>
+        <div class="shortcut-item"><kbd>→</kbd> <span>Semaine suivante</span></div>
+        <div class="shortcut-item"><kbd>?</kbd> <span>Afficher cette aide</span></div>
+        <div class="shortcut-item"><kbd>Échap</kbd> <span>Fermer la boîte active</span></div>
+      </div>
+      <div class="dialog-actions" style="margin-top:20px; justify-content: flex-end;">
+        <button type="button" id="ok-shortcuts-dialog" class="button primary-cta">Fermer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast de confirmation -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Input caché pour import JSON -->
+  <input type="file" id="import-json-input" accept=".json" hidden>
+
+  <!-- Zone invisible pour impression A4 vectorielle -->
+  <div id="print-area" class="print-only" aria-hidden="true"></div>
+
+  <!-- Pied de page -->
+  <footer class="footer wrap">
+    <div class="brand">bm<b>.</b></div>
+    <span>Rythme — Conçu avec rigueur et simplicité par Benjamin Minko.</span>
+    <a class="text-link" href="/">Retour au portfolio ↗</a>
+  </footer>
+
+</body>
+</html>

@@ -5,16 +5,29 @@
 <title>Programmation — Benjamin Minko</title>
 <meta name="description" content="Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="../styles.css?v=20261013"><script src="../script.js" defer></script>
 </head>
 <body data-rubrique="Web">
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 <header class="header"><nav class="nav wrap" aria-label="Navigation principale">
 <a class="brand" href="../index.html#accueil" aria-label="Benjamin Minko, accueil">Benjamin Minko<b>.</b></a>
+<div class="nav-tools"><button type="button" class="nav-tool-btn" id="search-trigger" title="Rechercher (Ctrl+K)" aria-label="Rechercher"><span aria-hidden="true">🔍</span> <kbd class="nav-kbd">Ctrl K</kbd></button><button type="button" class="nav-tool-btn" id="theme-toggle" title="Basculer thème sombre / clair" aria-label="Thème sombre">🌙</button></div>
 <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" hidden>Menu <span aria-hidden="true">＋</span></button>
 <div class="nav-links" id="navigation"><a href="../index.html#accueil">Accueil</a><a href="../index.html#apropos">À propos</a><a href="../index.html#carnet">Le carnet</a><a class="nav-contact" href="../index.html#contact">On échange ? <span aria-hidden="true">↗</span></a></div>
 </nav></header>
-<main id="contenu"><section class="wrap rubric-page"><a class="breadcrumb" href="../index.html#projets">← Toutes les rubriques</a><nav class="rubric-navigation" aria-label="Changer de rubrique"><a href="tous-les-projets.html">Tous mes projets</a><a href="sciences-actuarielles.html">Sciences actuarielles</a><a href="developpement-web.html" aria-current="page">Programmation</a><a href="intelligence-artificielle.html">Intelligence artificielle</a><a href="lectures.html">Lectures &amp; découvertes</a><a href="foi-bible.html">Foi &amp; Bible</a></nav><header class="rubric-heading tone-clay"><div><p class="eyebrow">MON UNIVERS / 0 PROJETS</p><h1>Programmation</h1><p>Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.</p></div><span class="section-symbol" aria-hidden="true">&lt;/&gt;</span></header><div class="rubric-content"><h2>Mes projets <span>00</span></h2><div class="filters" hidden></div><p class="sr-only" id="filter-status" role="status"></p><div class="rubric-empty"><span aria-hidden="true">&lt;/&gt;</span><h2>Les premières pages<br><em>restent à écrire.</em></h2><p>Cette rubrique accueillera bientôt mes projets et explorations.</p><a class="text-link" href="../index.html#projets">Explorer les autres rubriques →</a></div></div></section><section class="contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap contact-grid reveal"><div><p class="eyebrow">04 / LA CONVERSATION CONTINUE</p><h2 id="contact-title">Une idée, un livre,<br><em>un bonjour ?</em></h2></div><div class="contact-copy"><p>Pour parler d’un projet, partager une découverte ou simplement faire connaissance.</p><a class="email-link" href="mailto:minkojunior400@gmail.com">minkojunior400@gmail.com <span aria-hidden="true">↗</span></a><div class="contact-links"><button id="copy-email" hidden>Copier l’adresse <span aria-hidden="true">⧉</span></button><a href="https://www.linkedin.com/in/benjaminminko" target="_blank" rel="noopener noreferrer">LinkedIn ↗<span class="sr-only"> (nouvel onglet)</span></a></div><p class="copy-status" id="copy-status" role="status"></p></div></div></section>
+<main id="contenu"><section class="wrap rubric-page"><a class="breadcrumb" href="../index.html#projets">← Toutes les rubriques</a><nav class="rubric-navigation" aria-label="Changer de rubrique"><a href="tous-les-projets.html">Tous mes projets</a><a href="sciences-actuarielles.html">Sciences actuarielles</a><a href="developpement-web.html" aria-current="page">Programmation</a><a href="intelligence-artificielle.html">Intelligence artificielle</a><a href="lectures.html">Lectures &amp; découvertes</a><a href="foi-bible.html">Foi &amp; Bible</a></nav><header class="rubric-heading tone-clay"><div><p class="eyebrow">MON UNIVERS / 1 PROJET</p><h1>Programmation</h1><p>Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.</p></div><span class="section-symbol" aria-hidden="true">&lt;/&gt;</span></header><div class="rubric-content"><h2>Mes projets <span>01</span></h2><div class="filters" hidden></div><p class="sr-only" id="filter-status" role="status"></p><div class="projects"><article class="project reveal" data-category="Web"><img class="project-image" src="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/rythme-planner.jpg" alt="Rythme — Planificateur hebdomadaire et architecture du temps par Benjamin Minko" loading="lazy" width="800" height="500"><div class="project-meta"><span>01 — Web</span><span>JavaScript · CSS Éditorial · iCalendar RFC 5545 · Canvas HD · LocalStorage</span></div><h3>Rythme — Architecture de la Semaine</h3><p>Un planificateur hebdomadaire interactif, épuré et sophistiqué. Conçu pour équilibrer travail profond (deep work), modélisation, lectures et foi. Teste en direct et télécharge ton planning en PDF d&#x27;art, en fichier calendrier (.ics) ou en image haute définition.</p><div class="project-links"><a href="/planificateur.html" target="_blank" rel="noopener noreferrer">Voir le site ↗<span class="sr-only"> (nouvel onglet)</span></a><a href="/planificateur.html" target="_blank" rel="noopener noreferrer">Essayer la démo ↗<span class="sr-only"> (nouvel onglet)</span></a><a href="https://github.com/Katakurisamaa/portfolio.git" target="_blank" rel="noopener noreferrer">Code source ↗<span class="sr-only"> (nouvel onglet)</span></a></div><details><summary>Dans les coulisses <span aria-hidden="true">+</span></summary><div class="detail-body">Rythme est né du désir de ne plus subir la dispersion moderne : structurer le temps non pas comme une suite de contraintes, mais comme une composition d’énergies complémentaires.
+
+L&#x27;application propose :
+- Une catégorisation intuitive par natures d&#x27;énergie (Deep Work, Analyse &amp; Actuariat, Lectures, Alignement spirituel, Vitalité, Partage).
+- Un diagnostic d&#x27;harmonie en temps réel inspiré de l&#x27;équilibre des risques actuariels.
+- 4 architectures inspirantes préconfigurées (Chercheur, Bâtisseur, Équilibre, Minimaliste).
+- Un triple moteur d&#x27;exportation : PDF imprimable format A4, fichier calendrier universel (.ics) pour Google Calendar &amp; Apple, et image PNG haute résolution.
+
+Entièrement codé en Vanilla JavaScript et CSS pur avec gestion soignée du mode sombre.</div></details></article></div>
+</div></section><section class="contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap contact-grid reveal"><div><p class="eyebrow">04 / LA CONVERSATION CONTINUE</p><h2 id="contact-title">Une idée, un livre,<br><em>un bonjour ?</em></h2></div><div class="contact-copy"><p>Pour parler d’un projet, partager une découverte ou simplement faire connaissance.</p><a class="email-link" href="mailto:minkojunior400@gmail.com">minkojunior400@gmail.com <span aria-hidden="true">↗</span></a><div class="contact-links"><button id="copy-email" hidden>Copier l’adresse <span aria-hidden="true">⧉</span></button><a href="https://www.linkedin.com/in/benjaminminko" target="_blank" rel="noopener noreferrer">LinkedIn ↗<span class="sr-only"> (nouvel onglet)</span></a></div><p class="copy-status" id="copy-status" role="status"></p></div></div></section>
 </main><footer class="wrap footer"><a class="brand" href="../index.html#accueil">bm.</a><span>© <span id="year">2026</span> Benjamin Minko · Toujours en chemin.<a class="discreet-admin-link" href="../admin.html" aria-label="Atelier" title="Atelier">✦</a></span><a href="../index.html#accueil">Retour en haut ↑</a></footer>
   <!-- Liseuse de document d'étude & recherche (Lecture seule sécurisée) -->
   <dialog id="doc-viewer-modal" class="doc-viewer-modal" aria-labelledby="doc-viewer-title">
@@ -36,6 +49,57 @@
           <span>Ouverture du document en cours...</span>
         </div>
         <iframe id="doc-viewer-frame" class="doc-viewer-frame" src="about:blank" title="Document d’étude" loading="lazy"></iframe>
+      </div>
+    </div>
+  </dialog>
+  <!-- Liseuse Biblique Complète (Louis Segond 1910 & Parole de Vie 2017) -->
+  <dialog id="bible-reader-modal" class="bible-modal" aria-labelledby="bible-modal-title">
+    <div class="bible-modal-container">
+      <div class="bible-modal-header">
+        <div class="bible-modal-info">
+          <span class="bible-modal-badge">✦ ÉCRITURES SAINTES · CONTEXTE BIBLIQUE</span>
+          <h2 id="bible-modal-title" class="bible-modal-title">Chapitre biblique</h2>
+          <p class="bible-modal-sub" id="bible-modal-sub">Méditation du chapitre complet</p>
+        </div>
+        <div class="bible-modal-actions">
+          <div class="bible-modal-versions" role="radiogroup" aria-label="Version de lecture">
+            <button type="button" class="bible-modal-ver active" data-ver="FRLSG">Segond 1910</button>
+            <button type="button" class="bible-modal-ver" data-ver="FRPDV17">Parole de Vie 2017</button>
+          </div>
+          <button type="button" class="bible-modal-close" id="close-bible-modal" aria-label="Fermer la Bible">✕ Fermer</button>
+        </div>
+      </div>
+      <div class="bible-modal-body" id="bible-modal-body">
+        <div class="bible-modal-loading" id="bible-modal-loading">
+          <span class="bible-spinner" aria-hidden="true"></span>
+          <span>Chargement du chapitre...</span>
+        </div>
+        <div class="bible-chapter-content" id="bible-chapter-content"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Palette de Recherche Instantanée (Ctrl+K / Cmd+K) -->
+  <dialog id="search-palette-modal" class="search-palette" aria-labelledby="search-palette-title">
+    <div class="search-palette-container">
+      <div class="search-palette-header">
+        <span class="search-palette-icon" aria-hidden="true">🔍</span>
+        <input type="search" id="search-palette-input" class="search-palette-input" placeholder="Rechercher un projet, formule, verset, livre, mot-clé..." autocomplete="off">
+        <button type="button" id="close-search-palette" class="close-search-btn" aria-label="Fermer la recherche">✕</button>
+      </div>
+      <div class="search-palette-filters">
+        <button type="button" class="search-filter-pill active" data-cat="">Tout</button>
+        <button type="button" class="search-filter-pill" data-cat="Actuariat & data">Actuariat & data</button>
+        <button type="button" class="search-filter-pill" data-cat="Web">Programmation</button>
+        <button type="button" class="search-filter-pill" data-cat="IA">IA</button>
+        <button type="button" class="search-filter-pill" data-cat="Lectures">Lectures</button>
+        <button type="button" class="search-filter-pill" data-cat="Foi">Foi & Bible</button>
+      </div>
+      <div class="search-palette-body" id="search-palette-results">
+        <p class="search-empty-hint">Tape un mot-clé pour explorer instantanément tout le portfolio.</p>
+      </div>
+      <div class="search-palette-footer">
+        <span>Navigation : <kbd>↑</kbd> <kbd>↓</kbd> pour naviguer · <kbd>Entrée</kbd> pour ouvrir · <kbd>Échap</kbd> pour fermer</span>
       </div>
     </div>
   </dialog>
