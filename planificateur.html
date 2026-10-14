@@ -544,6 +544,31 @@
     </div>
   </dialog>
 
+  <!-- MODALE PERSONNALISÉE : CONFIRMATION GÉNÉRALE (Presets, Import, Duplication) -->
+  <dialog id="generic-confirm-dialog" class="planner-dialog" aria-labelledby="generic-confirm-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="generic-confirm-title">Confirmation</h2>
+        <button type="button" id="close-generic-confirm-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
+      </div>
+      <div class="confirm-dialog-body">
+        <div class="confirm-dialog-icon" id="generic-confirm-icon" aria-hidden="true">💡</div>
+        <div class="confirm-dialog-message">
+          <p class="confirm-main-question" id="generic-confirm-question">Êtes-vous sûr ?</p>
+          <p class="confirm-sub-text" id="generic-confirm-sub">
+            Cette action va modifier vos créneaux actuels.
+          </p>
+        </div>
+      </div>
+      <div class="dialog-actions confirm-dialog-actions">
+        <button type="button" id="cancel-generic-confirm-btn" class="tool-btn-subtle">Annuler</button>
+        <button type="button" id="confirm-generic-confirm-btn" class="button primary-cta">
+          <span id="generic-confirm-btn-text">Confirmer ↗</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Toast de confirmation -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 

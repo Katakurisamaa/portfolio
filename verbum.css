@@ -1488,3 +1488,146 @@ body.dark .vb-quiz-option.wrong { color: #fca093; }
 .vb-footer-links a:hover {
   color: var(--vb-accent);
 }
+
+/* ==========================================================================
+   Modale Personnalisée Verbum & Notifications Toast
+   ========================================================================== */
+.vb-modal {
+  border: 1px solid var(--vb-card-border);
+  background: var(--vb-card-bg);
+  color: var(--vb-ink);
+  border-radius: var(--vb-radius-lg);
+  padding: 0;
+  max-width: 480px;
+  width: calc(100% - 32px);
+  box-shadow: var(--vb-shadow-lg);
+  overflow: hidden;
+  margin: auto;
+}
+
+.vb-modal::backdrop {
+  background: rgba(25, 28, 24, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.vb-modal-container {
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+}
+
+.vb-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--vb-line);
+}
+
+.vb-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vb-modal-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.vb-modal-title {
+  font-family: var(--vb-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--vb-ink);
+}
+
+.vb-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: var(--vb-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.vb-modal-close:hover {
+  color: var(--vb-ink);
+  background: var(--vb-hover-bg);
+}
+
+.vb-modal-body {
+  margin-bottom: 22px;
+}
+
+.vb-modal-message {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--vb-ink-light);
+  margin: 0;
+}
+
+.vb-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Toast Container */
+.vb-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.vb-toast {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: var(--vb-radius);
+  background: var(--vb-card-bg);
+  color: var(--vb-ink);
+  border: 1px solid var(--vb-card-border);
+  box-shadow: var(--vb-shadow-lg);
+  font-size: 0.92rem;
+  font-weight: 600;
+  animation: slideToast 0.3s ease;
+  max-width: 380px;
+}
+
+.vb-toast.info {
+  border-left: 4px solid var(--vb-gold);
+}
+
+.vb-toast.success {
+  border-left: 4px solid #3ca330;
+}
+
+.vb-toast.warning {
+  border-left: 4px solid var(--vb-accent);
+}
+
+@keyframes slideToast {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

@@ -334,11 +334,66 @@ function saveState() {
   }
 }
 
-function loadPreset(name, shouldConfirm = true) {
-  if (shouldConfirm && plannerState.slots.length > 0) {
-    if (!window.confirm(`Remplacer ton planning actuel par le modèle « ${name} » ?`)) {
+function confirmAction({ title = 'Confirmation', question, sub = '', confirmText = 'Confirmer', icon = '💡', isDanger = false }) {
+  return new Promise((resolve) => {
+    const d = document.getElementById('generic-confirm-dialog');
+    if (!d || typeof d.showModal !== 'function') {
+      resolve(true);
       return;
     }
+    const titleEl = document.getElementById('generic-confirm-title');
+    const questEl = document.getElementById('generic-confirm-question');
+    const subEl = document.getElementById('generic-confirm-sub');
+    const iconEl = document.getElementById('generic-confirm-icon');
+    const confirmBtn = document.getElementById('confirm-generic-confirm-btn');
+    const btnText = document.getElementById('generic-confirm-btn-text');
+
+    if (titleEl) titleEl.textContent = title;
+    if (questEl) questEl.textContent = question;
+    if (subEl) subEl.textContent = sub;
+    if (iconEl) iconEl.textContent = icon;
+    if (confirmBtn) confirmBtn.className = isDanger ? 'button danger-cta' : 'button primary-cta';
+    if (btnText) btnText.textContent = confirmText;
+
+    const cleanup = () => {
+      confirmBtn?.removeEventListener('click', handleConfirm);
+      document.getElementById('cancel-generic-confirm-btn')?.removeEventListener('click', handleCancel);
+      document.getElementById('close-generic-confirm-dialog')?.removeEventListener('click', handleCancel);
+      d.removeEventListener('cancel', handleCancel);
+    };
+
+    const handleConfirm = () => {
+      cleanup();
+      d.close();
+      resolve(true);
+    };
+
+    const handleCancel = () => {
+      cleanup();
+      d.close();
+      resolve(false);
+    };
+
+    confirmBtn?.addEventListener('click', handleConfirm);
+    document.getElementById('cancel-generic-confirm-btn')?.addEventListener('click', handleCancel);
+    document.getElementById('close-generic-confirm-dialog')?.addEventListener('click', handleCancel);
+    d.addEventListener('cancel', handleCancel);
+
+    d.showModal();
+  });
+}
+
+async function loadPreset(name, shouldConfirm = true) {
+  if (shouldConfirm && plannerState.slots.length > 0) {
+    const ok = await confirmAction({
+      title: 'Changer d’architecture',
+      question: `Appliquer le modèle « ${name} » ?`,
+      sub: 'Les créneaux actuels de cette semaine seront remplacés par l’architecture prédéfinie.',
+      confirmText: 'Appliquer le modèle ↗',
+      icon: '⚡',
+      isDanger: false
+    });
+    if (!ok) return;
   }
 
   const preset = PRESETS[name];
@@ -1319,12 +1374,22 @@ function initEvents() {
       if (file.size > 2000000) { showToast('Fichier trop volumineux (2 Mo maximum).', 'error'); e.target.value = ''; return; }
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         try {
           const parsed = JSON.parse(event.target.result);
           if (parsed && Array.isArray(parsed.slots)) {
             const imported = validateWeek(parsed);
-            if ((plannerState.slots.length || plannerState.intentions.some(Boolean)) && !window.confirm('Remplacer uniquement la semaine affichée par ce fichier ?')) return;
+            if (plannerState.slots.length || plannerState.intentions.some(Boolean)) {
+              const ok = await confirmAction({
+                title: 'Importer un planning',
+                question: 'Remplacer uniquement la semaine affichée par ce fichier ?',
+                sub: 'Les créneaux de cette semaine seront écrasés par les données importées.',
+                confirmText: 'Importer le fichier ↗',
+                icon: '📥',
+                isDanger: false
+              });
+              if (!ok) return;
+            }
             plannerState = imported;
             saveState();
             renderAll();
@@ -1420,10 +1485,20 @@ function renderDayNavigation() {
   });
 }
 
-document.getElementById('copy-previous-week')?.addEventListener('click', () => {
+document.getElementById('copy-previous-week')?.addEventListener('click', async () => {
   const previous = plannerWeeks[getWeekKey(currentWeekOffset - 1)];
   if (!previous || !previous.slots.length) { showToast('La semaine précédente ne contient aucun créneau.', 'info'); return; }
-  if ((plannerState.slots.length || plannerState.intentions.some(Boolean)) && !window.confirm('Remplacer cette semaine par une copie de la précédente ?')) return;
+  if (plannerState.slots.length || plannerState.intentions.some(Boolean)) {
+    const ok = await confirmAction({
+      title: 'Dupliquer la semaine',
+      question: 'Remplacer cette semaine par une copie de la précédente ?',
+      sub: 'Vos créneaux actuels seront remplacés par l’architecture de la semaine passée.',
+      confirmText: 'Copier la semaine ↗',
+      icon: '📋',
+      isDanger: false
+    });
+    if (!ok) return;
+  }
   plannerState = validateWeek(previous);
   saveState();
   renderAll();

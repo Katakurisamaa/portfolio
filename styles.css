@@ -1404,3 +1404,101 @@ body.image-viewer-open{overflow:hidden}
 @media(max-width:760px){.projects>.project.media-ready:only-child,.projects>.project-wide.media-ready{grid-template-columns:minmax(0,1fr);gap:20px}.projects>.project.media-ready:only-child .media-copy,.projects>.project-wide.media-ready .media-copy{padding:0}.projects>.project.media-ready:only-child .media-stage,.projects>.project-wide.media-ready .media-stage,.project-media .media-stage{height:clamp(310px,95vw,440px);padding:25px}.project-media.is-landscape .media-stage{height:auto;min-height:210px;aspect-ratio:4/3;padding:18px}.project-media.is-landscape .project-image{max-height:100%;max-width:100%}.media-copy .project-meta{margin-top:0}.media-copy h3{font-size:29px}.media-footer{padding:13px 15px}.image-viewer{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);border-radius:10px}.image-viewer-head{padding:12px 14px;gap:12px}.image-viewer-content{padding:12px;height:68dvh}.image-viewer-caption{padding:12px 14px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.project-media,.project-media .project-image{transition:none!important}.project-media:hover .project-image{transform:none}}
 
+/* ==========================================================================
+   Visionneuse d'Image Personnalisée (.image-viewer) Desktop & Mobile
+   ========================================================================== */
+.image-viewer {
+  width: min(92vw, 1060px);
+  max-height: 90vh;
+  margin: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.image-viewer::backdrop {
+  background: rgba(18, 21, 16, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.image-viewer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.image-viewer-head h2 {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.image-viewer-close {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-viewer-close:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.image-viewer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #151814;
+  padding: 24px;
+  overflow: auto;
+  max-height: 70vh;
+}
+
+.image-viewer-content img {
+  max-width: 100%;
+  max-height: 66vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.image-viewer-caption {
+  margin: 0;
+  padding: 12px 22px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-style: italic;
+}
+
+[data-theme="dark"] .image-viewer {
+  background: #1f231d;
+  border-color: #383e33;
+}
+
+[data-theme="dark"] .image-viewer-head,
+[data-theme="dark"] .image-viewer-caption {
+  background: #1a1e18;
+  border-color: #383e33;
+}
+
+

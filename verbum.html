@@ -502,6 +502,28 @@
     </div>
   </section>
 
+  <!-- MODALE PERSONNALISÉE VERBUM : DIALOGUE D'ALERTE & CONFIRMATION -->
+  <dialog id="vb-custom-dialog" class="vb-modal" aria-labelledby="vb-dialog-title">
+    <div class="vb-modal-container">
+      <div class="vb-modal-header">
+        <div class="vb-modal-header-left">
+          <span class="vb-modal-icon" id="vb-dialog-icon" aria-hidden="true">📖</span>
+          <h2 id="vb-dialog-title" class="vb-modal-title">Attention</h2>
+        </div>
+        <button type="button" id="close-vb-dialog" class="vb-modal-close" aria-label="Fermer la boîte de dialogue">✕</button>
+      </div>
+      <div class="vb-modal-body">
+        <p id="vb-dialog-message" class="vb-modal-message"></p>
+      </div>
+      <div class="vb-modal-footer">
+        <button type="button" id="ok-vb-dialog" class="vb-btn vb-btn-primary vb-btn-lg">Compris ↗</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notifications Flottantes -->
+  <div id="vb-toast-container" class="vb-toast-container" aria-live="polite"></div>
+
 </main>
 
 <!-- Footer -->

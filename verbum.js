@@ -825,8 +825,60 @@
   }
 
   // ==========================================================================
-  // 4. Initialisation & Remplissage de l'UI
+  // Modale & Notifications Personnalisées Verbum
   // ==========================================================================
+  function showVerbumAlert(message, title = "Verbum", icon = "📖") {
+    const dialog = document.getElementById('vb-custom-dialog');
+    if (!dialog || typeof dialog.showModal !== 'function') {
+      showVerbumToast(message, 'warning');
+      return;
+    }
+    const titleEl = document.getElementById('vb-dialog-title');
+    const msgEl = document.getElementById('vb-dialog-message');
+    const iconEl = document.getElementById('vb-dialog-icon');
+    const closeBtn = document.getElementById('close-vb-dialog');
+    const okBtn = document.getElementById('ok-vb-dialog');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (iconEl) iconEl.textContent = icon;
+
+    const cleanup = () => {
+      closeBtn?.removeEventListener('click', closeHandler);
+      okBtn?.removeEventListener('click', closeHandler);
+      dialog.removeEventListener('cancel', closeHandler);
+    };
+
+    const closeHandler = () => {
+      cleanup();
+      dialog.close();
+    };
+
+    closeBtn?.addEventListener('click', closeHandler);
+    okBtn?.addEventListener('click', closeHandler);
+    dialog.addEventListener('cancel', closeHandler);
+
+    dialog.showModal();
+  }
+
+  function showVerbumToast(message, type = 'info') {
+    const container = document.getElementById('vb-toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `vb-toast ${type}`;
+    const icon = type === 'success' ? '✓' : (type === 'warning' ? '⚠️' : '📖');
+    toast.innerHTML = `<span aria-hidden="true">${icon}</span> <span>${escapeHtml(message)}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      toast.style.transition = 'all 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  }
+
   function init() {
     initTheme();
     populateFilters();
@@ -1019,7 +1071,7 @@
     const userText = input.value.trim();
 
     if (!userText) {
-      alert("Veuillez saisir votre verset de mémoire avant d'analyser.");
+      showVerbumAlert("Veuillez d'abord saisir votre verset de mémoire avant de lancer l'analyse.", "Restitution incomplète", "✍️");
       input.focus();
       return;
     }
@@ -1164,7 +1216,7 @@
   function unlockDetectiveClue() {
     if (state.detectiveSolved) return;
     if (state.detectiveCluesUnlocked >= 3) {
-      alert("Tous les indices disponibles ont déjà été révélés !");
+      showVerbumToast("Tous les indices disponibles ont déjà été révélés !", "info");
       return;
     }
 
@@ -1457,7 +1509,7 @@
   // ==========================================================================
   function speakCurrentVerse() {
     if (!('speechSynthesis' in window)) {
-      alert("La synthèse vocale n'est pas supportée sur ce navigateur.");
+      showVerbumAlert("La synthèse vocale n'est pas supportée par votre navigateur actuel.", "Audio non disponible", "🔊");
       return;
     }
 
@@ -1583,7 +1635,7 @@
       if (available.length > 0) {
         loadVerse(available[0]);
       } else {
-        alert("Aucun verset dans cette combinaison. Réinitialisation des filtres.");
+        showVerbumToast("Aucun verset pour cette combinaison. Filtres réinitialisés.", "warning");
         bookSel.value = 'all';
         themeSel.value = 'all';
         loadVerse(BIBLE_VERSES[0]);
@@ -1717,7 +1769,7 @@
         const refVal = document.getElementById('custom-ref-input')?.value.trim();
         const textVal = document.getElementById('custom-text-input')?.value.trim();
         if (!refVal || !textVal) {
-          alert("Veuillez renseigner une référence et le texte exact.");
+          showVerbumAlert("Veuillez renseigner à la fois la référence et le texte complet du verset.", "Champs obligatoires", "✏️");
           return;
         }
         state.userCustomVerse = {
