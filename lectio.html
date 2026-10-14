@@ -59,7 +59,6 @@
 <header class="lec-header">
   <nav class="lec-nav">
     <a class="lec-brand" href="index.html#projets" aria-label="Retour au portfolio">
-      <span class="lec-brand-icon" aria-hidden="true">✦</span>
       Lectio<b>.</b>
     </a>
     <div class="lec-nav-center">
@@ -67,7 +66,7 @@
     </div>
     <div class="lec-nav-actions">
       <button type="button" id="theme-toggle" class="lec-icon-btn" title="Basculer thème sombre / clair" aria-label="Thème sombre">
-        <span id="theme-icon">🌙</span>
+        <span id="theme-icon" class="lec-theme-icon" aria-hidden="true"></span>
       </button>
       <a href="index.html#projets" class="lec-back-link"><span aria-hidden="true">←</span> Portfolio</a>
     </div>
@@ -99,10 +98,10 @@
           <p class="lec-drop-or">— ou —</p>
           <div class="lec-drop-actions">
             <button type="button" class="lec-btn lec-btn-primary" id="paste-btn">
-              <span aria-hidden="true">📋</span> Coller un texte
+              <svg class="lec-control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v3H8zM6 7H5v13h14V7h-1M9 12h6m-6 4h6"></path></svg> Coller un texte
             </button>
             <label class="lec-btn lec-btn-secondary" for="file-input">
-              <span aria-hidden="true">📁</span> Parcourir
+              <svg class="lec-control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3zM3 10h18"></path></svg> Parcourir
             </label>
             <input type="file" id="file-input" accept=".txt,.pdf,.md" class="sr-only">
           </div>
@@ -123,13 +122,13 @@
         <span class="lec-modes-label">Mode d'analyse :</span>
         <div class="lec-mode-pills" role="radiogroup" aria-label="Mode d'analyse">
           <button type="button" class="lec-mode active" data-mode="academic" role="radio" aria-checked="true">
-            <span aria-hidden="true">🎓</span> Académique
+            Académique
           </button>
           <button type="button" class="lec-mode" data-mode="general" role="radio" aria-checked="false">
-            <span aria-hidden="true">📄</span> Général
+            Général
           </button>
           <button type="button" class="lec-mode" data-mode="meditation" role="radio" aria-checked="false">
-            <span aria-hidden="true">✝</span> Méditation
+            Méditation
           </button>
         </div>
       </div>
@@ -139,15 +138,12 @@
         <span class="lec-samples-label">Ou explorer un exemple interactif sans clé API :</span>
         <div class="lec-samples-list">
           <button type="button" class="lec-sample-btn" data-sample="actuariat">
-            <span class="lec-sample-icon" aria-hidden="true">∑</span>
             <span>Mortalité & Stacking (Actuariat)</span>
           </button>
           <button type="button" class="lec-sample-btn" data-sample="philosophie">
-            <span class="lec-sample-icon" aria-hidden="true">⌛</span>
             <span>Architecture du Temps (Sénèque)</span>
           </button>
           <button type="button" class="lec-sample-btn" data-sample="foi">
-            <span class="lec-sample-icon" aria-hidden="true">✝</span>
             <span>Compter nos jours (Psaume 90)</span>
           </button>
         </div>
@@ -179,7 +175,6 @@
       <!-- Document Info Bar -->
       <div class="lec-doc-bar">
         <div class="lec-doc-info">
-          <span class="lec-doc-icon" aria-hidden="true">📄</span>
           <div>
             <strong id="doc-name">Document</strong>
             <span id="doc-stats" class="lec-doc-stats"></span>
@@ -187,10 +182,10 @@
         </div>
         <div class="lec-doc-actions">
           <button type="button" class="lec-btn lec-btn-ghost" id="copy-all-btn">
-            <span aria-hidden="true">📋</span> Copier tout
+            <svg class="lec-control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v13H8zM5 16H4V3h11v2"></path></svg> Copier tout
           </button>
           <button type="button" class="lec-btn lec-btn-ghost" id="new-analysis-btn">
-            <span aria-hidden="true">✦</span> Nouvelle analyse
+            Nouvelle analyse
           </button>
         </div>
       </div>
@@ -207,8 +202,8 @@
       <div class="lec-panel active" id="panel-summary" role="tabpanel" aria-labelledby="tab-summary">
         <div class="lec-card">
           <div class="lec-card-header">
-            <span class="lec-card-badge">✦ SYNTHÈSE STRUCTURÉE</span>
-            <button type="button" class="lec-copy-section" data-section="summary" title="Copier la synthèse">⧉</button>
+            <span class="lec-card-badge">SYNTHÈSE STRUCTURÉE</span>
+            <button type="button" class="lec-copy-section" data-section="summary" title="Copier la synthèse" aria-label="Copier la synthèse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v13H8zM5 16H4V3h11v2"></path></svg></button>
           </div>
           <div class="lec-card-body" id="summary-content">
             <!-- AI generated content -->
@@ -219,8 +214,8 @@
       <div class="lec-panel" id="panel-questions" role="tabpanel" aria-labelledby="tab-questions" hidden>
         <div class="lec-card">
           <div class="lec-card-header">
-            <span class="lec-card-badge">❓ QUESTIONS CLÉS</span>
-            <button type="button" class="lec-copy-section" data-section="questions" title="Copier les questions">⧉</button>
+            <span class="lec-card-badge">QUESTIONS CLÉS</span>
+            <button type="button" class="lec-copy-section" data-section="questions" title="Copier les questions" aria-label="Copier les questions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v13H8zM5 16H4V3h11v2"></path></svg></button>
           </div>
           <div class="lec-card-body" id="questions-content">
           </div>
@@ -230,8 +225,8 @@
       <div class="lec-panel" id="panel-concepts" role="tabpanel" aria-labelledby="tab-concepts" hidden>
         <div class="lec-card">
           <div class="lec-card-header">
-            <span class="lec-card-badge">🧩 CONCEPTS PRINCIPAUX</span>
-            <button type="button" class="lec-copy-section" data-section="concepts" title="Copier les concepts">⧉</button>
+            <span class="lec-card-badge">CONCEPTS PRINCIPAUX</span>
+            <button type="button" class="lec-copy-section" data-section="concepts" title="Copier les concepts" aria-label="Copier les concepts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v13H8zM5 16H4V3h11v2"></path></svg></button>
           </div>
           <div class="lec-card-body" id="concepts-content">
           </div>
@@ -241,8 +236,8 @@
       <div class="lec-panel" id="panel-connections" role="tabpanel" aria-labelledby="tab-connections" hidden>
         <div class="lec-card">
           <div class="lec-card-header">
-            <span class="lec-card-badge">🔗 CONNEXIONS ENTRE IDÉES</span>
-            <button type="button" class="lec-copy-section" data-section="connections" title="Copier les connexions">⧉</button>
+            <span class="lec-card-badge">CONNEXIONS ENTRE IDÉES</span>
+            <button type="button" class="lec-copy-section" data-section="connections" title="Copier les connexions" aria-label="Copier les connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h11v13H8zM5 16H4V3h11v2"></path></svg></button>
           </div>
           <div class="lec-card-body" id="connections-content">
           </div>
@@ -260,14 +255,13 @@
 <!-- API Key Dialog -->
 <dialog id="api-key-dialog" class="lec-dialog">
   <div class="lec-dialog-body">
-    <span class="lec-dialog-icon" aria-hidden="true">🔑</span>
     <h2 class="lec-dialog-title">Clé API Gemini</h2>
     <p class="lec-dialog-desc">Pour analyser vos documents, Lectio utilise l'API Gemini (gratuite). Votre clé est stockée uniquement dans votre navigateur.</p>
-    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="lec-dialog-link">Obtenir une clé gratuite sur AI Studio ↗</a>
+    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="lec-dialog-link">Obtenir une clé gratuite sur AI Studio</a>
     <input type="password" id="api-key-input" class="lec-input" placeholder="Collez votre clé API ici..." autocomplete="off">
     <div class="lec-dialog-actions">
       <button type="button" class="lec-btn lec-btn-secondary" id="cancel-api-key">Annuler</button>
-      <button type="button" class="lec-btn lec-btn-secondary" id="dialog-sample-btn">Tester un exemple sans clé ✦</button>
+      <button type="button" class="lec-btn lec-btn-secondary" id="dialog-sample-btn">Tester un exemple sans clé</button>
       <button type="button" class="lec-btn lec-btn-primary" id="save-api-key">Enregistrer</button>
     </div>
   </div>
@@ -277,7 +271,7 @@
 <footer class="lec-footer">
   <a class="lec-footer-brand" href="index.html">bm.</a>
   <span>© <span id="year">2026</span> Benjamin Minko · Lectio — Synthétiseur Intelligent</span>
-  <a href="index.html#contact">Contact ↗</a>
+  <a href="index.html#contact">Contact</a>
 </footer>
 
 <script src="lectio.js"></script>

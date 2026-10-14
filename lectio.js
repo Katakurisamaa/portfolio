@@ -39,7 +39,9 @@ const themeIcon = $('#theme-icon');
 
 function setTheme(dark) {
   document.body.classList.toggle('dark', dark);
-  themeIcon.textContent = dark ? '☀️' : '🌙';
+  themeIcon.innerHTML = dark
+    ? '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>'
+    : '<svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 15.4A8.5 8.5 0 0 1 8.6 3.5 8.7 8.7 0 1 0 20.5 15.4Z"></path></svg>';
   localStorage.setItem('lectio-theme', dark ? 'dark' : 'light');
 }
 

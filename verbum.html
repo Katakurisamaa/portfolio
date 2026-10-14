@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f5f2e9">
 <title>Verbum — Mémorisation & Maîtrise des Écritures | Benjamin Minko</title>
-<meta name="description" content="Verbum est un atelier interactif d'assimilation et de mémorisation biblique par Benjamin Minko. Dictée mot à mot avec analyse intelligente, recherche de références et flash quiz.">
+<meta name="description" content="Verbum accompagne la mémorisation biblique avec comparaison mot à mot, exercices de références, quiz et suivi des progrès.">
 <meta name="author" content="Benjamin Minko">
 <meta name="keywords" content="Verbum, mémorisation biblique, verset biblique, méditation chrétienne, Louis Segond, Parole de Vie, quizz biblique, Benjamin Minko, IA chrétienne, étude biblique">
 <meta name="robots" content="index, follow">
@@ -14,7 +14,7 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Verbum — Mémorisation & Maîtrise des Écritures | Benjamin Minko">
-<meta property="og:description" content="Grave la Parole dans ton cœur. Mémorisation mot à mot, détection de références et flash quiz bibliques.">
+<meta property="og:description" content="Un espace de mémorisation biblique avec comparaison mot à mot, exercices de références, quiz et suivi des progrès.">
 <meta property="og:url" content="https://benjaminminko.com/verbum.html">
 <meta property="og:site_name" content="Benjamin Minko">
 <meta property="og:locale" content="fr_FR">
@@ -23,7 +23,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Verbum — Mémorisation & Maîtrise des Écritures">
-<meta name="twitter:description" content="Grave la Parole dans ton cœur : atelier de mémorisation guidée, devinettes de références et quiz interactifs.">
+<meta name="twitter:description" content="Mémorisation guidée, exercices de références bibliques, quiz et suivi des progrès.">
 <meta name="twitter:image" content="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/verbum-hero.jpg">
 
 <!-- Structured Data JSON-LD -->
@@ -59,7 +59,6 @@
 <header class="vb-header">
   <nav class="vb-nav">
     <a class="vb-brand" href="index.html#projets" aria-label="Retour au portfolio">
-      <span class="vb-brand-icon" aria-hidden="true">📖</span>
       Verbum<b>.</b>
     </a>
     <div class="vb-nav-center">
@@ -67,7 +66,7 @@
     </div>
     <div class="vb-nav-actions">
       <button type="button" id="theme-toggle" class="vb-icon-btn" title="Basculer thème sombre / clair" aria-label="Thème sombre">
-        <span id="theme-icon">🌙</span>
+        <span id="theme-icon" class="vb-theme-icon" aria-hidden="true"></span>
       </button>
       <a href="index.html#projets" class="vb-back-link"><span aria-hidden="true">←</span> Portfolio</a>
     </div>
@@ -79,30 +78,30 @@
   <!-- Hero Banner -->
   <section class="vb-hero" id="hero-section">
     <div class="vb-hero-inner">
-      <p class="vb-eyebrow"><span class="vb-dot"></span> ATELIER BIBLIQUE INTELLIGENT · ANCIEN &amp; NOUVEAU TESTAMENT</p>
+      <p class="vb-eyebrow"><span class="vb-dot"></span> ÉTUDE ET MÉMORISATION BIBLIQUE</p>
       <h1 class="vb-title">
-        Grave la Parole.<br>
-        <em>Maîtrise chaque verset.</em>
+        Mémoriser un verset,<br>
+        <em>un mot à la fois.</em>
       </h1>
       <p class="vb-subtitle">
         <em>« Ta parole est une lampe à mes pieds, et une lumière sur mon sentier. »</em> (Psaume 119:105).
-        Choisis ton livre et ta version, mémorise mot à mot avec analyse intelligente des écarts, résous les énigmes de références et teste tes réflexes en flash quiz.
+        Choisis un passage, entraîne-toi à le restituer et repère précisément tes oublis. Explore aussi les références et révise les textes du corpus.
       </p>
 
       <!-- Quick Metrics Ribbon -->
       <div class="vb-stats-ribbon" id="stats-ribbon">
         <div class="vb-stat-item">
           <span class="vb-stat-num" id="ribbon-count">0</span>
-          <span class="vb-stat-lbl">Versets gravés</span>
+          <span class="vb-stat-lbl">Versets pratiqués</span>
         </div>
         <div class="vb-stat-divider" aria-hidden="true"></div>
         <div class="vb-stat-item">
-          <span class="vb-stat-num" id="ribbon-accuracy">100%</span>
-          <span class="vb-stat-lbl">Précision moyenne</span>
+          <span class="vb-stat-num" id="ribbon-accuracy">0%</span>
+          <span class="vb-stat-lbl">Précision en dictée</span>
         </div>
         <div class="vb-stat-divider" aria-hidden="true"></div>
         <div class="vb-stat-item">
-          <span class="vb-stat-num" id="ribbon-streak">🔥 0</span>
+          <span class="vb-stat-num" id="ribbon-streak">0 j</span>
           <span class="vb-stat-lbl">Série actuelle</span>
         </div>
       </div>
@@ -113,20 +112,20 @@
   <section class="vb-tabs-section">
     <div class="vb-tabs-wrapper" role="tablist" aria-label="Modes d'entraînement Verbum">
       <button type="button" class="vb-tab active" id="tab-graver" role="tab" aria-selected="true" aria-controls="panel-graver" tabindex="0">
-        <span class="vb-tab-icon" aria-hidden="true">✍️</span>
-        <span class="vb-tab-text">Graver <em>(Dictée &amp; Mémorisation)</em></span>
+        <span class="vb-tab-icon" aria-hidden="true">01</span>
+        <span class="vb-tab-text">Mémoriser <em>(restitution guidée)</em></span>
       </button>
       <button type="button" class="vb-tab" id="tab-detective" role="tab" aria-selected="false" aria-controls="panel-detective" tabindex="-1">
-        <span class="vb-tab-icon" aria-hidden="true">🎯</span>
-        <span class="vb-tab-text">Détective <em>(Deviner la référence)</em></span>
+        <span class="vb-tab-icon" aria-hidden="true">02</span>
+        <span class="vb-tab-text">Références <em>(identifier un passage)</em></span>
       </button>
       <button type="button" class="vb-tab" id="tab-quiz" role="tab" aria-selected="false" aria-controls="panel-quiz" tabindex="-1">
-        <span class="vb-tab-icon" aria-hidden="true">⚡</span>
-        <span class="vb-tab-text">Flash Quizz <em>(4 propositions)</em></span>
+        <span class="vb-tab-icon" aria-hidden="true">03</span>
+        <span class="vb-tab-text">Quiz <em>(4 propositions)</em></span>
       </button>
       <button type="button" class="vb-tab" id="tab-biblio" role="tab" aria-selected="false" aria-controls="panel-biblio" tabindex="-1">
-        <span class="vb-tab-icon" aria-hidden="true">📚</span>
-        <span class="vb-tab-text">Bibliothèque <em>(Index des versets)</em></span>
+        <span class="vb-tab-icon" aria-hidden="true">04</span>
+        <span class="vb-tab-text">Corpus <em>(recherche et révision)</em></span>
       </button>
     </div>
   </section>
@@ -196,10 +195,10 @@
         </div>
 
         <button type="button" id="graver-random-btn" class="vb-btn vb-btn-outline" title="Proposer un autre verset">
-          <span aria-hidden="true">🎲</span> Aléatoire
+          Proposer un verset
         </button>
         <button type="button" id="graver-custom-toggle-btn" class="vb-btn vb-btn-ghost" title="Coller mon propre verset personnalisé">
-          <span aria-hidden="true">✏️</span> Verset personnalisé
+          Mon verset
         </button>
       </div>
 
@@ -228,10 +227,10 @@
           </div>
           <div class="vb-verse-tools">
             <button type="button" id="audio-speak-btn" class="vb-tool-btn" title="Écouter la récitation audio" aria-label="Écouter le verset">
-              <span aria-hidden="true">🔊</span> Écouter
+              Écouter
             </button>
             <button type="button" id="copy-ref-btn" class="vb-tool-btn" title="Copier la référence et le verset" aria-label="Copier le verset">
-              <span aria-hidden="true">📋</span> Copier
+              Copier
             </button>
           </div>
         </div>
@@ -240,16 +239,16 @@
         <div class="vb-assistance-levels" role="group" aria-label="Niveau d'aide mnémotechnique">
           <span class="vb-assist-label">Niveau d'aide :</span>
           <button type="button" class="vb-pill active" data-assist="open" title="Le verset reste visible pour la lecture et mémorisation">
-            👁️ Découverte
+            Lecture
           </button>
           <button type="button" class="vb-pill" data-assist="first-letters" title="Affiche uniquement la première lettre de chaque mot">
-            🔤 Premières lettres
+            Premières lettres
           </button>
           <button type="button" class="vb-pill" data-assist="cloze" title="Masque les mots-clés théologiques">
-            🧩 Texte à trous
+            Texte à trous
           </button>
           <button type="button" class="vb-pill" data-assist="blank" title="Page blanche complète : verset totalement masqué">
-            📜 Page blanche
+            Restitution libre
           </button>
         </div>
 
@@ -281,7 +280,7 @@
 
         <div class="vb-typing-actions">
           <button type="button" id="analyze-btn" class="vb-btn vb-btn-primary vb-btn-lg">
-            <span>✨</span> Analyser &amp; Corriger
+            Analyser ma réponse
           </button>
           <button type="button" id="clear-input-btn" class="vb-btn vb-btn-ghost">
             Effacer
@@ -333,7 +332,7 @@
         <!-- Next Verse / Re-practice CTA -->
         <div class="vb-analysis-cta">
           <button type="button" id="retry-verse-btn" class="vb-btn vb-btn-outline">
-            🔄 Recommencer ce verset
+            Recommencer
           </button>
           <button type="button" id="next-verse-btn" class="vb-btn vb-btn-primary">
             Verset suivant ➔
@@ -373,7 +372,7 @@
         <div class="vb-clues-header">
           <span>Besoin d'un coup de pouce ?</span>
           <button type="button" id="detective-clue-btn" class="vb-btn vb-btn-ghost vb-btn-sm">
-            💡 Demander un indice (<span id="clues-left-count">3 restants</span>)
+            Demander un indice (<span id="clues-left-count">3 restants</span>)
           </button>
         </div>
         <div class="vb-clues-list" id="detective-clues-list"></div>
@@ -395,23 +394,23 @@
 
           <div class="vb-field-group">
             <label for="detective-chapter-input">Chapitre :</label>
-            <input type="number" id="detective-chapter-input" class="vb-input" min="1" max="150" placeholder="Ex: 91">
+            <input type="number" id="detective-chapter-input" class="vb-input" min="1" max="150" placeholder="Ex. 91" aria-label="Chapitre">
           </div>
 
           <div class="vb-field-group">
-            <label for="detective-verse-input">Verset :</label>
-            <input type="number" id="detective-verse-input" class="vb-input" min="1" max="176" placeholder="Ex: 1">
+            <label for="detective-verse-input">Verset ou plage :</label>
+            <input type="text" id="detective-verse-input" class="vb-input" inputmode="numeric" placeholder="Ex. 16 ou 16-18">
           </div>
         </div>
 
         <div class="vb-guess-direct-bar">
-          <span class="vb-or-separator">OU saisie directe rapide :</span>
-          <input type="text" id="detective-direct-input" class="vb-input" placeholder="Ex: Jean 3:16 ou Ps 91 1" aria-label="Saisie rapide de la référence">
+          <span class="vb-or-separator">Ou saisis la référence complète :</span>
+          <input type="text" id="detective-direct-input" class="vb-input" placeholder="Ex. Jean 3:16 ou Psaumes 91:1" aria-label="Saisie rapide de la référence">
         </div>
 
         <div class="vb-guess-actions">
           <button type="button" id="detective-validate-btn" class="vb-btn vb-btn-primary vb-btn-lg">
-            🔍 Valider ma réponse
+            Vérifier la référence
           </button>
           <button type="button" id="detective-giveup-btn" class="vb-btn vb-btn-outline">
             Donner ma langue au chat
@@ -443,7 +442,7 @@
             <div class="vb-quiz-stats">
               <span>Question <strong id="quiz-current-q">1</strong> / 10</span>
               <span>Score : <strong id="quiz-current-score">0</strong> pts</span>
-              <span>Série : <strong id="quiz-streak">🔥 0</strong></span>
+              <span>Réponses justes à la suite : <strong id="quiz-streak">0</strong></span>
             </div>
           </div>
         </div>
@@ -470,7 +469,7 @@
 
         <!-- Quiz Results Modal / Card -->
         <div class="vb-quiz-results-card" id="quiz-results-card" hidden>
-          <div class="vb-quiz-trophy" id="quiz-trophy">🏆</div>
+          <div class="vb-quiz-trophy" id="quiz-trophy" aria-hidden="true">—</div>
           <h2 class="vb-quiz-results-title" id="quiz-final-title">Session terminée !</h2>
           <p class="vb-quiz-results-score" id="quiz-final-score">Score final : 8 / 10 (800 pts)</p>
           <p class="vb-quiz-results-msg" id="quiz-final-msg">Excellente connaissance des Écritures !</p>
@@ -479,7 +478,7 @@
               Relancer une série de 10
             </button>
             <button type="button" class="vb-btn vb-btn-outline" onclick="document.getElementById('tab-graver').click();">
-              Passer en mode Graver ✍️
+              Passer en mode Graver
             </button>
           </div>
         </div>
@@ -498,24 +497,24 @@
       <!-- Stats Overview Cards -->
       <div class="vb-stats-grid">
         <div class="vb-overview-card">
-          <span class="vb-card-icon" aria-hidden="true">📜</span>
+          <span class="vb-card-icon" aria-hidden="true">01</span>
           <div class="vb-overview-num" id="stat-total-practiced">0</div>
-          <div class="vb-overview-label">Versets étudiés</div>
+          <div class="vb-overview-label">Versets pratiqués</div>
         </div>
         <div class="vb-overview-card">
-          <span class="vb-card-icon" aria-hidden="true">🎯</span>
+          <span class="vb-card-icon" aria-hidden="true">02</span>
           <div class="vb-overview-num" id="stat-avg-accuracy">0%</div>
-          <div class="vb-overview-label">Exactitude globale</div>
+          <div class="vb-overview-label">Précision en dictée</div>
         </div>
         <div class="vb-overview-card">
-          <span class="vb-card-icon" aria-hidden="true">🔥</span>
+          <span class="vb-card-icon" aria-hidden="true">03</span>
           <div class="vb-overview-num" id="stat-best-streak">0</div>
-          <div class="vb-overview-label">Meilleure série</div>
+          <div class="vb-overview-label">Meilleure série quotidienne</div>
         </div>
         <div class="vb-overview-card">
-          <span class="vb-card-icon" aria-hidden="true">🎖️</span>
+          <span class="vb-card-icon" aria-hidden="true">04</span>
           <div class="vb-overview-num" id="stat-mastery-level">Initié</div>
-          <div class="vb-overview-label">Rang de Maîtrise</div>
+          <div class="vb-overview-label">Quiz terminés</div>
         </div>
       </div>
 
@@ -523,12 +522,14 @@
       <div class="vb-biblio-header">
         <div>
           <h2 class="vb-section-heading">Index des Versets Disponibles</h2>
-          <p class="vb-section-sub">Parcourez le corpus biblique intégré, filtrez par livre ou thématique, et entraînez-vous directement.</p>
+          <p class="vb-section-sub">Les 66 livres sont répertoriés. Les filtres indiquent les passages déjà intégrés ; tu peux aussi ajouter les tiens avec « Mon verset ».</p>
         </div>
         <div class="vb-biblio-search-wrap">
+          <button type="button" id="biblio-review-toggle" class="vb-btn vb-btn-outline vb-review-toggle" aria-pressed="false">Réviser mes passages</button>
           <input type="search" id="biblio-search" class="vb-input" placeholder="Rechercher un mot, un livre ou une référence...">
         </div>
       </div>
+      <p id="biblio-result-count" class="vb-biblio-result-count" aria-live="polite"></p>
 
       <!-- Verses Table / Cards List -->
       <div class="vb-verses-list" id="biblio-verses-list">
@@ -543,7 +544,7 @@
     <div class="vb-modal-container">
       <div class="vb-modal-header">
         <div class="vb-modal-header-left">
-          <span class="vb-modal-icon" id="vb-dialog-icon" aria-hidden="true">📖</span>
+          <span class="vb-modal-icon" id="vb-dialog-icon" aria-hidden="true">i</span>
           <h2 id="vb-dialog-title" class="vb-modal-title">Attention</h2>
         </div>
         <button type="button" id="close-vb-dialog" class="vb-modal-close" aria-label="Fermer la boîte de dialogue">✕</button>
@@ -552,7 +553,7 @@
         <p id="vb-dialog-message" class="vb-modal-message"></p>
       </div>
       <div class="vb-modal-footer">
-        <button type="button" id="ok-vb-dialog" class="vb-btn vb-btn-primary vb-btn-lg">Compris ↗</button>
+        <button type="button" id="ok-vb-dialog" class="vb-btn vb-btn-primary vb-btn-lg">Compris</button>
       </div>
     </div>
   </dialog>
@@ -566,8 +567,7 @@
 <footer class="vb-footer">
   <div class="vb-footer-inner">
     <div class="vb-footer-brand">
-      <span class="vb-brand-icon" aria-hidden="true">📖</span>
-      <span><strong>Verbum</strong> — Mémorisation &amp; Architecture des Écritures</span>
+      <span><strong>Verbum</strong> — Mémorisation biblique</span>
     </div>
     <div class="vb-footer-copy">
       Conçu et développé par <a href="index.html">Benjamin Minko</a> · Actuariat, Data, Web &amp; IA.

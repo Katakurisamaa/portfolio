@@ -1,6 +1,15 @@
 'use strict';
 
 const $ = id => document.getElementById(id);
+const ADMIN_ICON_PATHS = {
+  sun: '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>',
+  moon: '<path d="M20.8 14.2A8.7 8.7 0 0 1 9.8 3.2 8.8 8.8 0 1 0 20.8 14.2Z"></path>',
+  edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path>',
+  trash: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"></path>',
+  logout: '<path d="M10 17l5-5-5-5m5 5H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>',
+  file: '<path d="M6 3h8l4 4v14H6zM14 3v5h5M9 13h6m-6 4h6"></path>'
+};
+const adminIcon = name => `<svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ADMIN_ICON_PATHS[name] || ''}</svg>`;
 const form = $('editor');
 const allFields = [
   'title', 'category', 'type', 'description', 'details',
@@ -14,11 +23,11 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const EXPECTED_HASH = '3ca8a7088a58c4bdc1334af1e91e33a08da0b3bf8ced9a1a7344c48ad12a5ea2';
 
 const SECTIONS = [
-  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', symbol: '↗', theme: 'sage', description: 'Probabilités, données et modélisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
-  { key: 'Web', title: 'Programmation', slug: 'developpement-web', symbol: '</>', theme: 'clay', description: 'Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label: 'projet' },
-  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', symbol: '✦', theme: 'sand', description: 'Mes expériences avec l’intelligence artificielle, les outils que j’explore et ce que j’apprends en les construisant.', label: 'projet' },
-  { key: 'Lectures', title: 'Lectures & découvertes', slug: 'lectures', symbol: 'Aa', theme: 'sage', description: 'Un espace pour les livres, les idées et les découvertes que j’ai envie de partager.', label: 'partage' },
-  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', symbol: '✝', theme: 'clay', description: 'Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label: 'partage' }
+  { key: 'Actuariat & data', title: 'Sciences actuarielles', slug: 'sciences-actuarielles', theme: 'sage', description: 'Probabilités, données et modélisation du risque. Mes projets pour mettre les sciences actuarielles en pratique.', label: 'projet' },
+  { key: 'Web', title: 'Programmation', slug: 'developpement-web', theme: 'clay', description: 'Les sites et applications que je crée sur mon temps libre. Des idées qui deviennent des outils à utiliser.', label: 'projet' },
+  { key: 'IA', title: 'Intelligence artificielle', slug: 'intelligence-artificielle', theme: 'sand', description: 'Mes expériences avec l’intelligence artificielle, les outils que j’explore et ce que j’apprends en les construisant.', label: 'projet' },
+  { key: 'Lectures', title: 'Lectures & découvertes', slug: 'lectures', theme: 'sage', description: 'Un espace pour les livres, les idées et les découvertes que j’ai envie de partager.', label: 'partage' },
+  { key: 'Foi', title: 'Foi & Bible', slug: 'foi-bible', theme: 'clay', description: 'Ma relation avec Jésus, mes lectures de la Bible et mes réflexions autour de la foi.', label: 'partage' }
 ];
 
 let sections = [...SECTIONS], selectedSection = '__all__';
@@ -145,7 +154,7 @@ $('login-form').addEventListener('submit', async (e) => {
     token = hashed;
     localStorage.setItem('bm_admin_token', token);
     showLogin(false);
-    message('✓ Bienvenue dans ton Atelier de création !', 'success');
+    message('Bienvenue dans ton Atelier de création.', 'success');
     await fetchProjectsFromSources();
     return;
   }
@@ -159,7 +168,7 @@ $('login-form').addEventListener('submit', async (e) => {
       token = res.token;
       localStorage.setItem('bm_admin_token', token);
       showLogin(false);
-      message('✓ Bienvenue dans ton Atelier de création !', 'success');
+      message('Bienvenue dans ton Atelier de création.', 'success');
       await fetchProjectsFromSources();
       return;
     }
@@ -174,7 +183,8 @@ $('toggle-password').addEventListener('click', () => {
   const input = $('login-password');
   const show = input.type === 'password';
   input.type = show ? 'text' : 'password';
-  $('toggle-password').textContent = show ? '🙈' : '👁';
+  $('toggle-password').textContent = show ? 'Masquer' : 'Afficher';
+  $('toggle-password').setAttribute('aria-label', `${show ? 'Masquer' : 'Afficher'} le mot de passe`);
 });
 
 $('logout-btn').addEventListener('click', async () => {
@@ -212,7 +222,7 @@ $('change-pw-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ currentPassword: cur, newPassword: nw })
     });
     $('change-pw-dialog').close();
-    message('✓ Mot de passe mis à jour avec succès.', 'success');
+    message('Mot de passe mis à jour avec succès.', 'success');
   } catch (err) {
     errEl.hidden = false;
     errEl.textContent = err.message || 'Impossible de mettre à jour le mot de passe.';
@@ -336,7 +346,7 @@ function renderPreview() {
     const docBtn = document.createElement('button');
     docBtn.type = 'button';
     docBtn.className = 'project-doc-btn';
-    docBtn.textContent = '📄 Lire le document d’étude ↗';
+    docBtn.innerHTML = `${adminIcon('file')}<span>Lire le document d’étude ↗</span>`;
     $('preview-links').append(docBtn);
   }
 }
@@ -421,11 +431,16 @@ if (mobileMenuToggle && mobileDropdown) {
   mobileMenuToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     mobileDropdown.hidden = !mobileDropdown.hidden;
+    const expanded = !mobileDropdown.hidden;
+    mobileMenuToggle.setAttribute('aria-expanded', String(expanded));
+    mobileMenuToggle.classList.toggle('is-open', expanded);
   });
 
   document.addEventListener('click', (e) => {
     if (!mobileDropdown.hidden && !mobileDropdown.contains(e.target) && e.target !== mobileMenuToggle) {
       mobileDropdown.hidden = true;
+      mobileMenuToggle.setAttribute('aria-expanded', 'false');
+      mobileMenuToggle.classList.remove('is-open');
     }
   });
 }
@@ -486,7 +501,7 @@ function edit(project = null, moveFocus = false) {
   if (docStatus) {
     if (project?.document) {
       docStatus.className = 'doc-upload-status ready';
-      docStatus.textContent = '✓ Document PDF associé (Lecture seule)';
+      docStatus.textContent = 'Document PDF associé (lecture seule)';
       docStatus.hidden = false;
     } else {
       docStatus.hidden = true;
@@ -495,7 +510,7 @@ function edit(project = null, moveFocus = false) {
 
   dirty = false;
   $('edit-title').textContent = project ? 'Modifier la publication' : 'Nouvelle publication';
-  $('save-state').textContent = project ? '✓ Enregistré sur Supabase' : 'Prêt à écrire';
+  $('save-state').textContent = project ? 'Enregistré sur Supabase' : 'Prêt à écrire';
   $('save-state').style.color = 'var(--admin-muted)';
 
   renderList();
@@ -544,8 +559,8 @@ function renderList() {
 
     const tag = document.createElement('span');
     tag.className = 'list-type-tag';
-    const icon = item.type === 'lecture' ? '📖' : item.type === 'foi' ? '✝' : '💻';
-    tag.textContent = `${icon} ${item.type || 'projet'} · ${item.category || ''}`;
+    const icon = (item.type || 'projet').slice(0, 1).toLocaleUpperCase('fr');
+    tag.textContent = `${item.type || 'projet'} · ${item.category || ''}`;
     top.append(tag);
 
     // Corps de carte : miniature + titre
@@ -563,6 +578,7 @@ function renderList() {
       const ph = document.createElement('div');
       ph.className = 'list-thumbnail-placeholder';
       ph.textContent = icon;
+      ph.setAttribute('aria-hidden', 'true');
       body.append(ph);
     }
 
@@ -586,7 +602,7 @@ function renderList() {
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
     editBtn.className = 'btn-card-action';
-    editBtn.innerHTML = '✏️ Modifier';
+    editBtn.innerHTML = `${adminIcon('edit')}<span>Modifier</span>`;
     editBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!busy && approveDiscard()) edit(item, true);
@@ -595,7 +611,7 @@ function renderList() {
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'btn-card-action delete';
-    delBtn.innerHTML = '🗑️ Supprimer';
+    delBtn.innerHTML = `${adminIcon('trash')}<span>Supprimer</span>`;
     delBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (busy || !approveDiscard()) return;
@@ -739,7 +755,7 @@ async function fetchProjectsFromSources() {
     undo = null;
     $('undo').hidden = true;
     edit();
-    message(`✓ Connecté à Supabase. ${projects.length} publications synchronisées !`, 'success');
+    message(`Connecté à Supabase. ${projects.length} publications synchronisées.`, 'success');
   } catch (err) {
     message(`Erreur de chargement : ${err.message}`, 'error');
   } finally {
@@ -895,7 +911,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (busy || !form.reportValidity()) return;
   lock(true);
-  message('⚡ Enregistrement et synchronisation en cours...');
+  message('Enregistrement et synchronisation en cours…');
 
   try {
     const docInput = $('document-file');
@@ -904,7 +920,7 @@ form.addEventListener('submit', async (e) => {
       if (docFile.size > 25 * 1024 * 1024) {
         throw new Error('Le document PDF ne doit pas dépasser 25 Mo.');
       }
-      message('⚡ Téléversement du document PDF sur Supabase Storage...');
+      message('Téléversement du document PDF sur Supabase Storage…');
       const cleanName = docFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const filename = `doc-${Date.now()}-${cleanName}`;
       const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${filename}`, {
@@ -976,7 +992,7 @@ form.addEventListener('submit', async (e) => {
     await persist(next);
     edit(projects.find(p => p.id === item.id));
     if (window.innerWidth <= 850) setMobileView('list');
-    message('✓ Publication enregistrée et synchronisée avec Supabase !', 'success');
+    message('Publication enregistrée et synchronisée avec Supabase.', 'success');
   } catch (err) {
     message(`Erreur : ${err.message}`, 'error');
     renderPreview();
@@ -1042,7 +1058,7 @@ $('undo').addEventListener('click', async () => {
     undo = null;
     $('undo').hidden = true;
     edit(toRestore);
-    message('✓ Publication restaurée avec succès !', 'success');
+    message('Publication restaurée avec succès.', 'success');
   } catch (err) {
     message(`Erreur de restauration : ${err.message}`, 'error');
   } finally {
@@ -1081,7 +1097,7 @@ if (docFileInput) {
       if (labelText) labelText.textContent = file.name.length > 20 ? file.name.slice(0, 17) + '...' : file.name;
       if (status) {
         status.className = 'doc-upload-status ready';
-        status.textContent = `✓ « ${file.name} » prêt à être téléversé (${(file.size / 1024 / 1024).toFixed(1)} Mo)`;
+        status.textContent = `« ${file.name} » prêt à être téléversé (${(file.size / 1024 / 1024).toFixed(1)} Mo)`;
         status.hidden = false;
       }
       markDirty();
@@ -1264,7 +1280,7 @@ if (bibleFetchBtn) {
 
     if (status) {
       status.className = 'bible-status loading';
-      status.textContent = `⚡ Recherche du verset dans ${activeBibleVersion === 'FRLSG' ? 'Louis Segond 1910' : 'Parole de Vie 2017'}...`;
+      status.textContent = `Recherche du verset dans ${activeBibleVersion === 'FRLSG' ? 'Louis Segond 1910' : 'Parole de Vie 2017'}…`;
       status.hidden = false;
     }
 
@@ -1276,7 +1292,7 @@ if (bibleFetchBtn) {
       if (status) {
         const verLabel = activeBibleVersion === 'FRLSG' ? 'Segond 1910' : 'Parole de Vie 2017';
         status.className = 'bible-status success';
-        status.textContent = `✓ Verset inséré avec succès (${verLabel}) !`;
+        status.textContent = `Verset inséré avec succès (${verLabel}).`;
         status.hidden = false;
       }
     } catch (err) {
@@ -1353,7 +1369,7 @@ if (bibleCompareBtn && compareDrawer) {
         const status = $('bible-status');
         if (status) {
           status.className = 'bible-status success';
-          status.textContent = `✓ Version ${target === 'FRLSG' ? 'Segond 1910' : 'Parole de Vie 2017'} sélectionnée et insérée !`;
+          status.textContent = `Version ${target === 'FRLSG' ? 'Segond 1910' : 'Parole de Vie 2017'} sélectionnée et insérée.`;
           status.hidden = false;
         }
       }
@@ -1379,19 +1395,19 @@ function applyAdminTheme(theme) {
     desktopBtn.setAttribute('title', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
     desktopBtn.setAttribute('aria-label', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
   }
-  if (desktopIcon) desktopIcon.textContent = isDark ? '☀️' : '🌙';
+  if (desktopIcon) desktopIcon.innerHTML = adminIcon(isDark ? 'sun' : 'moon');
   if (desktopText) desktopText.textContent = isDark ? 'Clair' : 'Sombre';
 
   const mobileBtn = $('theme-toggle-mobile');
   if (mobileBtn) {
-    mobileBtn.textContent = isDark ? '☀️' : '🌙';
+    mobileBtn.innerHTML = adminIcon(isDark ? 'sun' : 'moon');
     mobileBtn.setAttribute('title', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
     mobileBtn.setAttribute('aria-label', isDark ? 'Passer au mode clair' : 'Passer au mode sombre');
   }
 
   const dropdownIcon = $('mobile-dropdown-theme-icon');
   const dropdownText = $('mobile-dropdown-theme-text');
-  if (dropdownIcon) dropdownIcon.textContent = isDark ? '☀️' : '🌙';
+  if (dropdownIcon) dropdownIcon.innerHTML = adminIcon(isDark ? 'sun' : 'moon');
   if (dropdownText) dropdownText.textContent = isDark ? 'Passer au mode clair' : 'Passer au mode sombre';
 }
 

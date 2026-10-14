@@ -1,7 +1,7 @@
 /**
  * Rythme — Architecture de la Semaine & Planificateur Minimaliste
  * Par Benjamin Minko
- * Moteur interactif : gestion temporelle, presets, calcul d'harmonie actuariel, export iCal & PNG
+ * Moteur interactif : gestion temporelle, modèles de semaine et exports PDF, iCal et image
  */
 
 'use strict';
@@ -37,147 +37,154 @@ function changeWeek(offset) {
 }
 
 const ENERGIES = {
-  deepwork: { label: 'Deep Work', icon: '⚡', color: '#a7422d', darkColor: '#e87c64', weight: 'Création' },
-  data:     { label: 'Analyse & Chiffres', icon: '📊', color: '#20576e', darkColor: '#5db6db', weight: 'Rigueur' },
-  reading:  { label: 'Lecture & Esprit', icon: '📖', color: '#7a5028', darkColor: '#e2ad6c', weight: 'Apprentissage' },
-  faith:    { label: 'Foi & Alignement', icon: '✝', color: '#285e2f', darkColor: '#65de81', weight: 'Alignement' },
-  vitality: { label: 'Vitalité & Corps', icon: '🌿', color: '#854d0e', darkColor: '#f6a623', weight: 'Énergie' },
-  social:   { label: 'Liens & Partage', icon: '🤝', color: '#583e73', darkColor: '#bfa1eb', weight: 'Relations' }
+  deepwork: { label: 'Concentration & création', color: '#a7422d', darkColor: '#e87c64', weight: 'Création' },
+  data:     { label: 'Analyse & organisation', color: '#20576e', darkColor: '#5db6db', weight: 'Rigueur' },
+  reading:  { label: 'Apprentissage', color: '#7a5028', darkColor: '#e2ad6c', weight: 'Apprentissage' },
+  faith:    { label: 'Temps personnel', color: '#285e2f', darkColor: '#65de81', weight: 'Équilibre' },
+  vitality: { label: 'Santé & mouvement', color: '#854d0e', darkColor: '#f6a623', weight: 'Énergie' },
+  social:   { label: 'Relations & vie sociale', color: '#583e73', darkColor: '#bfa1eb', weight: 'Relations' }
 };
 
 const DAY_NAMES = [
   'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'
 ];
 
+const PRESET_LABELS = {
+  etudes: 'Études & apprentissage',
+  projet: 'Projet & création',
+  equilibre: 'Travail & équilibre personnel',
+  essentiel: 'Semaine allégée'
+};
+
 // Presets d'inspiration
 const PRESETS = {
-  chercheur: {
+  etudes: {
     intentions: [
-      "Finaliser l'estimation des poids contextuels du stacking bayésien",
-      "Synthétiser 2 papiers de recherche en actuariat et sciences des données",
-      "Préserver 4h de deep work sans distraction chaque matin"
+      'Avancer sur les cours et les travaux à rendre',
+      'Réserver du temps pour réviser et comprendre les notions difficiles',
+      'Garder des moments pour bouger, voir ses proches et se reposer'
     ],
     slots: [
-      { id: 'c1', day: 1, start: '07:30', end: '08:30', energy: 'faith', title: 'Méditation & Prière matinale', notes: 'Psaume 90, silence et clarté' },
-      { id: 'c2', day: 1, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Modélisation stochastique & Stacking', notes: 'Script Stan & calibration des résidus' },
-      { id: 'c3', day: 1, start: '14:00', end: '16:30', energy: 'data', title: 'Analyse des tables de mortalité', notes: 'Nettoyage des données et backtesting' },
-      { id: 'c4', day: 1, start: '17:30', end: '18:30', energy: 'vitality', title: 'Marche & Aération de l’esprit', notes: 'Sortir sans écran' },
-      { id: 'c5', day: 1, start: '20:30', end: '21:30', energy: 'reading', title: 'Lecture — Théorie du Risque', notes: 'Prise de notes dans le carnet' },
+      { id: 'c1', day: 1, start: '07:30', end: '08:30', energy: 'faith', title: 'Préparer la journée', notes: 'Prendre un moment calme avant de commencer' },
+      { id: 'c2', day: 1, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Cours ou travail prioritaire', notes: 'Avancer sur la tâche qui demande le plus de concentration' },
+      { id: 'c3', day: 1, start: '14:00', end: '16:30', energy: 'data', title: 'Exercices et révisions', notes: 'Revoir les notions et vérifier sa compréhension' },
+      { id: 'c4', day: 1, start: '17:30', end: '18:30', energy: 'vitality', title: 'Marche et pause active', notes: 'Prendre l’air et s’éloigner des écrans' },
+      { id: 'c5', day: 1, start: '20:30', end: '21:30', energy: 'reading', title: 'Lecture ou apprentissage libre', notes: 'Noter les idées à retenir' },
 
-      { id: 'c6', day: 2, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Optimisation des hyperparamètres', notes: 'Convergence MCMC et diagnostics' },
-      { id: 'c7', day: 2, start: '14:00', end: '17:00', energy: 'data', title: 'Validation temporelle & Graphiques', notes: 'Courbes de mortalité projetées' },
-      { id: 'c8', day: 2, start: '18:00', end: '19:00', energy: 'vitality', title: 'Activité sportive', notes: 'Renforcement et étirements' },
+      { id: 'c6', day: 2, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Étude d’un sujet important', notes: 'Travailler par étapes, sans interruptions' },
+      { id: 'c7', day: 2, start: '14:00', end: '17:00', energy: 'data', title: 'Devoirs et exercices pratiques', notes: 'Appliquer les notions étudiées' },
+      { id: 'c8', day: 2, start: '18:00', end: '19:00', energy: 'vitality', title: 'Activité physique', notes: 'Sport, marche ou étirements' },
 
-      { id: 'c9', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Rédaction scientifique & Méthode', notes: 'Mise au propre des équations et théorèmes' },
-      { id: 'c10', day: 3, start: '14:00', end: '16:30', energy: 'data', title: 'Revue croisée de code R', notes: 'Modularisation des fonctions' },
-      { id: 'c11', day: 3, start: '19:30', end: '21:30', energy: 'social', title: 'Échange technique & Discussion', notes: 'Partage d’idées avec d’autres étudiants' },
+      { id: 'c9', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Rédiger un travail ou un dossier', notes: 'Structurer les idées et avancer une partie' },
+      { id: 'c10', day: 3, start: '14:00', end: '16:30', energy: 'data', title: 'Organiser les notes de cours', notes: 'Classer les informations et repérer les questions' },
+      { id: 'c11', day: 3, start: '19:30', end: '21:30', energy: 'social', title: 'Étudier ou échanger en groupe', notes: 'Partager les questions et s’entraider' },
 
-      { id: 'c12', day: 4, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Stacking bayésien — Simulations', notes: 'Étude de robustesse aux chocs' },
-      { id: 'c13', day: 4, start: '14:00', end: '17:00', energy: 'data', title: 'Analyse des distributions a posteriori', notes: 'Intervalles de crédibilité' },
-      { id: 'c14', day: 4, start: '18:00', end: '19:00', energy: 'vitality', title: 'Course à pied & Déconnexion', notes: 'Rythme d’endurance fondamental' },
+      { id: 'c12', day: 4, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Projet d’étude — avancer une étape', notes: 'Se concentrer sur un objectif précis' },
+      { id: 'c13', day: 4, start: '14:00', end: '17:00', energy: 'data', title: 'Révision et préparation', notes: 'S’exercer et préparer les prochaines échéances' },
+      { id: 'c14', day: 4, start: '18:00', end: '19:00', energy: 'vitality', title: 'Sport ou activité en plein air', notes: 'Bouger et faire une pause' },
 
-      { id: 'c15', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Rédaction du chapitre d’application', notes: 'Interprétation des résultats belges' },
-      { id: 'c16', day: 5, start: '14:00', end: '16:00', energy: 'reading', title: 'Veille académique & Articles', notes: 'Dernières parutions sur arXiv' },
-      { id: 'c17', day: 5, start: '19:30', end: '22:00', energy: 'social', title: 'Soirée détente & Famille', notes: 'Repos bien mérité' },
+      { id: 'c15', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Terminer un travail prioritaire', notes: 'Relire, compléter et préparer la remise' },
+      { id: 'c16', day: 5, start: '14:00', end: '16:00', energy: 'reading', title: 'Lecture et curiosité', notes: 'Choisir un sujet à découvrir' },
+      { id: 'c17', day: 5, start: '19:30', end: '22:00', energy: 'social', title: 'Soirée libre avec ses proches', notes: 'Prendre du temps hors des études' },
 
-      { id: 'c18', day: 6, start: '08:30', end: '10:00', energy: 'reading', title: 'Lecture littéraire & Découvertes', notes: 'Laurent Gounelle & réflexions' },
-      { id: 'c19', day: 6, start: '10:30', end: '12:30', energy: 'deepwork', title: 'Projet personnel & Code libre', notes: 'Création d’un outil web innovant' },
-      { id: 'c20', day: 6, start: '15:00', end: '18:30', energy: 'social', title: 'Sortie entre amis & Marche', notes: 'Partage et rires' },
+      { id: 'c18', day: 6, start: '08:30', end: '10:00', energy: 'reading', title: 'Lecture personnelle', notes: 'Lire à son rythme et se détendre' },
+      { id: 'c19', day: 6, start: '10:30', end: '12:30', energy: 'deepwork', title: 'Projet personnel ou activité créative', notes: 'Faire quelque chose qui donne envie' },
+      { id: 'c20', day: 6, start: '15:00', end: '18:30', energy: 'social', title: 'Sortie ou moment avec des proches', notes: 'Choisir une activité qui fait du bien' },
 
-      { id: 'c21', day: 0, start: '09:30', end: '12:00', energy: 'faith', title: 'Culte, Louange & Communauté', notes: 'Rassemblement et adoration' },
-      { id: 'c22', day: 0, start: '15:00', end: '17:00', energy: 'reading', title: 'Méditation biblique & Repos', notes: 'Étude d’un épître et journaling' },
-      { id: 'c23', day: 0, start: '18:00', end: '19:00', energy: 'faith', title: 'Alignement & Vision de la semaine', notes: 'Prioriser avec sagesse' }
+      { id: 'c21', day: 0, start: '09:30', end: '12:00', energy: 'social', title: 'Activité personnelle ou sortie', notes: 'Garder du temps pour ce qui compte pour soi' },
+      { id: 'c22', day: 0, start: '15:00', end: '17:00', energy: 'reading', title: 'Lecture et repos', notes: 'Ralentir avant le début de la semaine' },
+      { id: 'c23', day: 0, start: '18:00', end: '19:00', energy: 'faith', title: 'Préparer la semaine à venir', notes: 'Choisir les priorités et prévoir des pauses' }
     ]
   },
 
-  developpeur: {
+  projet: {
     intentions: [
-      "Concevoir et déployer une nouvelle interface web épurée",
-      "Écrire un code sans dépendances inutiles et testé au millimètre",
-      "Faire du sport au moins 4 fois dans la semaine"
+      'Définir une étape importante pour un projet',
+      'Réserver du temps pour créer, vérifier et améliorer',
+      'Préserver des pauses et des activités hors travail'
     ],
     slots: [
-      { id: 'd1', day: 1, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Architecture Frontend & Composants', notes: 'Vanilla CSS pur et responsive tactile' },
-      { id: 'd2', day: 1, start: '14:00', end: '17:00', energy: 'data', title: 'Optimisation de requêtes & Cache', notes: 'Performance et temps de réponse' },
-      { id: 'd3', day: 1, start: '18:00', end: '19:00', energy: 'vitality', title: 'Sport & Cardio', notes: 'Entraînement' },
+      { id: 'd1', day: 1, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Planifier le projet et ses étapes', notes: 'Définir un objectif réaliste pour la semaine' },
+      { id: 'd2', day: 1, start: '14:00', end: '17:00', energy: 'data', title: 'Faire avancer une tâche importante', notes: 'Se concentrer sur un résultat concret' },
+      { id: 'd3', day: 1, start: '18:00', end: '19:00', energy: 'vitality', title: 'Sport ou activité physique', notes: 'Choisir une activité adaptée à son énergie' },
 
-      { id: 'd4', day: 2, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Développement moteur interactif', notes: 'Logique applicative JavaScript' },
-      { id: 'd5', day: 2, start: '14:00', end: '16:30', energy: 'deepwork', title: 'Tests unitaires & Cas limites', notes: 'Gestion des erreurs' },
-      { id: 'd6', day: 2, start: '20:30', end: '21:30', energy: 'reading', title: 'Lecture veille techno & Design', notes: 'Clean Code & UI minimaliste' },
+      { id: 'd4', day: 2, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Créer ou produire une première version', notes: 'Avancer sans chercher à tout finaliser' },
+      { id: 'd5', day: 2, start: '14:00', end: '16:30', energy: 'deepwork', title: 'Vérifier et améliorer le résultat', notes: 'Relire, tester ou corriger ce qui doit l’être' },
+      { id: 'd6', day: 2, start: '20:30', end: '21:30', energy: 'reading', title: 'Lecture ou apprentissage libre', notes: 'Découvrir un sujet lié au projet ou autre' },
 
-      { id: 'd7', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Mise en place de l’export PDF & iCal', notes: 'Formatage vectoriel' },
-      { id: 'd8', day: 3, start: '15:00', end: '17:00', energy: 'social', title: 'Revue de projet avec un ami dev', notes: 'Retours utilisateurs' },
+      { id: 'd7', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Poursuivre la réalisation du projet', notes: 'Protéger une plage de concentration' },
+      { id: 'd8', day: 3, start: '15:00', end: '17:00', energy: 'social', title: 'Partager son travail et demander un avis', notes: 'Recueillir des retours utiles' },
 
-      { id: 'd9', day: 4, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Accessibilité & Mode sombre', notes: 'Vérification des contrastes WCAG' },
-      { id: 'd10', day: 4, start: '14:00', end: '16:30', energy: 'data', title: 'Audit de vitesse & Lighthouse 100%', notes: 'Zéro déchet dans le bundle' },
-      { id: 'd11', day: 4, start: '18:00', end: '19:00', energy: 'vitality', title: 'Natation ou footing', notes: 'Aération' },
+      { id: 'd9', day: 4, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Améliorer les points à revoir', notes: 'Choisir les améliorations les plus utiles' },
+      { id: 'd10', day: 4, start: '14:00', end: '16:30', energy: 'data', title: 'Faire le point sur l’avancement', notes: 'Comparer le résultat à l’objectif prévu' },
+      { id: 'd11', day: 4, start: '18:00', end: '19:00', energy: 'vitality', title: 'Marche, natation ou footing', notes: 'Faire une vraie coupure' },
 
-      { id: 'd12', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Déploiement en production & Docs', notes: 'Mise en ligne sur GitHub & Vercel' },
-      { id: 'd13', day: 5, start: '19:00', end: '22:00', energy: 'social', title: 'Soirée conviviale & Jeux', notes: 'Détente totale' },
+      { id: 'd12', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Terminer une étape et préparer la suite', notes: 'Noter clairement ce qui reste à faire' },
+      { id: 'd13', day: 5, start: '19:00', end: '22:00', energy: 'social', title: 'Soirée libre et conviviale', notes: 'Loisir, sortie ou moment avec des proches' },
 
-      { id: 'd14', day: 6, start: '09:00', end: '11:00', energy: 'vitality', title: 'Grande marche en nature', notes: 'Déconnexion des écrans' },
-      { id: 'd15', day: 6, start: '14:00', end: '16:30', energy: 'reading', title: 'Livre de réflexion & Carnet', notes: 'Pause créative' },
+      { id: 'd14', day: 6, start: '09:00', end: '11:00', energy: 'vitality', title: 'Sortie ou activité en plein air', notes: 'Profiter d’un moment sans écran' },
+      { id: 'd15', day: 6, start: '14:00', end: '16:30', energy: 'reading', title: 'Loisir créatif ou lecture', notes: 'Faire quelque chose pour soi' },
 
-      { id: 'd16', day: 0, start: '09:30', end: '12:00', energy: 'faith', title: 'Culte & Communion', notes: 'Nourriture de l’âme' },
-      { id: 'd17', day: 0, start: '17:00', end: '18:30', energy: 'faith', title: 'Revue de la semaine & Silence', notes: 'Clarté pour lundi' }
+      { id: 'd16', day: 0, start: '09:30', end: '12:00', energy: 'social', title: 'Temps personnel ou activité collective', notes: 'Garder de la place pour ses envies' },
+      { id: 'd17', day: 0, start: '17:00', end: '18:30', energy: 'data', title: 'Bilan et préparation de la semaine', notes: 'Choisir la prochaine étape sans trop charger lundi' }
     ]
   },
 
   equilibre: {
     intentions: [
-      "Sanctuariser la prière et la méditation matinale chaque jour",
-      "Conclure les journées de travail à 18h précises",
-      "Passer des moments de vraie qualité avec mes proches"
+      'Commencer les journées par un moment pour soi',
+      'Avancer sur ses priorités sans remplir chaque journée',
+      'Prévoir du temps pour les proches, les activités et le repos'
     ],
     slots: [
-      { id: 'e1', day: 1, start: '07:00', end: '08:00', energy: 'faith', title: 'Temps avec Dieu & Prière', notes: 'Bible, louange et silence' },
-      { id: 'e2', day: 1, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Focus 1 : Priorité majeure', notes: 'Avancer sur le projet clé' },
-      { id: 'e3', day: 1, start: '14:00', end: '17:00', energy: 'data', title: 'Focus 2 : Étude & Calculs', notes: 'Rigueur et rigueur' },
-      { id: 'e4', day: 1, start: '18:30', end: '20:00', energy: 'social', title: 'Repas partagé en famille', notes: 'Écoute et bienveillance' },
+      { id: 'e1', day: 1, start: '07:00', end: '08:00', energy: 'faith', title: 'Routine du matin et temps calme', notes: 'Lecture, réflexion ou petit-déjeuner tranquille' },
+      { id: 'e2', day: 1, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Priorité principale du jour', notes: 'Avancer sur la tâche la plus importante' },
+      { id: 'e3', day: 1, start: '14:00', end: '17:00', energy: 'data', title: 'Travail, étude ou tâches pratiques', notes: 'Traiter les sujets prévus sans se presser' },
+      { id: 'e4', day: 1, start: '18:30', end: '20:00', energy: 'social', title: 'Repas ou moment partagé', notes: 'Prendre le temps d’échanger avec ses proches' },
 
-      { id: 'e5', day: 2, start: '07:00', end: '08:00', energy: 'faith', title: 'Prière & Méditation biblique', notes: 'Méditation guidée' },
-      { id: 'e6', day: 2, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Deep Work — Conception', notes: 'Focus sans notification' },
-      { id: 'e7', day: 2, start: '14:00', end: '17:00', energy: 'reading', title: 'Lecture attentive & Fiches', notes: 'Idées fortes à retenir' },
-      { id: 'e8', day: 2, start: '17:30', end: '18:30', energy: 'vitality', title: 'Marche active & Respiration', notes: 'Décharge mentale' },
+      { id: 'e5', day: 2, start: '07:00', end: '08:00', energy: 'faith', title: 'Préparer la journée à son rythme', notes: 'Noter les priorités et prendre un temps pour soi' },
+      { id: 'e6', day: 2, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Travail concentré sur un projet', notes: 'Mettre les notifications en pause' },
+      { id: 'e7', day: 2, start: '14:00', end: '17:00', energy: 'reading', title: 'Lecture ou apprentissage', notes: 'Avancer à son rythme et noter les idées utiles' },
+      { id: 'e8', day: 2, start: '17:30', end: '18:30', energy: 'vitality', title: 'Marche et respiration', notes: 'Faire une coupure en fin de journée' },
 
-      { id: 'e9', day: 3, start: '07:00', end: '08:00', energy: 'faith', title: 'Silence, Gratitude & Journaling', notes: 'Écrire ce pour quoi je suis reconnaissant' },
-      { id: 'e10', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Atelier de création & Projets', notes: 'Construire quelque chose d’utile' },
-      { id: 'e11', day: 3, start: '19:30', end: '21:30', energy: 'social', title: 'Groupe de prière & Partage', notes: 'Fraternité et prière commune' },
+      { id: 'e9', day: 3, start: '07:00', end: '08:00', energy: 'faith', title: 'Temps calme et journal personnel', notes: 'Faire le point sur ses envies et ses priorités' },
+      { id: 'e10', day: 3, start: '09:00', end: '12:30', energy: 'deepwork', title: 'Création ou avancée sur un projet', notes: 'Construire quelque chose d’utile ou terminer une étape' },
+      { id: 'e11', day: 3, start: '19:30', end: '21:30', energy: 'social', title: 'Activité de groupe ou moment partagé', notes: 'Rencontre, loisir ou engagement associatif' },
 
-      { id: 'e12', day: 4, start: '07:00', end: '08:00', energy: 'faith', title: 'Méditation des Psaumes', notes: 'Psaume 23 et 121' },
-      { id: 'e13', day: 4, start: '09:00', end: '12:00', energy: 'data', title: 'Modélisation & Analyse de données', notes: 'Avancement serein' },
-      { id: 'e14', day: 4, start: '17:30', end: '18:30', energy: 'vitality', title: 'Sport & Étirements', notes: 'Prendre soin de son corps' },
+      { id: 'e12', day: 4, start: '07:00', end: '08:00', energy: 'faith', title: 'Lecture ou activité personnelle', notes: 'Commencer sans consulter tout de suite les écrans' },
+      { id: 'e13', day: 4, start: '09:00', end: '12:00', energy: 'data', title: 'Étude, organisation ou démarches', notes: 'Garder un rythme régulier' },
+      { id: 'e14', day: 4, start: '17:30', end: '18:30', energy: 'vitality', title: 'Sport et étirements', notes: 'Choisir un effort adapté à son énergie' },
 
-      { id: 'e15', day: 5, start: '07:00', end: '08:00', energy: 'faith', title: 'Temps de dévotion & Prière', notes: 'Déposer la semaine entre ses mains' },
-      { id: 'e16', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Bilan & Clôture des dossiers', notes: 'Finir proprement la semaine' },
-      { id: 'e17', day: 5, start: '19:00', end: '22:00', energy: 'social', title: 'Dîner entre amis', notes: 'Convivialité' },
+      { id: 'e15', day: 5, start: '07:00', end: '08:00', energy: 'faith', title: 'Choisir ses priorités du jour', notes: 'Prendre quelques minutes pour s’organiser' },
+      { id: 'e16', day: 5, start: '09:00', end: '12:00', energy: 'deepwork', title: 'Bilan et clôture des tâches', notes: 'Terminer ce qui est important avant le week-end' },
+      { id: 'e17', day: 5, start: '19:00', end: '22:00', energy: 'social', title: 'Repas ou sortie avec des proches', notes: 'Profiter d’un moment convivial' },
 
-      { id: 'e18', day: 6, start: '09:00', end: '12:00', energy: 'vitality', title: 'Grand bol d’air & Activité', notes: 'Vélo ou randonnée' },
-      { id: 'e19', day: 6, start: '14:30', end: '17:00', energy: 'reading', title: 'Lecture d’un livre de fond', notes: 'Nourrir l’intelligence' },
+      { id: 'e18', day: 6, start: '09:00', end: '12:00', energy: 'vitality', title: 'Activité en plein air', notes: 'Vélo, promenade ou randonnée' },
+      { id: 'e19', day: 6, start: '14:30', end: '17:00', energy: 'reading', title: 'Lecture ou loisir créatif', notes: 'Prendre du temps pour une activité qui fait plaisir' },
 
-      { id: 'e20', day: 0, start: '09:30', end: '12:30', energy: 'faith', title: 'Culte du Dimanche & Louange', notes: 'Le cœur de la semaine' },
-      { id: 'e21', day: 0, start: '15:00', end: '18:00', energy: 'social', title: 'Temps de repos & Famille', notes: 'Sabbat et paix' }
+      { id: 'e20', day: 0, start: '09:30', end: '12:30', energy: 'faith', title: 'Temps personnel et repos', notes: 'Choisir ce qui permet de bien récupérer' },
+      { id: 'e21', day: 0, start: '15:00', end: '18:00', energy: 'social', title: 'Activité libre avec ses proches', notes: 'Garder du temps pour les relations et les loisirs' }
     ]
   },
 
-  minimaliste: {
+  essentiel: {
     intentions: [
       "Une seule tâche majeure par demi-journée",
       "Éliminer tout superflu et distractions numériques",
       "Respirer, lire et vivre le moment présent"
     ],
     slots: [
-      { id: 'm1', day: 1, start: '09:30', end: '12:00', energy: 'deepwork', title: 'L’Unique Focus du matin', notes: 'Ce qui compte le plus' },
-      { id: 'm2', day: 1, start: '14:30', end: '17:00', energy: 'data', title: 'Tâche essentielle de l’après-midi', notes: 'Régularité sans précipitation' },
-      { id: 'm3', day: 2, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Création & Écriture sans bruit', notes: 'Téléphone éteint' },
-      { id: 'm4', day: 2, start: '15:00', end: '17:00', energy: 'reading', title: 'Lecture lente & Réflexion', notes: 'Un livre à la fois' },
-      { id: 'm5', day: 3, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Recherche & Conception', notes: 'Aller au fond d’une idée' },
-      { id: 'm6', day: 3, start: '15:00', end: '16:30', energy: 'vitality', title: 'Marche méditative', notes: 'Observer et marcher' },
-      { id: 'm7', day: 4, start: '09:30', end: '12:00', energy: 'data', title: 'Analyse méthodique', notes: 'Une question à résoudre' },
-      { id: 'm8', day: 4, start: '15:00', end: '17:00', energy: 'social', title: 'Échange avec une personne précieuse', notes: 'Vraie conversation' },
-      { id: 'm9', day: 5, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Finir et ranger les projets', notes: 'Clarté mentale pour le week-end' },
-      { id: 'm10', day: 6, start: '10:00', end: '12:00', energy: 'reading', title: 'Carnet de pensée & Lectures', notes: 'Liberté d’esprit' },
-      { id: 'm11', day: 0, start: '09:30', end: '12:00', energy: 'faith', title: 'Adoration & Silence intérieur', notes: 'Se recentrer sur l’essentiel' }
+      { id: 'm1', day: 1, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Priorité principale du matin', notes: 'Commencer par ce qui compte le plus' },
+      { id: 'm2', day: 1, start: '14:30', end: '17:00', energy: 'data', title: 'Tâche essentielle de l’après-midi', notes: 'Avancer régulièrement, sans se presser' },
+      { id: 'm3', day: 2, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Créer ou écrire au calme', notes: 'Mettre les notifications en pause' },
+      { id: 'm4', day: 2, start: '15:00', end: '17:00', energy: 'reading', title: 'Lecture ou apprentissage', notes: 'Un sujet à la fois' },
+      { id: 'm5', day: 3, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Réfléchir et avancer sur un sujet', notes: 'Prendre le temps d’aller au fond d’une idée' },
+      { id: 'm6', day: 3, start: '15:00', end: '16:30', energy: 'vitality', title: 'Marche ou pause active', notes: 'Prendre l’air et changer de rythme' },
+      { id: 'm7', day: 4, start: '09:30', end: '12:00', energy: 'data', title: 'Tâches pratiques et organisation', notes: 'Traiter un sujet concret à la fois' },
+      { id: 'm8', day: 4, start: '15:00', end: '17:00', energy: 'social', title: 'Échange avec un proche', notes: 'Prendre un vrai temps de conversation' },
+      { id: 'm9', day: 5, start: '09:30', end: '12:00', energy: 'deepwork', title: 'Terminer une tâche et ranger', notes: 'Laisser de l’espace avant le week-end' },
+      { id: 'm10', day: 6, start: '10:00', end: '12:00', energy: 'reading', title: 'Lecture ou activité personnelle', notes: 'Garder le temps libre' },
+      { id: 'm11', day: 0, start: '09:30', end: '12:00', energy: 'faith', title: 'Repos et moment pour soi', notes: 'Temps libre, réflexion ou loisir' }
     ]
   }
 };
@@ -201,8 +208,8 @@ function showToast(message, type = 'success', duration = 3000) {
   if (!container) return;
   const toast = document.createElement('div');
   toast.className = `toast-item toast-${type}`;
-  const iconMap = { success: '✓', warning: '⚠️', info: '✦', error: '✕' };
-  toast.innerHTML = `<span class="toast-icon">${iconMap[type] || '✦'}</span><span>${message}</span>`;
+  const iconMap = { success: '✓', warning: '!', info: 'i', error: '×' };
+  toast.innerHTML = `<span class="toast-icon">${iconMap[type] || 'i'}</span><span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -334,7 +341,7 @@ function saveState() {
   }
 }
 
-function confirmAction({ title = 'Confirmation', question, sub = '', confirmText = 'Confirmer', icon = '💡', isDanger = false }) {
+function confirmAction({ title = 'Confirmation', question, sub = '', confirmText = 'Confirmer', icon = 'i', isDanger = false }) {
   return new Promise((resolve) => {
     const d = document.getElementById('generic-confirm-dialog');
     if (!d || typeof d.showModal !== 'function') {
@@ -384,20 +391,22 @@ function confirmAction({ title = 'Confirmation', question, sub = '', confirmText
 }
 
 async function loadPreset(name, shouldConfirm = true) {
+  const preset = PRESETS[name];
+  if (!preset) return;
+
   if (shouldConfirm && plannerState.slots.length > 0) {
+    const currentCount = plannerState.slots.length;
+    const nextCount = preset.slots.length;
     const ok = await confirmAction({
-      title: 'Changer d’architecture',
-      question: `Appliquer le modèle « ${name} » ?`,
-      sub: 'Les créneaux actuels de cette semaine seront remplacés par l’architecture prédéfinie.',
-      confirmText: 'Appliquer le modèle ↗',
-      icon: '⚡',
+      title: 'Remplacer le planning ?',
+      question: `Veux-tu appliquer « ${PRESET_LABELS[name]} » ?`,
+      sub: `Cette semaine contient ${currentCount} créneau${currentCount > 1 ? 'x' : ''}. Le modèle la remplacera par ${nextCount} créneaux. Tu pourras ensuite modifier le planning.`,
+      confirmText: 'Remplacer cette semaine',
+      icon: 'i',
       isDanger: false
     });
     if (!ok) return;
   }
-
-  const preset = PRESETS[name];
-  if (!preset) return;
 
   plannerState = {
     intentions: [...preset.intentions],
@@ -441,7 +450,7 @@ function renderWeekHeader() {
   const totalHours = (totalMins / 60).toFixed(1);
 
   if (totalHoursBadge) {
-    totalHoursBadge.textContent = `✦ ${minutesToHoursStr(totalMins)} planifiées`;
+    totalHoursBadge.textContent = `${minutesToHoursStr(totalMins)} planifiées`;
     totalHoursBadge.hidden = false;
   }
 }
@@ -586,11 +595,11 @@ function renderGrid() {
 
       const icon = document.createElement('span');
       icon.className = 'day-empty-icon';
-      icon.textContent = colIdx >= 5 ? '🌿' : '☕';
+      icon.setAttribute('aria-hidden', 'true');
 
       const text = document.createElement('p');
       text.className = 'day-empty-text';
-      text.textContent = colIdx >= 5 ? 'Sabbat, repos et contemplation' : 'Espace libre & sérénité';
+      text.textContent = 'Temps libre, activité personnelle ou repos';
 
       const addBtnEmpty = document.createElement('button');
       addBtnEmpty.type = 'button';
@@ -629,7 +638,7 @@ function renderGrid() {
 
         const badge = document.createElement('span');
         badge.className = 'slot-energy-badge';
-        badge.innerHTML = `<span aria-hidden="true">${energyConfig.icon}</span> ${energyConfig.label}`;
+        badge.innerHTML = `<span class="energy-mark" aria-hidden="true"></span> ${energyConfig.label}`;
 
         const timeWrap = document.createElement('div');
         timeWrap.className = 'slot-time-wrap';
@@ -656,7 +665,7 @@ function renderGrid() {
         if (isConflict) {
           const conflictBadge = document.createElement('span');
           conflictBadge.className = 'slot-conflict-badge';
-          conflictBadge.innerHTML = '⚠️ Chevauchement';
+          conflictBadge.textContent = 'Chevauchement';
           card.append(conflictBadge);
         }
 
@@ -676,7 +685,8 @@ function renderGrid() {
         editBtn.type = 'button';
         editBtn.className = 'slot-action-btn';
         editBtn.title = 'Modifier ce créneau';
-        editBtn.innerHTML = '✏️';
+        editBtn.setAttribute('aria-label', 'Modifier ce créneau');
+        editBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5 4 4M4 20l4.5-1 10.8-10.8a2.1 2.1 0 0 0-3-3L5.5 16 4 20Z"></path></svg>';
         editBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           openSlotModal(slot);
@@ -686,7 +696,8 @@ function renderGrid() {
         delBtn.type = 'button';
         delBtn.className = 'slot-action-btn';
         delBtn.title = 'Supprimer ce créneau';
-        delBtn.innerHTML = '🗑️';
+        delBtn.setAttribute('aria-label', 'Supprimer ce créneau');
+        delBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m3 3v7m6-7v7"></path></svg>';
         delBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           deleteSlot(slot.id);
@@ -724,7 +735,7 @@ function renderGrid() {
 }
 
 // ==========================================================================
-// Analyse Actuarielle & Harmonie de Vie
+// Répartition du temps et repères de la semaine
 // ==========================================================================
 function renderAnalytics() {
   const container = document.getElementById('analytics-bars');
@@ -767,7 +778,7 @@ function renderAnalytics() {
     top.className = 'metric-top';
 
     const label = document.createElement('span');
-    label.innerHTML = `${energy.icon} ${energy.label}`;
+    label.innerHTML = `<span class="energy-mark" aria-hidden="true"></span> ${energy.label}`;
     label.style.color = `var(--energy-${key})`;
 
     const val = document.createElement('span');
@@ -1026,10 +1037,10 @@ function exportICS() {
   let ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Benjamin Minko//Rythme Planificateur Hebdomadaire//FR',
+    'PRODID:-//Rythme//Planificateur Hebdomadaire//FR',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
-    'X-WR-CALNAME:Rythme - Mon Planning Hebdomadaire',
+    'X-WR-CALNAME:Rythme - Planning hebdomadaire',
     'X-WR-TIMEZONE:Europe/Paris'
   ];
 
@@ -1107,7 +1118,7 @@ function exportPNG() {
   // En-tête éditorial
   ctx.fillStyle = isDark ? '#e87c64' : '#a7422d';
   ctx.font = 'bold 22px Segoe UI, sans-serif';
-  ctx.fillText('RYTHME · L’ARCHITECTURE DE LA SEMAINE — BENJAMIN MINKO', 80, 75);
+  ctx.fillText('RYTHME · PLANIFICATEUR HEBDOMADAIRE', 80, 75);
 
   ctx.fillStyle = inkColor;
   ctx.font = 'bold 44px Georgia, serif';
@@ -1184,7 +1195,7 @@ function exportPNG() {
       // Badge énergie & Heure
       ctx.fillStyle = isDark ? energy.darkColor : energy.color;
       ctx.font = 'bold 13px Segoe UI, sans-serif';
-      ctx.fillText(`${energy.icon} ${slot.start} - ${slot.end}`, colX + 22, slotY + 24);
+      ctx.fillText(`${energy.label} · ${slot.start} - ${slot.end}`, colX + 22, slotY + 24);
 
       // Titre
       ctx.fillStyle = inkColor;
@@ -1217,20 +1228,6 @@ function exportPNG() {
   }, 'image/png');
 }
 
-// 4. Export JSON
-function exportJSON() {
-  const json = JSON.stringify(plannerState, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `rythme-${getWeekKey(currentWeekOffset)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
 // ==========================================================================
 // Gestion du Thème (Dark / Light)
 // ==========================================================================
@@ -1240,7 +1237,11 @@ function applyTheme(theme) {
 
   const themeIcon = document.getElementById('theme-icon');
   const themeText = document.getElementById('theme-text');
-  if (themeIcon) themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  if (themeIcon) {
+    themeIcon.innerHTML = theme === 'dark'
+      ? '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>'
+      : '<svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 15.4A8.5 8.5 0 0 1 8.6 3.5 8.7 8.7 0 1 0 20.5 15.4Z"></path></svg>';
+  }
   if (themeText) themeText.textContent = theme === 'dark' ? 'Clair' : 'Sombre';
 
   const metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -1343,10 +1344,9 @@ function initEvents() {
     });
   }
 
-  // Dropdown Export & Import
+  // Dropdown Export
   const exportBtn = document.getElementById('export-dropdown-btn');
   const exportMenu = document.getElementById('export-menu');
-  const fileInput = document.getElementById('import-json-input');
 
   if (exportBtn && exportMenu) {
     exportBtn.addEventListener('click', (e) => {
@@ -1356,54 +1356,8 @@ function initEvents() {
     });
 
     document.getElementById('export-pdf')?.addEventListener('click', () => { exportMenu.hidden = true; exportPDF(); });
-    document.getElementById('export-ics')?.addEventListener('click', () => { exportMenu.hidden = true; exportICS(); });
     document.getElementById('export-png')?.addEventListener('click', () => { exportMenu.hidden = true; exportPNG(); });
-    document.getElementById('export-json')?.addEventListener('click', () => { exportMenu.hidden = true; exportJSON(); });
-
-    // Import JSON
-    document.getElementById('import-json')?.addEventListener('click', () => {
-      exportMenu.hidden = true;
-      fileInput?.click();
-    });
-  }
-
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      if (file.size > 2000000) { showToast('Fichier trop volumineux (2 Mo maximum).', 'error'); e.target.value = ''; return; }
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const parsed = JSON.parse(event.target.result);
-          if (parsed && Array.isArray(parsed.slots)) {
-            const imported = validateWeek(parsed);
-            if (plannerState.slots.length || plannerState.intentions.some(Boolean)) {
-              const ok = await confirmAction({
-                title: 'Importer un planning',
-                question: 'Remplacer uniquement la semaine affichée par ce fichier ?',
-                sub: 'Les créneaux de cette semaine seront écrasés par les données importées.',
-                confirmText: 'Importer le fichier ↗',
-                icon: '📥',
-                isDanger: false
-              });
-              if (!ok) return;
-            }
-            plannerState = imported;
-            saveState();
-            renderAll();
-            showToast('Planning importé avec succès !', 'success');
-          } else {
-            showToast('Fichier JSON invalide (format non reconnu).', 'warning');
-          }
-        } catch (err) {
-          showToast('Erreur lors de la lecture du fichier JSON.', 'error');
-        }
-        e.target.value = '';
-      };
-      reader.readAsText(file);
-    });
+    document.getElementById('export-ics')?.addEventListener('click', () => { exportMenu.hidden = true; exportICS(); });
   }
 
   // Modale Raccourcis Clavier
@@ -1492,9 +1446,9 @@ document.getElementById('copy-previous-week')?.addEventListener('click', async (
     const ok = await confirmAction({
       title: 'Dupliquer la semaine',
       question: 'Remplacer cette semaine par une copie de la précédente ?',
-      sub: 'Vos créneaux actuels seront remplacés par l’architecture de la semaine passée.',
-      confirmText: 'Copier la semaine ↗',
-      icon: '📋',
+      sub: 'Les créneaux actuels seront remplacés par une copie de la semaine précédente.',
+      confirmText: 'Copier la semaine',
+      icon: 'i',
       isDanger: false
     });
     if (!ok) return;

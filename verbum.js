@@ -10,6 +10,20 @@
   // ==========================================================================
   // 1. Base de données biblique (Corpus riche de versets fondamentaux)
   // ==========================================================================
+  // Canon protestant francophone : l’index couvre les 66 livres, même si le
+  // corpus de mémorisation n’en propose pas encore pour chacun.
+  const BIBLE_BOOKS = [
+    'Genèse', 'Exode', 'Lévitique', 'Nombres', 'Deutéronome', 'Josué', 'Juges', 'Ruth',
+    '1 Samuel', '2 Samuel', '1 Rois', '2 Rois', '1 Chroniques', '2 Chroniques', 'Esdras',
+    'Néhémie', 'Esther', 'Job', 'Psaumes', 'Proverbes', 'Ecclésiaste', 'Cantique des cantiques',
+    'Ésaïe', 'Jérémie', 'Lamentations', 'Ézéchiel', 'Daniel', 'Osée', 'Joël', 'Amos',
+    'Abdias', 'Jonas', 'Michée', 'Nahum', 'Habacuc', 'Sophonie', 'Aggée', 'Zacharie',
+    'Malachie', 'Matthieu', 'Marc', 'Luc', 'Jean', 'Actes', 'Romains', '1 Corinthiens',
+    '2 Corinthiens', 'Galates', 'Éphésiens', 'Philippiens', 'Colossiens', '1 Thessaloniciens',
+    '2 Thessaloniciens', '1 Timothée', '2 Timothée', 'Tite', 'Philémon', 'Hébreux', 'Jacques',
+    '1 Pierre', '2 Pierre', '1 Jean', '2 Jean', '3 Jean', 'Jude', 'Apocalypse'
+  ];
+
   const BIBLE_VERSES = [
     {
       id: "ps-91-1",
@@ -608,11 +622,23 @@
   // ==========================================================================
   // 2. État Global de l'Application
   // ==========================================================================
+  function readCustomVerses() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('verbum_custom_verses') || '[]');
+      if (!Array.isArray(saved)) return [];
+      return saved.filter(verse => verse && typeof verse.id === 'string' && verse.id.startsWith('custom-') &&
+        typeof verse.ref === 'string' && typeof verse.text_lsg === 'string' && verse.ref && verse.text_lsg);
+    } catch (error) {
+      return [];
+    }
+  }
+
   const state = {
     currentVerse: BIBLE_VERSES[0],
     currentVersion: 'lsg',
     currentAssist: 'open', // 'open' | 'first-letters' | 'cloze' | 'blank'
-    userCustomVerse: null,
+    customVerses: readCustomVerses(),
+    reviewMode: false,
 
     // Detective Mode State
     detectiveVerse: null,
@@ -629,7 +655,8 @@
 
     // Audio & Theme
     theme: localStorage.getItem('vb_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-    audioPlaying: false
+    audioPlaying: false,
+    practiceRecorded: false
   };
 
   // LocalStorage stats
@@ -827,7 +854,7 @@
   // ==========================================================================
   // Modale & Notifications Personnalisées Verbum
   // ==========================================================================
-  function showVerbumAlert(message, title = "Verbum", icon = "📖") {
+  function showVerbumAlert(message, title = "Verbum", icon = "i") {
     const dialog = document.getElementById('vb-custom-dialog');
     if (!dialog || typeof dialog.showModal !== 'function') {
       showVerbumToast(message, 'warning');
@@ -867,7 +894,7 @@
 
     const toast = document.createElement('div');
     toast.className = `vb-toast ${type}`;
-    const icon = type === 'success' ? '✓' : (type === 'warning' ? '⚠️' : '📖');
+    const icon = type === 'success' ? '✓' : (type === 'warning' ? '!' : 'i');
     toast.innerHTML = `<span aria-hidden="true">${icon}</span> <span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
 
@@ -1003,7 +1030,7 @@
     const dropdown = document.getElementById('detective-book-dropdown');
     if (!bookInput || !dropdown) return;
 
-    const books = Array.from(new Set(BIBLE_VERSES.map(v => v.book))).sort();
+    const books = BIBLE_BOOKS;
 
     function renderAutocomplete(query) {
       const q = normalizeWord(query || '');
@@ -1092,7 +1119,13 @@
     const isDark = state.theme === 'dark';
     document.body.classList.toggle('dark', isDark);
     const icon = document.getElementById('theme-icon');
-    if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+    if (icon) {
+      icon.innerHTML = isDark
+        ? '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>'
+        : '<svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 15.4A8.5 8.5 0 0 1 8.6 3.5 8.7 8.7 0 1 0 20.5 15.4Z"></path></svg>';
+    }
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn?.setAttribute('aria-label', isDark ? 'Passer au thème clair' : 'Passer au thème sombre');
   }
 
   function toggleTheme() {
@@ -1109,13 +1142,14 @@
 
     if (!bookSelect || !themeSelect) return;
 
-    // Livres uniques
-    const books = Array.from(new Set(BIBLE_VERSES.map(v => v.book))).sort();
+    // Tous les livres du canon, avec le nombre de passages déjà intégrés.
+    const books = BIBLE_BOOKS;
     bookSelect.innerHTML = '<option value="all">Tous les livres</option>';
     books.forEach(b => {
+      const count = BIBLE_VERSES.filter(v => v.book === b).length;
       const opt = document.createElement('option');
       opt.value = b;
-      opt.textContent = b;
+      opt.textContent = `${b} (${count})`;
       bookSelect.appendChild(opt);
     });
 
@@ -1125,12 +1159,17 @@
           <span>Tous les livres</span>
           <span class="vb-opt-check" aria-hidden="true">✓</span>
         </div>
-      ` + books.map(b => `
+      ` + books.map(b => {
+        const count = BIBLE_VERSES.filter(v => v.book === b).length;
+        const availability = count === 0 ? 'Aucun passage intégré' : `${count} passage${count > 1 ? 's' : ''}`;
+        return `
         <div class="vb-custom-option" role="option" data-value="${escapeHtml(b)}" aria-selected="false" tabindex="0">
           <span>${escapeHtml(b)}</span>
+          <span class="vb-book-availability">${availability}</span>
           <span class="vb-opt-check" aria-hidden="true">✓</span>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     // Thèmes uniques
@@ -1192,11 +1231,11 @@
     const practicedCount = Object.keys(stats.practicedVerses || {}).length;
     const avgAcc = stats.totalAttempts > 0
       ? Math.round(stats.totalAccuracySum / stats.totalAttempts)
-      : 100;
+      : 0;
 
     if (countEl) countEl.textContent = practicedCount;
     if (accEl) accEl.textContent = `${avgAcc}%`;
-    if (streakEl) streakEl.textContent = `🔥 ${stats.streak || 0}`;
+    if (streakEl) streakEl.textContent = `${stats.streak || 0} j`;
 
     // Met à jour aussi les stats de l'onglet Bibliothèque
     const totalP = document.getElementById('stat-total-practiced');
@@ -1206,12 +1245,9 @@
 
     if (totalP) totalP.textContent = practicedCount;
     if (avgA) avgA.textContent = `${avgAcc}%`;
-    if (bStreak) bStreak.textContent = stats.bestStreak || 0;
+    if (bStreak) bStreak.textContent = `${stats.bestStreak || 0} j`;
     if (mLevel) {
-      if (practicedCount >= 30) mLevel.textContent = "Théologien";
-      else if (practicedCount >= 15) mLevel.textContent = "Scribe";
-      else if (practicedCount >= 5) mLevel.textContent = "Disciple";
-      else mLevel.textContent = "Initié";
+      mLevel.textContent = `${stats.quizAttempts || 0}`;
     }
   }
 
@@ -1220,6 +1256,7 @@
   // ==========================================================================
   function loadVerse(verse) {
     state.currentVerse = verse;
+    state.practiceRecorded = false;
 
     // Badges
     const refBadge = document.getElementById('verse-ref');
@@ -1244,7 +1281,7 @@
     if (textarea) {
       textarea.value = "";
       updateCounters();
-      textarea.focus();
+      if (document.activeElement === textarea) textarea.blur();
     }
 
     const analysisCard = document.getElementById('analysis-card');
@@ -1252,9 +1289,6 @@
   }
 
   function getCanonicalText() {
-    if (state.userCustomVerse && state.currentVerse.id === 'custom') {
-      return state.userCustomVerse.text;
-    }
     return state.currentVersion === 'pdv'
       ? state.currentVerse.text_pdv
       : state.currentVerse.text_lsg;
@@ -1273,8 +1307,8 @@
       const tokens = fullText.split(/\s+/);
       const transformed = tokens.map(tok => {
         const firstLetter = tok.replace(/[^a-zA-ZÀ-ÿ0-9]/g, "").charAt(0);
-        if (!firstLetter) return tok;
-        return `<span class="first-letter-hint">${firstLetter}</span><span class="first-letter-dots">...</span>`;
+        if (!firstLetter) return escapeHtml(tok);
+        return `<span class="first-letter-hint">${escapeHtml(firstLetter)}</span><span class="first-letter-dots">...</span>`;
       }).join(' ');
       container.innerHTML = `« ${transformed} »`;
     } else if (state.currentAssist === 'cloze') {
@@ -1284,14 +1318,14 @@
       const transformed = tokens.map(tok => {
         const norm = normalizeWord(tok);
         if (norm.length > 3 && !stopwords.has(norm) && (clozeIndex++ % 2 === 0)) {
-          return `<span class="cloze-hole" title="Mot masqué">${tok}</span>`;
+          return `<span class="cloze-hole" title="Mot masqué">${escapeHtml(tok)}</span>`;
         }
-        return tok;
+        return escapeHtml(tok);
       }).join(' ');
       container.innerHTML = `« ${transformed} »`;
     } else if (state.currentAssist === 'blank') {
       container.classList.add('mode-blank');
-      container.innerHTML = `<em>📜 Verset masqué — Restitution de mémoire intégrale</em>`;
+      container.innerHTML = '<em>Verset masqué — restitution sans aide</em>';
     }
   }
 
@@ -1313,7 +1347,7 @@
     const userText = input.value.trim();
 
     if (!userText) {
-      showVerbumAlert("Veuillez d'abord saisir votre verset de mémoire avant de lancer l'analyse.", "Restitution incomplète", "✍️");
+      showVerbumAlert("Saisis ta restitution avant de lancer l’analyse.", "Restitution incomplète");
       input.focus();
       return;
     }
@@ -1338,20 +1372,20 @@
     if (percentEl) percentEl.textContent = `${result.accuracy}%`;
 
     if (result.accuracy === 100) {
-      verdictEl.textContent = "Parfaitement gravé ! 🏆";
-      summaryEl.textContent = "Exactitude absolue mot pour mot. Votre mémoire a restitué le passage avec une fidélité remarquable.";
+      verdictEl.textContent = "Restitution exacte";
+      summaryEl.textContent = "Chaque mot correspond au texte de référence.";
       if (circleEl) circleEl.style.borderColor = "#3ca330";
     } else if (result.accuracy >= 85) {
-      verdictEl.textContent = "Excellent travail ! 🌟";
-      summaryEl.textContent = "Le verset est très bien maîtrisé. Seules quelques coquilles ou nuances grammaticales subsistent.";
+      verdictEl.textContent = "Très bonne restitution";
+      summaryEl.textContent = "Quelques écarts subsistent. Relis les mots signalés, puis essaie de nouveau.";
       if (circleEl) circleEl.style.borderColor = "#b88d3e";
     } else if (result.accuracy >= 65) {
-      verdictEl.textContent = "Bonne mémorisation globale 👍";
-      summaryEl.textContent = "Le sens général est là, mais plusieurs mots ou expressions clés nécessitent un réajustement.";
+      verdictEl.textContent = "Restitution en cours";
+      summaryEl.textContent = "Le passage est reconnaissable. Reprends les mots signalés et recommence.";
       if (circleEl) circleEl.style.borderColor = "#d4930d";
     } else {
-      verdictEl.textContent = "À retravailler pas à pas ✍️";
-      summaryEl.textContent = "Rapprochez-vous du texte authentique. Utilisez le mode 'Premières lettres' ou 'Texte à trous' pour vous guider.";
+      verdictEl.textContent = "À reprendre par étapes";
+      summaryEl.textContent = "Utilise les premières lettres ou le texte à trous, puis tente une restitution sans aide.";
       if (circleEl) circleEl.style.borderColor = "#a7422d";
     }
 
@@ -1380,7 +1414,10 @@
     }
 
     // Mise à jour des stats globales
-    recordPracticeSession(result.accuracy);
+    if (!state.practiceRecorded) {
+      recordPracticeSession(result.accuracy);
+      state.practiceRecorded = true;
+    }
 
     // Scroll doux vers l'analyse
     analysisCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1402,9 +1439,12 @@
     stats.totalAccuracySum = (stats.totalAccuracySum || 0) + accuracy;
 
     // Calcul de streak quotidien
-    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     if (stats.lastPracticeDate !== today) {
-      stats.streak = (stats.streak || 0) + 1;
+      const previous = stats.lastPracticeDate ? new Date(`${stats.lastPracticeDate}T00:00:00`) : null;
+      const gap = previous ? Math.round((new Date(`${today}T00:00:00`) - previous) / 86400000) : 0;
+      stats.streak = gap === 1 ? (stats.streak || 0) + 1 : 1;
       stats.bestStreak = Math.max(stats.bestStreak || 0, stats.streak);
       stats.lastPracticeDate = today;
     }
@@ -1489,40 +1529,39 @@
 
     let isMatch = false;
 
-    // Vérification de la saisie directe
+    const referencePattern = /^(.+?)\s+(\d+)\s*[:.]\s*(\d+)(?:\s*[-–]\s*(\d+))?$/;
+    const expected = target.ref.match(referencePattern);
+    const aliases = {
+      psaumes: ['psaume', 'ps'], proverbes: ['proverbe', 'pr'], romains: ['rm', 'rom'],
+      matthieu: ['mt', 'mat'], jean: ['jn'], genese: ['gn', 'gen'], exode: ['ex'],
+      ephesians: ['ep', 'eph'], philippiens: ['ph', 'phil'], galates: ['ga', 'gal'],
+      hebreux: ['he', 'heb'], jacques: ['jc'], apocalypse: ['ap', 'apo'],
+      jeremie: ['jr', 'jer'], esaie: ['es', 'esa'], marc: ['mc'], luc: ['lc'], actes: ['ac']
+    };
+    const matchesBook = value => {
+      const entered = normalizeWord(value);
+      const book = normalizeWord(target.book);
+      return entered === book || (aliases[book] || []).includes(entered);
+    };
+    const matchesReference = value => {
+      const found = value.match(referencePattern);
+      return Boolean(found && expected && matchesBook(found[1]) &&
+        Number(found[2]) === Number(expected[2]) &&
+        Number(found[3]) === Number(expected[3]) &&
+        Number(found[4] || found[3]) === Number(expected[4] || expected[3]));
+    };
+
+    // Vérification de la référence complète
     if (directVal) {
-      const normDirect = normalizeWord(directVal);
-      const targetNorm = normalizeWord(`${target.book}${target.chapter}${target.verse}`);
-      // Vérifie aussi abbréviations courantes (ex: Ps, Rom, Mt, Jn, Pr...)
-      const normBook = normalizeWord(target.book);
-      const isBookMatch = normDirect.includes(normBook) ||
-        (normBook === 'psaumes' && normDirect.includes('ps')) ||
-        (normBook === 'matthieu' && normDirect.includes('mt')) ||
-        (normBook === 'romains' && normDirect.includes('rm')) ||
-        (normBook === 'proverbes' && normDirect.includes('pr')) ||
-        (normBook === 'jean' && normDirect.includes('jn'));
-
-      const hasChap = normDirect.includes(target.chapter.toString());
-      if (isBookMatch && hasChap) {
-        isMatch = true;
-      }
+      const normalized = directVal.replace(/\s+/g, ' ').replace(/\s*[-–]\s*/g, '-').replace(/\s*([:.])\s*/g, '$1');
+      isMatch = matchesReference(normalized);
     } else {
-      // Vérification des champs distincts
-      const normInputBook = normalizeWord(bookVal);
-      const normTargetBook = normalizeWord(target.book);
-      const bookOk = normInputBook === normTargetBook ||
-        (normTargetBook === 'psaumes' && (normInputBook === 'ps' || normInputBook === 'psaume')) ||
-        (normTargetBook === 'matthieu' && normInputBook === 'mt') ||
-        (normTargetBook === 'romains' && normInputBook === 'rm') ||
-        (normTargetBook === 'jean' && normInputBook === 'jn') ||
-        (normTargetBook === 'proverbes' && (normInputBook === 'pr' || normInputBook === 'proverbe'));
-
       const chapOk = chapVal === target.chapter;
-      const versOk = isNaN(versVal) || versVal === target.verse; // verset facultatif pour être indulgent
-
-      if (bookOk && chapOk) {
-        isMatch = true;
-      }
+      const range = versVal.match(/^(\d+)(?:-(\d+))?$/);
+      const expectedStart = expected ? Number(expected[3]) : NaN;
+      const expectedEnd = expected ? Number(expected[4] || expected[3]) : NaN;
+      const verseOk = Boolean(range && Number(range[1]) === expectedStart && Number(range[2] || range[1]) === expectedEnd);
+      isMatch = matchesBook(bookVal) && chapOk && verseOk;
     }
 
     const feedback = document.getElementById('detective-feedback');
@@ -1532,20 +1571,18 @@
 
     if (isMatch) {
       state.detectiveSolved = true;
-      const earned = Math.max(40, 100 - state.detectiveCluesUnlocked * 20);
       feedback.className = 'vb-feedback-banner success';
       feedback.innerHTML = `
-        <h4 style="margin:0 0 0.4rem; font-family:var(--vb-serif); font-size:1.25rem;">🎉 Bravo ! Excellente déduction biblique !</h4>
-        <p style="margin:0 0 0.6rem;">Il s'agissait bien de <strong>${target.ref}</strong> (+${earned} points).</p>
+        <h4 style="margin:0 0 0.4rem; font-family:var(--vb-serif); font-size:1.25rem;">Bonne réponse</h4>
+        <p style="margin:0 0 0.6rem;">Il s'agissait bien de <strong>${target.ref}</strong>.</p>
         <p style="margin:0; font-size:0.9rem; font-style:italic;">${target.context}</p>
       `;
       if (nextBtn) nextBtn.hidden = false;
-      recordPracticeSession(100);
     } else {
       feedback.className = 'vb-feedback-banner failure';
       feedback.innerHTML = `
         <h4 style="margin:0 0 0.4rem; font-family:var(--vb-serif); font-size:1.25rem;">Pas tout à fait...</h4>
-        <p style="margin:0;">Vérifiez le livre ou le numéro de chapitre. Utilisez un indice si vous hésitez !</p>
+        <p style="margin:0;">Vérifiez le livre, le chapitre et le verset, puis réessayez.</p>
       `;
     }
   }
@@ -1610,7 +1647,7 @@
 
     if (currentQEl) currentQEl.textContent = state.quizIndex + 1;
     if (currentScoreEl) currentScoreEl.textContent = state.quizScore;
-    if (streakEl) streakEl.textContent = `🔥 ${state.quizStreak}`;
+    if (streakEl) streakEl.textContent = String(state.quizStreak);
     if (progressFill) progressFill.style.width = `${((state.quizIndex + 1) / state.quizTotalQuestions) * 100}%`;
     if (targetRefEl) targetRefEl.textContent = target.ref;
     if (themeHintEl) themeHintEl.textContent = `Thématique : ${target.theme}`;
@@ -1698,20 +1735,24 @@
     if (finalScoreEl) finalScoreEl.textContent = `Score final : ${correctCount} / 10 (${totalPts} pts)`;
 
     if (correctCount === 10) {
-      if (trophyEl) trophyEl.textContent = '🏆';
+      if (trophyEl) trophyEl.textContent = '100 %';
       if (finalMsgEl) finalMsgEl.textContent = "Score parfait ! Votre familiarité avec les Écritures est exemplaire.";
     } else if (correctCount >= 8) {
-      if (trophyEl) trophyEl.textContent = '⭐';
+      if (trophyEl) trophyEl.textContent = `${correctCount}/10`;
       if (finalMsgEl) finalMsgEl.textContent = "Remarquable score ! Vous possédez une assise biblique très solide.";
     } else if (correctCount >= 5) {
-      if (trophyEl) trophyEl.textContent = '📖';
+      if (trophyEl) trophyEl.textContent = `${correctCount}/10`;
       if (finalMsgEl) finalMsgEl.textContent = "Bon niveau ! Continuez à graver ces passages régulièrement pour affiner vos réflexes.";
     } else {
-      if (trophyEl) trophyEl.textContent = '🌱';
+      if (trophyEl) trophyEl.textContent = `${correctCount}/10`;
       if (finalMsgEl) finalMsgEl.textContent = "Chaque graine semée porte son fruit. N'hésitez pas à relire les textes dans la bibliothèque !";
     }
 
-    recordPracticeSession(correctCount * 10);
+    const stats = getStats();
+    stats.quizAttempts = (stats.quizAttempts || 0) + 1;
+    stats.quizBestScore = Math.max(stats.quizBestScore || 0, correctCount);
+    try { localStorage.setItem('verbum_stats', JSON.stringify(stats)); } catch (e) { console.warn('Impossible de sauvegarder le résultat du quiz', e); }
+    renderStatsRibbon();
   }
 
   // Petit carillon sonore synthétisé avec l'API Web Audio (aucun fichier externe requis)
@@ -1751,7 +1792,7 @@
   // ==========================================================================
   function speakCurrentVerse() {
     if (!('speechSynthesis' in window)) {
-      showVerbumAlert("La synthèse vocale n'est pas supportée par votre navigateur actuel.", "Audio non disponible", "🔊");
+      showVerbumAlert("La synthèse vocale n'est pas disponible dans ce navigateur.", "Audio non disponible");
       return;
     }
 
@@ -1783,7 +1824,9 @@
     if (!listEl) return;
 
     const term = normalizeWord(filterText);
-    const filtered = BIBLE_VERSES.filter(v => {
+    const stats = getStats();
+    const practiced = stats.practicedVerses || {};
+    let filtered = [...BIBLE_VERSES, ...state.customVerses].filter(v => {
       if (!term) return true;
       return normalizeWord(v.ref).includes(term) ||
              normalizeWord(v.theme).includes(term) ||
@@ -1791,9 +1834,26 @@
              normalizeWord(v.book).includes(term);
     });
 
+    if (state.reviewMode) {
+      filtered = filtered.filter(verse => practiced[verse.id]?.count > 0);
+      filtered.sort((a, b) => (practiced[a.id]?.bestAccuracy ?? 0) - (practiced[b.id]?.bestAccuracy ?? 0));
+    }
+
+    const reviewBtn = document.getElementById('biblio-review-toggle');
+    if (reviewBtn) {
+      reviewBtn.setAttribute('aria-pressed', String(state.reviewMode));
+      reviewBtn.textContent = state.reviewMode ? 'Tout le corpus' : 'Réviser mes passages';
+    }
+    const resultCount = document.getElementById('biblio-result-count');
+    if (resultCount) {
+      resultCount.textContent = state.reviewMode
+        ? `${filtered.length} passage${filtered.length > 1 ? 's' : ''} à revoir, classé${filtered.length > 1 ? 's' : ''} par précision.`
+        : `${filtered.length} passage${filtered.length > 1 ? 's' : ''} disponible${filtered.length > 1 ? 's' : ''}${state.customVerses.length ? ` · ${state.customVerses.length} personnel${state.customVerses.length > 1 ? 's' : ''}` : ''}.`;
+    }
+
     listEl.innerHTML = '';
     if (filtered.length === 0) {
-      listEl.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--vb-muted); padding: 2rem;">Aucun verset ne correspond à votre recherche.</p>`;
+      listEl.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--vb-muted); padding: 2rem;">${state.reviewMode && !term ? 'Tu n’as pas encore de passage à réviser. Entraîne-toi sur un verset pour le retrouver ici.' : 'Aucun verset ne correspond à votre recherche.'}</p>`;
       return;
     }
 
@@ -1803,14 +1863,15 @@
       card.innerHTML = `
         <div>
           <div class="vb-biblio-item-top">
-            <span class="vb-biblio-ref">${verse.ref}</span>
-            <span class="vb-badge vb-badge-soft">${verse.theme}</span>
+            <span class="vb-biblio-ref">${escapeHtml(verse.ref)}</span>
+            <span class="vb-badge vb-badge-soft">${escapeHtml(verse.theme)}</span>
           </div>
-          <p class="vb-biblio-quote">« ${verse.text_lsg} »</p>
+          <p class="vb-biblio-quote">« ${escapeHtml(verse.text_lsg)} »</p>
         </div>
+        <p class="vb-biblio-progress">${practiced[verse.id]?.count ? `${practiced[verse.id].count} entraînement${practiced[verse.id].count > 1 ? 's' : ''} · meilleure précision ${practiced[verse.id].bestAccuracy}%` : 'Pas encore travaillé'}</p>
         <div class="vb-biblio-actions">
           <button type="button" class="vb-btn vb-btn-primary vb-btn-sm btn-practice-verse">
-            Graver ce verset ✍️
+            Mémoriser ce verset
           </button>
         </div>
       `;
@@ -1877,12 +1938,10 @@
       if (available.length > 0) {
         loadVerse(available[0]);
       } else {
-        showVerbumToast("Aucun verset pour cette combinaison. Filtres réinitialisés.", "warning");
-        bookSel.value = 'all';
-        themeSel.value = 'all';
-        setCustomSelectValue('custom-book-select', 'all');
-        setCustomSelectValue('custom-theme-select', 'all');
-        loadVerse(BIBLE_VERSES[0]);
+        const message = bVal !== 'all'
+          ? `Aucun passage intégré pour ${bVal} avec cette thématique. Tu peux ajouter ton propre texte avec « Mon verset ».`
+          : 'Aucun passage ne correspond à cette thématique. Choisis une autre thématique ou ajoute ton propre texte.';
+        showVerbumToast(message, 'warning');
       }
     }
 
@@ -1904,8 +1963,14 @@
           const tOk = tVal === 'all' || v.theme === tVal;
           return bOk && tOk;
         });
-        const pool = available.length > 0 ? available : BIBLE_VERSES;
-        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        if (available.length === 0) {
+          const message = bVal !== 'all'
+            ? `Aucun passage intégré pour ${bVal} avec cette thématique.`
+            : 'Aucun passage ne correspond à cette thématique.';
+          showVerbumToast(message, 'warning');
+          return;
+        }
+        const chosen = available[Math.floor(Math.random() * available.length)];
         loadVerse(chosen);
       });
     }
@@ -1914,8 +1979,9 @@
     const pills = document.querySelectorAll('.vb-pill');
     pills.forEach(pill => {
       pill.addEventListener('click', () => {
-        pills.forEach(p => p.classList.remove('active'));
+        pills.forEach(p => { p.classList.remove('active'); p.setAttribute('aria-pressed', 'false'); });
         pill.classList.add('active');
+        pill.setAttribute('aria-pressed', 'true');
         state.currentAssist = pill.dataset.assist;
         updatePromptDisplay();
       });
@@ -1924,7 +1990,7 @@
     // Zone de saisie
     const textarea = document.getElementById('practice-input');
     if (textarea) {
-      textarea.addEventListener('input', updateCounters);
+      textarea.addEventListener('input', () => { state.practiceRecorded = false; updateCounters(); });
       // Raccourci Ctrl+Enter pour analyser rapidement
       textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
@@ -2013,20 +2079,32 @@
         const refVal = document.getElementById('custom-ref-input')?.value.trim();
         const textVal = document.getElementById('custom-text-input')?.value.trim();
         if (!refVal || !textVal) {
-          showVerbumAlert("Veuillez renseigner à la fois la référence et le texte complet du verset.", "Champs obligatoires", "✏️");
+          showVerbumAlert("Renseigne la référence et le texte à mémoriser.", "Champs obligatoires");
           return;
         }
-        state.userCustomVerse = {
-          id: 'custom',
+        if (refVal.length > 120 || textVal.length > 3000) {
+          showVerbumAlert("La référence est limitée à 120 caractères et le texte à 3 000 caractères.", "Texte trop long");
+          return;
+        }
+        const customVerse = {
+          id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
           ref: refVal,
-          book: refVal.split(' ')[0] || 'Personnalisé',
+          book: refVal.split(/\s+\d/)[0] || 'Personnalisé',
           theme: 'Personnalisé',
-          text: textVal,
           text_lsg: textVal,
           text_pdv: textVal,
           context: 'Verset personnalisé ajouté manuellement.'
         };
-        loadVerse(state.userCustomVerse);
+        const updatedCustomVerses = [...state.customVerses, customVerse];
+        try {
+          localStorage.setItem('verbum_custom_verses', JSON.stringify(updatedCustomVerses));
+        } catch (error) {
+          showVerbumAlert("Le navigateur ne peut pas enregistrer ce passage. Libère un peu d’espace de stockage, puis réessaie.", "Enregistrement impossible");
+          return;
+        }
+        state.customVerses = updatedCustomVerses;
+        loadVerse(customVerse);
+        renderBiblioDirectory(document.getElementById('biblio-search')?.value || '');
         customBox.hidden = true;
       });
     }
@@ -2072,6 +2150,13 @@
     if (biblioSearch) {
       biblioSearch.addEventListener('input', (e) => {
         renderBiblioDirectory(e.target.value);
+      });
+    }
+    const reviewToggle = document.getElementById('biblio-review-toggle');
+    if (reviewToggle) {
+      reviewToggle.addEventListener('click', () => {
+        state.reviewMode = !state.reviewMode;
+        renderBiblioDirectory(biblioSearch?.value || '');
       });
     }
 

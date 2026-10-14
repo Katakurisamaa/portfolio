@@ -8,7 +8,7 @@
   <title>L'Atelier — Gestion des publications — Benjamin Minko</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261013">
-  <link rel="stylesheet" href="admin.css?v=20261013">
+  <link rel="stylesheet" href="admin.css?v=20261014d">
   <script>
     (function() {
       try {
@@ -19,7 +19,7 @@
       } catch (e) {}
     })();
   </script>
-  <script src="admin.js?v=20261013" defer></script>
+  <script src="admin.js?v=20261014d" defer></script>
 </head>
 <body class="mobile-mode-list">
 
@@ -37,7 +37,7 @@
         <label for="login-password">Mot de passe administrateur</label>
         <div class="password-wrapper">
           <input type="password" id="login-password" required autocomplete="current-password" placeholder="Entre ton mot de passe...">
-          <button type="button" id="toggle-password" class="toggle-pw" aria-label="Afficher ou masquer le mot de passe">👁</button>
+          <button type="button" id="toggle-password" class="toggle-pw" aria-label="Afficher le mot de passe">Afficher</button>
         </div>
         <p id="login-error" class="login-error" hidden></p>
         <div class="dialog-actions" style="margin-top:20px; padding-top:0; border-top:none;">
@@ -59,28 +59,28 @@
       <div class="admin-top-links desktop-only">
         <a class="top-pill-link" href="/" target="_blank" rel="noopener"><span>↗</span> Voir mon site</a>
         <button type="button" id="theme-toggle" class="top-pill-link" aria-label="Passer au mode sombre" title="Passer au mode sombre">
-          <span id="theme-toggle-icon">🌙</span> <span id="theme-toggle-text">Sombre</span>
+          <span id="theme-toggle-icon" class="admin-icon-slot" aria-hidden="true"></span> <span id="theme-toggle-text">Sombre</span>
         </button>
-        <button type="button" id="open-sync-dialog" class="top-pill-link"><span>⚡</span> Supabase</button>
-        <button type="button" id="open-change-pw" class="top-pill-link"><span>🔑</span> Mot de passe</button>
-        <button type="button" id="logout-btn" class="top-pill-link danger-link"><span>✕</span> Déconnexion</button>
+        <button type="button" id="open-sync-dialog" class="top-pill-link"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16M6 4h12v16H6zM9 11h6m-6 4h6"></path></svg> Supabase</button>
+        <button type="button" id="open-change-pw" class="top-pill-link"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"></path></svg> Mot de passe</button>
+        <button type="button" id="logout-btn" class="top-pill-link danger-link"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg> Déconnexion</button>
       </div>
 
       <!-- Bouton Menu Mobile -->
       <div class="mobile-only mobile-header-actions">
-        <a class="top-pill-link-mobile" href="/" target="_blank" rel="noopener" title="Voir le site">↗</a>
-        <button type="button" id="theme-toggle-mobile" class="top-pill-link-mobile" aria-label="Changer de thème" title="Changer de thème">🌙</button>
-        <button type="button" id="mobile-menu-toggle" class="top-pill-link-mobile" aria-label="Menu des options">⚙️</button>
+        <a class="top-pill-link-mobile" href="/" target="_blank" rel="noopener" title="Voir le site" aria-label="Voir le site"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6m0-6-9 9"></path><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"></path></svg></a>
+        <button type="button" id="theme-toggle-mobile" class="top-pill-link-mobile admin-icon-slot" aria-label="Changer de thème" title="Changer de thème"></button>
+        <button type="button" id="mobile-menu-toggle" class="top-pill-link-mobile" aria-label="Menu des options" aria-expanded="false"><span class="admin-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
       </div>
     </nav>
 
     <!-- Menu déroulant options mobile -->
     <div id="mobile-dropdown-menu" class="mobile-dropdown" hidden>
       <div class="mobile-dropdown-inner wrap">
-        <button type="button" id="mobile-theme-toggle" class="mobile-menu-item"><span id="mobile-dropdown-theme-icon">🌙</span> <span id="mobile-dropdown-theme-text">Passer au mode sombre</span></button>
-        <button type="button" id="mobile-open-sync" class="mobile-menu-item"><span>⚡</span> État synchronisation Supabase</button>
-        <button type="button" id="mobile-open-pw" class="mobile-menu-item"><span>🔑</span> Modifier le mot de passe</button>
-        <button type="button" id="mobile-logout" class="mobile-menu-item danger"><span>✕</span> Déconnexion</button>
+        <button type="button" id="mobile-theme-toggle" class="mobile-menu-item"><span id="mobile-dropdown-theme-icon" class="admin-icon-slot" aria-hidden="true"></span> <span id="mobile-dropdown-theme-text">Passer au mode sombre</span></button>
+        <button type="button" id="mobile-open-sync" class="mobile-menu-item"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16M6 4h12v16H6zM9 11h6m-6 4h6"></path></svg> État synchronisation Supabase</button>
+        <button type="button" id="mobile-open-pw" class="mobile-menu-item"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"></path></svg> Modifier le mot de passe</button>
+        <button type="button" id="mobile-logout" class="mobile-menu-item danger"><svg class="admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg> Déconnexion</button>
       </div>
     </div>
   </header>
@@ -103,7 +103,7 @@
     <div class="utility-bar">
       <button id="reload" class="quiet">Actualiser</button>
       <button id="undo" class="quiet" hidden>Annuler suppression</button>
-      <span class="mobile-ip-badge" id="mobile-ip-info">📱 Synchronisé Supabase</span>
+      <span class="mobile-ip-badge" id="mobile-ip-info">Synchronisé avec Supabase</span>
     </div>
 
     <!-- Onglets de rubriques avec défilement horizontal -->
@@ -122,10 +122,10 @@
     <!-- Sélecteur d'affichage Mobile (Publications vs Écrire) -->
     <div class="mobile-view-tabs mobile-only" role="tablist" aria-label="Affichage mobile">
       <button type="button" class="mobile-view-tab active" id="tab-btn-list" role="tab" aria-selected="true">
-        📚 Publications <span class="tab-count-badge" id="mobile-list-count">0</span>
+        Publications <span class="tab-count-badge" id="mobile-list-count">0</span>
       </button>
       <button type="button" class="mobile-view-tab" id="tab-btn-editor" role="tab" aria-selected="false">
-        ✍️ Rédiger
+        Rédiger
       </button>
     </div>
 
@@ -137,7 +137,7 @@
           <h2>Dans cette vue <span id="count">0</span></h2>
         </div>
         <div class="list-search-box">
-          <span class="list-search-icon" aria-hidden="true">🔍</span>
+          <svg class="list-search-icon admin-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 4.1 4.1"></path></svg>
           <input type="search" id="project-search" class="list-search-input" aria-label="Filtrer les publications" placeholder="Filtrer une publication..." autocomplete="off">
         </div>
         <div id="project-list" class="project-list"></div>
@@ -160,10 +160,10 @@
               <div class="type-selector-block">
                 <label>Format de publication</label>
                 <div class="type-pills" role="radiogroup" aria-label="Type de publication">
-                  <button type="button" class="type-pill active" data-type="projet">💻 Projet</button>
-                  <button type="button" class="type-pill" data-type="lecture">📖 Lecture</button>
-                  <button type="button" class="type-pill" data-type="foi">✝ Foi</button>
-                  <button type="button" class="type-pill" data-type="article">✍ Article</button>
+                  <button type="button" class="type-pill active" data-type="projet"><span class="type-pill-index">01</span> Projet</button>
+                  <button type="button" class="type-pill" data-type="lecture"><span class="type-pill-index">02</span> Lecture</button>
+                  <button type="button" class="type-pill" data-type="foi"><span class="type-pill-index">03</span> Foi</button>
+                  <button type="button" class="type-pill" data-type="article"><span class="type-pill-index">04</span> Article</button>
                 </div>
                 <input type="hidden" id="type" name="type" value="projet">
               </div>
@@ -212,7 +212,7 @@
                     <div class="doc-input-grid">
                       <div class="doc-file-btn-wrap">
                         <label for="document-file" class="doc-upload-trigger">
-                          <span class="doc-icon" aria-hidden="true">📄</span>
+                          <svg class="doc-icon admin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h5M9 13h6m-6 4h6"></path></svg>
                           <span id="doc-upload-text">Téléverser PDF</span>
                         </label>
                         <input type="file" id="document-file" accept="application/pdf" class="sr-only">
@@ -253,7 +253,7 @@
                   <!-- Assistant Biblique Intégré (LSG & Parole de Vie 2017) -->
                   <div class="bible-assistant-box">
                     <div class="bible-box-top">
-                      <span class="bible-box-badge">📖 ASSISTANT BIBLIQUE INTÉGRÉ</span>
+                      <span class="bible-box-badge">ASSISTANT BIBLIQUE INTÉGRÉ</span>
                       <div class="bible-version-pills" role="radiogroup" aria-label="Version de la Bible">
                         <button type="button" class="bible-ver-pill active" data-ver="FRLSG" aria-pressed="true">Segond 1910 (LSG)</button>
                         <button type="button" class="bible-ver-pill" data-ver="FRPDV17" aria-pressed="false">Parole de Vie 2017 (PDV)</button>
@@ -267,10 +267,10 @@
                       </div>
                       <div class="bible-btn-wrap">
                         <button type="button" id="bible-fetch-btn" class="bible-action-btn primary" title="Récupérer le texte du verset dans la version sélectionnée">
-                          ✨ Insérer verset
+                          Insérer le verset
                         </button>
                         <button type="button" id="bible-compare-btn" class="bible-action-btn secondary" title="Comparer Segond 1910 et Parole de Vie 2017">
-                          ⚖ Comparer LSG & PDV
+                          Comparer LSG &amp; PDV
                         </button>
                       </div>
                     </div>
@@ -281,7 +281,7 @@
                     <div id="bible-compare-drawer" class="bible-compare-drawer" hidden>
                       <div class="compare-header">
                         <span>Comparaison des versions pour ta méditation :</span>
-                        <button type="button" id="close-compare-drawer" class="close-compare-btn">✕ Fermer</button>
+                        <button type="button" id="close-compare-drawer" class="close-compare-btn">Fermer</button>
                       </div>
                       <div class="compare-grid">
                         <div class="compare-card">
@@ -320,14 +320,14 @@
                 <p class="field-help">Facultatif : illustration automatique si tu n'ajoutes pas d'image.</p>
                 
                 <div class="upload-dropzone" id="dropzone">
-                  <span class="upload-icon" aria-hidden="true">🖼️</span>
+                  <svg class="upload-icon admin-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m21 15-5-5L5 20"></path></svg>
                   <label for="image-file" class="upload-label">
                     <span class="upload-cta">Choisir une photo</span> ou glisser ici
                   </label>
                   <p class="upload-hint">PNG, JPEG ou WebP jusqu'à 5 Mo</p>
                   <input id="image-file" type="file" accept="image/png,image/jpeg,image/webp" style="display:none;">
                   <div class="upload-actions">
-                    <button class="btn-card-action delete" id="remove-image" type="button" hidden>✕ Retirer l'image</button>
+                    <button class="btn-card-action delete" id="remove-image" type="button" hidden>Retirer l’image</button>
                   </div>
                 </div>
 
@@ -402,17 +402,17 @@
 
   <!-- Boîte de dialogue : Synchronisation Supabase -->
   <dialog id="sync-dialog" aria-labelledby="sync-title">
-    <h2 id="sync-title">⚡ Connecté à Supabase</h2>
+    <h2 id="sync-title">Connecté à Supabase</h2>
     <p>Ton Atelier de gestion est directement branché sur ta base PostgreSQL <strong>Supabase</strong> :</p>
     <div class="sync-options-guide">
       <div class="sync-option-box">
-        <strong>⚡ Synchronisation en direct</strong>
+        <strong>Synchronisation en direct</strong>
         <p style="margin:6px 0;">Projet Supabase : <code>yvrtpioalszmefypdfsy</code></p>
         <p>Chaque ajout ou modification depuis ton smartphone est sauvegardé instantanément.</p>
-        <p style="margin-top:6px;"><small style="color:var(--admin-green); font-weight:600;">✓ Table <code>projects</code> active &nbsp;·&nbsp; ✓ Stockage <code>portfolio-media</code> actif</small></p>
+        <p style="margin-top:6px;"><small style="color:var(--admin-green); font-weight:600;">Table <code>projects</code> active · Stockage <code>portfolio-media</code> actif</small></p>
       </div>
       <div class="sync-option-box">
-        <strong>📱 Accès nomade depuis ton smartphone</strong>
+        <strong>Accès depuis ton téléphone</strong>
         <p>Tu peux publier et administrer ton contenu partout, à tout moment.</p>
         <p>Les visiteurs voient tes nouveautés en temps réel dès leur enregistrement.</p>
       </div>

@@ -1502,3 +1502,117 @@ body.image-viewer-open{overflow:hidden}
 }
 
 
+/* Navigation controls: quiet, consistent line icons instead of emoji glyphs. */
+.nav-icon,
+.theme-icon,
+.theme-icon svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.nav-icon,
+.theme-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .2s ease;
+}
+
+.nav-tool-btn:hover .nav-icon { transform: scale(1.06); }
+.theme-toggle { justify-content: center; width: 38px; height: 34px; padding: 7px; }
+.theme-toggle:hover .theme-icon svg { transform: rotate(-12deg); }
+
+.menu-toggle-icon {
+  display: grid;
+  width: 18px;
+  height: 14px;
+  align-content: space-between;
+}
+
+.menu-toggle-icon i {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: transform .2s ease, opacity .15s ease;
+}
+
+.menu-toggle[aria-expanded="true"] .menu-toggle-icon i:first-child { transform: translateY(6.5px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-toggle-icon i:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] .menu-toggle-icon i:last-child { transform: translateY(-6.5px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .menu-toggle:not([hidden]) { gap: 10px; }
+  .menu-toggle .menu-toggle-icon { width: 18px; height: 14px; }
+}
+
+/* Portrait mis en scène comme un tirage éditorial dans la section À propos. */
+.about-portrait-card {
+  position: relative;
+  z-index: 0;
+  width: min(100%, 400px);
+  max-width: 400px;
+  margin-top: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  isolation: isolate;
+}
+
+.about-portrait-card::before {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  inset: 16px -14px 46px 14px;
+  background: var(--accent);
+  opacity: .82;
+  transition: transform .28s ease, opacity .28s ease;
+}
+
+.about-portrait-card:hover {
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+.about-portrait-card:hover::before { transform: translate(3px, 3px); opacity: 1; }
+
+.about-portrait-frame {
+  aspect-ratio: 4 / 5;
+  border: 8px solid var(--surface-about);
+  border-radius: 2px;
+  background: var(--surface-soft);
+  box-shadow: 0 18px 44px rgba(12, 17, 13, .2);
+}
+
+.about-portrait-img {
+  object-position: center 18%;
+}
+
+.about-portrait-footer {
+  padding: 12px 2px 0;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+
+.about-portrait-name { gap: 8px; color: var(--copy); }
+.about-portrait-name .small-dot { flex: 0 0 7px; }
+.about-portrait-name strong { font-size: 17px; }
+.about-portrait-caption { letter-spacing: 1px; color: var(--copy); }
+
+@media (max-width: 760px) {
+  .about-portrait-card {
+    width: min(100%, 360px);
+    max-width: 360px;
+    margin: 30px auto 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-portrait-card, .about-portrait-card::before { transition: none; }
+}

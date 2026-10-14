@@ -103,20 +103,9 @@ body.dark .lec-header {
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
 }
 .lec-brand b { color: var(--lec-accent); }
-.lec-brand-icon {
-  color: var(--lec-accent);
-  font-size: 14px;
-  animation: lecPulse 2s ease-in-out infinite;
-}
-
-@keyframes lecPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
 .lec-tagline {
   font-size: 11px;
   letter-spacing: 1.5px;
@@ -141,6 +130,28 @@ body.dark .lec-header {
   transition: background 0.2s;
 }
 .lec-icon-btn:hover { background: var(--lec-hover-bg); }
+
+.lec-theme-icon, .lec-theme-icon svg {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.lec-theme-icon svg, .lec-control-icon, .lec-copy-section svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lec-control-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
 
 .lec-back-link {
   font-size: 12px;
@@ -174,7 +185,7 @@ body.dark .lec-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0;
 }
 
 .lec-dot {
@@ -404,12 +415,6 @@ body.dark .lec-header {
   box-shadow: var(--lec-shadow);
 }
 
-.lec-sample-icon {
-  font-size: 13px;
-  color: var(--lec-accent);
-  font-weight: 700;
-}
-
 /* ==========================================================================
    Processing State
    ========================================================================== */
@@ -496,8 +501,6 @@ body.dark .lec-header {
   gap: 12px;
 }
 
-.lec-doc-icon { font-size: 24px; }
-
 .lec-doc-info strong {
   display: block;
   font-size: 14px;
@@ -579,6 +582,7 @@ body.dark .lec-header {
   transition: background 0.2s, color 0.2s;
 }
 .lec-copy-section:hover { background: var(--lec-hover-bg); color: var(--lec-accent); }
+.lec-copy-section svg { width: 16px; height: 16px; }
 
 .lec-card-body {
   padding: 28px 24px;
@@ -691,8 +695,6 @@ body.dark .lec-concept-tag { background: var(--lec-hover-bg); }
   padding: 36px 32px;
   text-align: center;
 }
-
-.lec-dialog-icon { font-size: 40px; display: block; margin-bottom: 16px; }
 
 .lec-dialog-title {
   font-family: var(--lec-serif);

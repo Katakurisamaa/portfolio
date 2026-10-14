@@ -4,26 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f3eb">
-  <title>Rythme — Planificateur Hebdomadaire & Architecture du Temps | Benjamin Minko</title>
-  <meta name="description" content="Planificateur hebdomadaire interactif créé par Benjamin Minko. Équilibrez deep work, actuariat, lecture et foi avec export PDF A4, iCalendar .ics et PNG HD.">
+  <title>Rythme — Planificateur hebdomadaire</title>
+  <meta name="description" content="Planificateur hebdomadaire pour organiser ses études, son travail, ses projets, ses activités personnelles et son repos. Modèles adaptables et exports PDF, calendrier ou image.">
   <meta name="author" content="Benjamin Minko">
-  <meta name="keywords" content="Rythme, planificateur hebdomadaire, architecture du temps, deep work, Benjamin Minko, calendrier, productivité, actuariat, iCalendar">
+  <meta name="keywords" content="Rythme, planificateur hebdomadaire, agenda, organisation, études, travail, projets, équilibre, calendrier">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://benjaminminko.com/planificateur.html">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Rythme — Planificateur Hebdomadaire & Architecture du Temps">
-  <meta property="og:description" content="Structurez votre semaine par énergies. Testez en direct et exportez en PDF imprimable, fichier calendrier .ics ou image HD.">
+  <meta property="og:title" content="Rythme — Planificateur hebdomadaire">
+  <meta property="og:description" content="Organisez votre semaine selon vos priorités, vos activités personnelles et votre besoin de repos. Personnalisez votre planning et exportez-le.">
   <meta property="og:url" content="https://benjaminminko.com/planificateur.html">
-  <meta property="og:site_name" content="Benjamin Minko">
+  <meta property="og:site_name" content="Rythme">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:image" content="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/rythme-planner.jpg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Rythme — Architecture de la Semaine par Benjamin Minko">
-  <meta name="twitter:description" content="Planificateur hebdomadaire interactif : équilibrez travail profond, lectures et alignement spirituel.">
+  <meta name="twitter:title" content="Rythme — Planificateur hebdomadaire">
+  <meta name="twitter:description" content="Un planning hebdomadaire adaptable pour organiser vos priorités, vos activités et vos temps de repos.">
   <meta name="twitter:image" content="https://yvrtpioalszmefypdfsy.supabase.co/storage/v1/object/public/portfolio-media/rythme-planner.jpg">
 
   <!-- Structured Data JSON-LD -->
@@ -33,7 +33,7 @@
     "@type": "WebApplication",
     "name": "Rythme — Architecture de la Semaine",
     "url": "https://benjaminminko.com/planificateur.html",
-    "description": "Planificateur hebdomadaire interactif et élégant pour harmoniser le travail profond, l'actuariat, la lecture et la foi.",
+    "description": "Planificateur hebdomadaire interactif pour organiser les priorités, les activités personnelles et les temps de repos.",
     "applicationCategory": "ProductivityApplication",
     "operatingSystem": "All",
     "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -50,11 +50,11 @@
   }
   </script>
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3Eb%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23a7422d'/%3E%3Ctext x='22' y='73' font-size='70' font-family='Georgia' fill='%23f5f2e9'%3ER%3C/text%3E%3C/svg%3E">
   
   <!-- Polices et styles globaux du portfolio -->
   <link rel="stylesheet" href="styles.css?v=20261013">
-  <link rel="stylesheet" href="planificateur.css?v=20261014">
+  <link rel="stylesheet" href="planificateur.css?v=20261014e">
 
   <!-- Script d'initialisation du thème sans scintillement -->
   <script>
@@ -67,7 +67,7 @@
       } catch (e) {}
     })();
   </script>
-  <script src="planificateur.js?v=20261014" defer></script>
+  <script src="planificateur.js?v=20261014e" defer></script>
 </head>
 <body>
 
@@ -75,8 +75,8 @@
   <header class="header">
     <nav class="nav wrap" aria-label="Navigation Rythme">
       <div class="brand-group">
-        <a class="brand" href="index.html#projets" aria-label="Retour au portfolio">Benjamin Minko<b>.</b></a>
-        <span class="badge-app-tag">Rythme<span class="badge-studio-suffix"> · Studio</span></span>
+        <a class="brand" href="#contenu" aria-label="Rythme, revenir au début du planificateur">Rythme<b>.</b></a>
+        <span class="badge-app-tag">Planificateur<span class="badge-studio-suffix"> · hebdomadaire</span></span>
       </div>
 
       <div class="planner-nav-actions">
@@ -85,7 +85,7 @@
           <span class="nav-portfolio-text"><span class="desktop-only-inline">Retour au </span>portfolio</span>
         </a>
         <button type="button" id="theme-toggle" class="top-pill-link theme-toggle-btn" aria-label="Basculer le thème">
-          <span id="theme-icon">🌙</span> <span id="theme-text" class="desktop-only-inline">Thème</span>
+          <span id="theme-icon" class="theme-icon" aria-hidden="true"></span> <span id="theme-text" class="desktop-only-inline">Thème</span>
         </button>
       </div>
     </nav>
@@ -99,19 +99,19 @@
         <p class="eyebrow"><span class="small-dot"></span> ARCHITECTURE DU TEMPS · OUTIL EN LIGNE</p>
         <h1 class="planner-title">Rythme<br><em>Une semaine à ta mesure.</em></h1>
         <p class="planner-subtitle">
-          Fais une place à ce qui compte : tes projets, tes études, ta foi et tes moments de repos.
-          Choisis trois priorités, organise tes créneaux et garde de la place pour l’imprévu.
+          Organise tes études, ton travail, tes projets et tes activités personnelles.
+          Choisis tes priorités, planifie tes créneaux et garde de la place pour l’imprévu.
         </p>
       </div>
 
       <!-- Carte d'instructions & points forts -->
       <aside class="hero-card-guide">
         <div class="guide-header">
-          <span class="guide-badge">✦ COMMENT ÇA MARCHE</span>
+          <span class="guide-badge">COMMENT ÇA MARCHE</span>
         </div>
         <ul class="guide-list">
-          <li><strong>Organise par Énergies :</strong> Deep work, analyse, lecture, foi, vitalité ou partages.</li>
-          <li><strong>Teste en un clic :</strong> Découvre nos 4 architectures types (chercheur, bâtisseur, équilibre, minimaliste).</li>
+          <li><strong>Organise par activité :</strong> Concentration, analyse, apprentissage, temps personnel, santé ou relations.</li>
+          <li><strong>Pars d’un modèle :</strong> Choisis un planning d’étude, de projet, équilibré ou allégé, puis adapte-le.</li>
           <li><strong>Télécharge et emporte :</strong> Exporte en PDF haute résolution, fichier calendrier (.ics) ou image.</li>
         </ul>
       </aside>
@@ -149,25 +149,30 @@
             <!-- Dropdown Presets -->
             <div class="dropdown-wrapper dropdown-flex">
               <button type="button" id="preset-btn" class="tool-btn-outline" aria-expanded="false" aria-haspopup="true">
-                <span>🪄</span> <span class="action-btn-text">Modèles</span> ▾
+                <span class="action-btn-text">Modèles</span> ▾
               </button>
               <div id="preset-menu" class="dropdown-popover" hidden>
-                <div class="popover-title">Choisis une architecture de semaine :</div>
-                <button type="button" class="preset-option" data-preset="chercheur">
-                  <strong>🔬 Chercheur & Actuaire</strong>
-                  <small>Stacking bayésien, analyse de données, lecture de papiers et modélisation.</small>
+                <div class="popover-title">Choisis ton point de départ</div>
+                <p class="preset-menu-intro">Un planning prêt à adapter : tu pourras modifier les créneaux après l’avoir choisi.</p>
+                <button type="button" class="preset-option" data-preset="etudes">
+                  <strong>Études &amp; apprentissage</strong>
+                  <small>Pour organiser tes cours, tes révisions et un travail à rendre, tout en gardant du temps pour souffler.</small>
+                  <span class="preset-meta">23 créneaux · toute la semaine</span>
                 </button>
-                <button type="button" class="preset-option" data-preset="developpeur">
-                  <strong>💻 Bâtisseur & Développeur</strong>
-                  <small>Deep work intense, code d'applications, revue d'architecture et déploiements.</small>
+                <button type="button" class="preset-option" data-preset="projet">
+                  <strong>Projet &amp; création</strong>
+                  <small>Pour faire avancer un projet : planifier, créer, vérifier le résultat et prévoir des pauses.</small>
+                  <span class="preset-meta">17 créneaux · toute la semaine</span>
                 </button>
                 <button type="button" class="preset-option" data-preset="equilibre">
-                  <strong>✝ Équilibre & Foi</strong>
-                  <small>Méditation matinale, travail ciblé, lectures nourricières et temps partagé.</small>
+                  <strong>Travail &amp; équilibre personnel</strong>
+                  <small>Pour répartir travail, activités personnelles, mouvement, relations et repos.</small>
+                  <span class="preset-meta">21 créneaux · toute la semaine</span>
                 </button>
-                <button type="button" class="preset-option" data-preset="minimaliste">
-                  <strong>🌿 Minimaliste Essentiel</strong>
-                  <small>Seulement 2 à 3 blocs d'impact par jour. Priorité absolue au calme mental.</small>
+                <button type="button" class="preset-option" data-preset="essentiel">
+                  <strong>Semaine allégée</strong>
+                  <small>Pour alléger ton agenda : une ou deux priorités par jour et de vrais temps libres.</small>
+                  <span class="preset-meta">11 créneaux · toute la semaine</span>
                 </button>
               </div>
             </div>
@@ -175,50 +180,36 @@
             <!-- Bouton Télécharger Dropdown -->
             <div class="dropdown-wrapper dropdown-flex">
               <button type="button" id="export-dropdown-btn" class="button export-cta" aria-expanded="false" aria-haspopup="true">
-                <span>📥</span> <span class="action-btn-text">Exporter</span> ▾
+                <span class="action-btn-text">Exporter</span> ▾
               </button>
               <div id="export-menu" class="dropdown-popover" hidden>
-                <div class="popover-title">Formater et exporter ma semaine :</div>
+                <div class="popover-title">Formater et exporter la semaine :</div>
                 <button type="button" class="export-item" id="export-pdf">
-                  <span class="export-icon">📄</span>
+                  <span class="export-icon" aria-hidden="true">PDF</span>
                   <div>
                     <strong>Imprimer ou Enregistrer en PDF A4</strong>
                     <small>Mise en page éditoriale prête pour le papier ou tablette.</small>
                   </div>
                 </button>
-                <button type="button" class="export-item" id="export-ics">
-                  <span class="export-icon">📅</span>
-                  <div>
-                    <strong>Exporter en Calendrier (.ics)</strong>
-                    <small>S'intègre d'un clic dans Google Calendar, Apple & Outlook.</small>
-                  </div>
-                </button>
                 <button type="button" class="export-item" id="export-png">
-                  <span class="export-icon">🖼️</span>
+                  <span class="export-icon" aria-hidden="true">PNG</span>
                   <div>
-                    <strong>Télécharger l'Image Haute Résolution (PNG)</strong>
-                    <small>Idéal pour fond d'écran ou aperçu rapide.</small>
+                    <strong>Télécharger une image (PNG)</strong>
+                    <small>Enregistrer une vue de la semaine en haute résolution.</small>
                   </div>
                 </button>
-                <button type="button" class="export-item" id="export-json">
-                  <span class="export-icon">💾</span>
+                <button type="button" class="export-item" id="export-ics">
+                  <span class="export-icon" aria-hidden="true">ICS</span>
                   <div>
-                    <strong>Sauvegarder le planning (Fichier JSON)</strong>
-                    <small>Pour recharger ou archiver ta configuration.</small>
-                  </div>
-                </button>
-                <button type="button" class="export-item import-item" id="import-json">
-                  <span class="export-icon">📂</span>
-                  <div>
-                    <strong>Importer un planning sauvegardé (.json)</strong>
-                    <small>Recharger une configuration précédemment exportée.</small>
+                    <strong>Exporter vers un calendrier (.ics)</strong>
+                    <small>Compatible avec Google Calendar, Apple Calendar et Outlook.</small>
                   </div>
                 </button>
               </div>
             </div>
 
             <!-- Bouton Raccourcis (Desktop uniquement) -->
-            <button type="button" id="shortcuts-btn" class="tool-btn-subtle desktop-only-inline" title="Raccourcis clavier (touche ?)">⌨ Raccourcis</button>
+            <button type="button" id="shortcuts-btn" class="tool-btn-subtle desktop-only-inline" title="Raccourcis clavier (touche ?)">Raccourcis clavier</button>
 
             <!-- Bouton Réinitialiser -->
             <button type="button" id="reset-week-btn" class="tool-btn-icon reset-btn" title="Réinitialiser la semaine" aria-label="Réinitialiser la semaine">✕</button>
@@ -243,30 +234,30 @@
         <div class="intentions-inputs">
           <div class="intention-input-wrap">
             <span class="intention-num">1</span>
-            <input type="text" id="intention-1" class="intention-input" placeholder="Ex. Finaliser la validation temporelle du modèle de stacking...">
+            <input type="text" id="intention-1" class="intention-input" placeholder="Ex. Terminer un travail important cette semaine...">
           </div>
           <div class="intention-input-wrap">
             <span class="intention-num">2</span>
-            <input type="text" id="intention-2" class="intention-input" placeholder="Ex. Programmer 2 sessions de deep work ininterrompues de 3h...">
+            <input type="text" id="intention-2" class="intention-input" placeholder="Ex. Réserver deux plages pour avancer sans interruption...">
           </div>
           <div class="intention-input-wrap">
             <span class="intention-num">3</span>
-            <input type="text" id="intention-3" class="intention-input" placeholder="Ex. Méditer Psaume 90 et préserver les soirées de ressourcement...">
+            <input type="text" id="intention-3" class="intention-input" placeholder="Ex. Garder du temps pour bouger et me reposer...">
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Légende des Énergies (Filtres interactifs) -->
-    <section class="energy-legend-bar" aria-label="Légende des catégories d'énergie">
-      <span class="legend-title">ÉNERGIES :</span>
+    <!-- Catégories de temps -->
+    <section class="energy-legend-bar" aria-label="Catégories de temps">
+      <span class="legend-title">CATÉGORIES :</span>
       <div class="legend-pills">
-        <span class="energy-pill tone-deepwork"><i class="energy-dot"></i> Deep Work</span>
-        <span class="energy-pill tone-data"><i class="energy-dot"></i> Analyse & Actuariat</span>
-        <span class="energy-pill tone-reading"><i class="energy-dot"></i> Lecture & Esprit</span>
-        <span class="energy-pill tone-faith"><i class="energy-dot"></i> Foi & Alignement</span>
-        <span class="energy-pill tone-vitality"><i class="energy-dot"></i> Vitalité & Santé</span>
-        <span class="energy-pill tone-social"><i class="energy-dot"></i> Liens & Partage</span>
+        <span class="energy-pill tone-deepwork"><i class="energy-dot"></i> Concentration &amp; création</span>
+        <span class="energy-pill tone-data"><i class="energy-dot"></i> Analyse &amp; organisation</span>
+        <span class="energy-pill tone-reading"><i class="energy-dot"></i> Apprentissage</span>
+        <span class="energy-pill tone-faith"><i class="energy-dot"></i> Temps personnel</span>
+        <span class="energy-pill tone-vitality"><i class="energy-dot"></i> Santé &amp; mouvement</span>
+        <span class="energy-pill tone-social"><i class="energy-dot"></i> Relations &amp; vie sociale</span>
       </div>
     </section>
 
@@ -279,7 +270,7 @@
       </div>
     </section>
 
-    <!-- TABLEAU DE BORD D'ANALYSE & ÉQUILIBRE ACTUARIEL -->
+    <!-- Tableau de bord : répartition du temps -->
     <section class="planner-analytics-section" aria-labelledby="analytics-heading">
       <div class="analytics-card">
         <div class="analytics-top">
@@ -313,8 +304,8 @@
             <span>Ajoute un créneau pour découvrir la répartition de ta semaine.</span>
           </div>
           <blockquote class="planner-quote" id="planner-quote">
-            « Enseigne-nous à bien compter nos jours, afin que nous appliquions notre cœur à la sagesse. »
-            <cite>— Psaume 90:12</cite>
+            « Une semaine bien pensée laisse de la place à l’essentiel et à l’imprévu. »
+            <cite>— Rythme</cite>
           </blockquote>
         </div>
       </div>
@@ -383,7 +374,7 @@
 
         <!-- Titre du bloc -->
         <label for="slot-title">Intention ou Activité <span>*</span></label>
-        <input type="text" id="slot-title" required maxlength="120" placeholder="Ex. Stacking bayésien — rédaction, Lecture Gounelle, Prière...">
+        <input type="text" id="slot-title" required maxlength="120" placeholder="Ex. Préparer un cours, avancer un projet, prendre une pause...">
 
         <!-- Horaires (Début & Fin) -->
         <div class="dialog-two-fields">
@@ -398,14 +389,15 @@
         </div>
 
         <!-- Choix de l'énergie / catégorie -->
-        <label>Nature de l'énergie</label>
-        <div class="energy-selector-grid" role="radiogroup" aria-label="Catégorie d'énergie">
+        <label>Type d’activité</label>
+        <p class="field-help category-help">Choisis la catégorie qui décrit le mieux ce créneau.</p>
+        <div class="energy-selector-grid" role="radiogroup" aria-label="Catégorie de temps">
           <label class="energy-radio-card tone-deepwork">
             <input type="radio" name="energy-type" value="deepwork" checked>
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>⚡ Deep Work</strong>
-              <small>Code, recherche, écriture</small>
+              <strong>Concentration &amp; création</strong>
+              <small>Travail exigeant, projet, rédaction</small>
             </div>
           </label>
 
@@ -413,8 +405,8 @@
             <input type="radio" name="energy-type" value="data">
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>📊 Analyse & Chiffres</strong>
-              <small>Actuariat, modèles, rigueur</small>
+              <strong>Analyse &amp; organisation</strong>
+              <small>Étude, planification, tâches pratiques</small>
             </div>
           </label>
 
@@ -422,8 +414,8 @@
             <input type="radio" name="energy-type" value="reading">
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>📖 Lecture & Esprit</strong>
-              <small>Livres, veille, études</small>
+              <strong>Apprentissage</strong>
+              <small>Lecture, cours, recherche d’information</small>
             </div>
           </label>
 
@@ -431,8 +423,8 @@
             <input type="radio" name="energy-type" value="faith">
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>✝ Foi & Alignement</strong>
-              <small>Méditation, prière, silence</small>
+              <strong>Temps personnel</strong>
+              <small>Pause, réflexion, activité calme ou temps pour soi</small>
             </div>
           </label>
 
@@ -440,8 +432,8 @@
             <input type="radio" name="energy-type" value="vitality">
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>🌿 Vitalité & Corps</strong>
-              <small>Sport, marche, repos</small>
+              <strong>Santé &amp; mouvement</strong>
+              <small>Sport, marche, récupération</small>
             </div>
           </label>
 
@@ -449,22 +441,22 @@
             <input type="radio" name="energy-type" value="social">
             <span class="radio-custom"></span>
             <div class="energy-card-info">
-              <strong>🤝 Liens & Partage</strong>
-              <small>Famille, amis, échanges</small>
+              <strong>Relations &amp; vie sociale</strong>
+              <small>Famille, proches, activités collectives</small>
             </div>
           </label>
         </div>
 
         <!-- Note complémentaire -->
         <label for="slot-notes">Précision ou objectif du créneau <small>(facultatif)</small></label>
-        <textarea id="slot-notes" rows="2" maxlength="300" placeholder="Ex. Isoler le smartphone et avancer le chapitre 3 sans interruption..."></textarea>
+        <textarea id="slot-notes" rows="2" maxlength="300" placeholder="Ex. Prévoir une pause et éviter les notifications..."></textarea>
 
         <!-- Actions -->
         <div class="dialog-actions">
           <button type="button" id="delete-slot-btn" class="button danger-btn" hidden>Supprimer</button>
           <div class="dialog-right-actions">
             <button type="button" id="cancel-slot-dialog" class="tool-btn-subtle">Annuler</button>
-            <button type="submit" class="button primary-cta">Valider le créneau ↗</button>
+            <button type="submit" class="button primary-cta">Valider le créneau</button>
           </div>
         </div>
       </form>
@@ -475,7 +467,7 @@
   <dialog id="shortcuts-dialog" class="planner-dialog" aria-labelledby="shortcuts-dialog-title">
     <div class="dialog-content">
       <div class="dialog-header">
-        <h2 id="shortcuts-dialog-title">⌨ Raccourcis Clavier Pro</h2>
+        <h2 id="shortcuts-dialog-title">Raccourcis clavier</h2>
         <button type="button" id="close-shortcuts-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
       </div>
       <div class="shortcuts-grid">
@@ -501,7 +493,7 @@
         <button type="button" id="close-reset-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
       </div>
       <div class="confirm-dialog-body">
-        <div class="confirm-dialog-icon" aria-hidden="true">🗑️</div>
+        <div class="confirm-dialog-icon" aria-hidden="true">!</div>
         <div class="confirm-dialog-message">
           <p class="confirm-main-question">Effacer tous les créneaux et réinitialiser la semaine ?</p>
           <p class="confirm-sub-text">
@@ -527,7 +519,7 @@
         <button type="button" id="close-delete-slot-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
       </div>
       <div class="confirm-dialog-body">
-        <div class="confirm-dialog-icon" aria-hidden="true">🗑️</div>
+        <div class="confirm-dialog-icon" aria-hidden="true">!</div>
         <div class="confirm-dialog-message">
           <p class="confirm-main-question" id="delete-slot-question">Supprimer définitivement ce créneau ?</p>
           <p class="confirm-sub-text">
@@ -552,7 +544,7 @@
         <button type="button" id="close-generic-confirm-dialog" class="dialog-close-btn" aria-label="Fermer">✕</button>
       </div>
       <div class="confirm-dialog-body">
-        <div class="confirm-dialog-icon" id="generic-confirm-icon" aria-hidden="true">💡</div>
+        <div class="confirm-dialog-icon" id="generic-confirm-icon" aria-hidden="true">i</div>
         <div class="confirm-dialog-message">
           <p class="confirm-main-question" id="generic-confirm-question">Êtes-vous sûr ?</p>
           <p class="confirm-sub-text" id="generic-confirm-sub">
@@ -563,7 +555,7 @@
       <div class="dialog-actions confirm-dialog-actions">
         <button type="button" id="cancel-generic-confirm-btn" class="tool-btn-subtle">Annuler</button>
         <button type="button" id="confirm-generic-confirm-btn" class="button primary-cta">
-          <span id="generic-confirm-btn-text">Confirmer ↗</span>
+          <span id="generic-confirm-btn-text">Confirmer</span>
         </button>
       </div>
     </div>
@@ -572,17 +564,14 @@
   <!-- Toast de confirmation -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- Input caché pour import JSON -->
-  <input type="file" id="import-json-input" accept=".json" hidden>
-
   <!-- Zone invisible pour impression A4 vectorielle -->
   <div id="print-area" class="print-only" aria-hidden="true"></div>
 
   <!-- Pied de page -->
   <footer class="footer wrap">
-    <div class="brand">bm<b>.</b></div>
-    <span>Rythme — Conçu avec rigueur et simplicité par Benjamin Minko.</span>
-    <a class="text-link" href="/">Retour au portfolio ↗</a>
+    <div class="brand">Rythme<b>.</b></div>
+    <span>Un espace pour organiser la semaine à sa façon.</span>
+    <a class="text-link" href="/">Retour au portfolio</a>
   </footer>
 
 </body>
