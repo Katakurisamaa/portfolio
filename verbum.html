@@ -140,25 +140,59 @@
       <!-- Selection Bar -->
       <div class="vb-filter-bar">
         <div class="vb-filter-group">
-          <label for="graver-book-select">Livre :</label>
-          <select id="graver-book-select" class="vb-select">
-            <option value="all">Tous les livres</option>
-          </select>
+          <label id="vb-book-select-label">Livre :</label>
+          <div class="vb-custom-select" id="custom-book-select">
+            <button type="button" class="vb-custom-trigger" id="book-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="vb-book-select-label book-select-trigger">
+              <span class="vb-custom-value" id="book-select-value">Tous les livres</span>
+              <span class="vb-custom-chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="vb-custom-dropdown" id="book-select-dropdown" role="listbox" aria-labelledby="vb-book-select-label" hidden>
+              <!-- Dynamically populated in JS -->
+            </div>
+            <select id="graver-book-select" hidden aria-hidden="true" tabindex="-1">
+              <option value="all">Tous les livres</option>
+            </select>
+          </div>
         </div>
 
         <div class="vb-filter-group">
-          <label for="graver-theme-select">Thématique :</label>
-          <select id="graver-theme-select" class="vb-select">
-            <option value="all">Toutes les thématiques</option>
-          </select>
+          <label id="vb-theme-select-label">Thématique :</label>
+          <div class="vb-custom-select" id="custom-theme-select">
+            <button type="button" class="vb-custom-trigger" id="theme-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="vb-theme-select-label theme-select-trigger">
+              <span class="vb-custom-value" id="theme-select-value">Toutes les thématiques</span>
+              <span class="vb-custom-chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="vb-custom-dropdown" id="theme-select-dropdown" role="listbox" aria-labelledby="vb-theme-select-label" hidden>
+              <!-- Dynamically populated in JS -->
+            </div>
+            <select id="graver-theme-select" hidden aria-hidden="true" tabindex="-1">
+              <option value="all">Toutes les thématiques</option>
+            </select>
+          </div>
         </div>
 
         <div class="vb-filter-group">
-          <label for="graver-version-select">Version :</label>
-          <select id="graver-version-select" class="vb-select">
-            <option value="lsg">Louis Segond 1910</option>
-            <option value="pdv">Parole de Vie (Français courant)</option>
-          </select>
+          <label id="vb-version-select-label">Version :</label>
+          <div class="vb-custom-select" id="custom-version-select">
+            <button type="button" class="vb-custom-trigger" id="version-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="vb-version-select-label version-select-trigger">
+              <span class="vb-custom-value" id="version-select-value">Louis Segond 1910</span>
+              <span class="vb-custom-chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="vb-custom-dropdown" id="version-select-dropdown" role="listbox" aria-labelledby="vb-version-select-label" hidden>
+              <div class="vb-custom-option is-selected" role="option" data-value="lsg" aria-selected="true" tabindex="0">
+                <span>Louis Segond 1910</span>
+                <span class="vb-opt-check" aria-hidden="true">✓</span>
+              </div>
+              <div class="vb-custom-option" role="option" data-value="pdv" aria-selected="false" tabindex="0">
+                <span>Parole de Vie (Français courant)</span>
+                <span class="vb-opt-check" aria-hidden="true">✓</span>
+              </div>
+            </div>
+            <select id="graver-version-select" hidden aria-hidden="true" tabindex="-1">
+              <option value="lsg">Louis Segond 1910</option>
+              <option value="pdv">Parole de Vie (Français courant)</option>
+            </select>
+          </div>
         </div>
 
         <button type="button" id="graver-random-btn" class="vb-btn vb-btn-outline" title="Proposer un autre verset">
@@ -353,8 +387,10 @@
         <div class="vb-guess-inputs-grid">
           <div class="vb-field-group">
             <label for="detective-book-input">Livre :</label>
-            <input type="text" id="detective-book-input" class="vb-input" list="bible-books-datalist" placeholder="Ex: Psaumes, Romains, Jérémie..." autocomplete="off">
-            <datalist id="bible-books-datalist"></datalist>
+            <div class="vb-autocomplete-wrapper" id="detective-book-wrapper">
+              <input type="text" id="detective-book-input" class="vb-input" placeholder="Ex: Psaumes, Romains, Jérémie..." autocomplete="off">
+              <div class="vb-autocomplete-dropdown" id="detective-book-dropdown" role="listbox" hidden></div>
+            </div>
           </div>
 
           <div class="vb-field-group">

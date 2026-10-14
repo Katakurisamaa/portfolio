@@ -412,6 +412,193 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   outline: none;
 }
 
+/* ==========================================================================
+   Sélecteurs Déroulants Personnalisés (.vb-custom-select)
+   ========================================================================== */
+.vb-custom-select {
+  position: relative;
+  display: inline-block;
+  min-width: 170px;
+}
+
+.vb-custom-select select {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  border: 0 !important;
+  margin: -1px !important;
+  padding: 0 !important;
+}
+
+.vb-custom-dropdown[hidden],
+.vb-autocomplete-dropdown[hidden] {
+  display: none !important;
+}
+
+.vb-custom-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.48rem 0.85rem;
+  border-radius: var(--vb-radius-sm);
+  border: 1px solid var(--vb-line);
+  background: var(--vb-paper);
+  color: var(--vb-ink);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.vb-custom-trigger:hover {
+  border-color: var(--vb-accent);
+  background: var(--vb-card-bg);
+}
+
+.vb-custom-trigger:focus-visible,
+.vb-custom-select.is-open .vb-custom-trigger {
+  border-color: var(--vb-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(167, 66, 45, 0.18);
+  background: var(--vb-card-bg);
+}
+
+.vb-custom-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+
+.vb-custom-chevron {
+  font-size: 0.75rem;
+  color: var(--vb-accent);
+  transition: transform 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.vb-custom-select.is-open .vb-custom-chevron {
+  transform: rotate(180deg);
+}
+
+.vb-custom-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 210px;
+  max-width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 300;
+  background: var(--vb-card-bg);
+  border: 1px solid var(--vb-card-border);
+  border-radius: var(--vb-radius);
+  box-shadow: var(--vb-shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vb-line) transparent;
+  animation: fadeIn 0.15s ease;
+}
+
+.vb-custom-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.vb-custom-dropdown::-webkit-scrollbar-thumb {
+  background: var(--vb-line);
+  border-radius: 4px;
+}
+
+.vb-custom-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--vb-radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--vb-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.vb-custom-option:hover {
+  background: var(--vb-hover-bg);
+  color: var(--vb-accent);
+}
+
+.vb-custom-option.is-selected {
+  background: var(--vb-paper-warm);
+  color: var(--vb-accent);
+  font-weight: 700;
+}
+
+.vb-opt-check {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--vb-accent);
+  opacity: 0;
+}
+
+.vb-custom-option.is-selected .vb-opt-check {
+  opacity: 1;
+}
+
+/* Autocomplete in Mode Détective */
+.vb-autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.vb-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 300;
+  background: var(--vb-card-bg);
+  border: 1px solid var(--vb-card-border);
+  border-radius: var(--vb-radius);
+  box-shadow: var(--vb-shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vb-line) transparent;
+}
+
+.vb-autocomplete-option {
+  padding: 8px 12px;
+  border-radius: var(--vb-radius-sm);
+  font-size: 0.88rem;
+  color: var(--vb-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vb-autocomplete-option:hover,
+.vb-autocomplete-option.is-focused {
+  background: var(--vb-hover-bg);
+  color: var(--vb-accent);
+}
+
 /* Custom Verse Box */
 .vb-custom-box {
   background: var(--vb-gold-soft);

@@ -879,10 +879,202 @@
     }, 3200);
   }
 
+  // ==========================================================================
+  // SÉLECTEURS DÉROULANTS PERSONNALISÉS (Sans popup natif OS)
+  // ==========================================================================
+  function closeAllCustomSelects() {
+    document.querySelectorAll('.vb-custom-select.is-open').forEach(sel => {
+      sel.classList.remove('is-open');
+      const trigger = sel.querySelector('.vb-custom-trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      const dropdown = sel.querySelector('.vb-custom-dropdown');
+      if (dropdown) dropdown.hidden = true;
+    });
+  }
+
+  function setCustomSelectValue(wrapperId, val) {
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) return;
+    const valueEl = wrapper.querySelector('.vb-custom-value');
+    const dropdown = wrapper.querySelector('.vb-custom-dropdown');
+    const hiddenSelect = wrapper.querySelector('select');
+    if (hiddenSelect) hiddenSelect.value = val;
+
+    if (dropdown) {
+      const options = dropdown.querySelectorAll('.vb-custom-option');
+      options.forEach(opt => {
+        const matches = opt.getAttribute('data-value') === val;
+        opt.classList.toggle('is-selected', matches);
+        opt.setAttribute('aria-selected', matches ? 'true' : 'false');
+        if (matches && valueEl) {
+          const labelSpan = opt.querySelector('span:first-child');
+          valueEl.textContent = labelSpan ? labelSpan.textContent.trim() : opt.textContent.trim();
+        }
+      });
+    }
+  }
+
+  function setupCustomSelect({ wrapperId, triggerId, valueId, dropdownId, hiddenSelectId, onChange }) {
+    const wrapper = document.getElementById(wrapperId);
+    const trigger = document.getElementById(triggerId);
+    const valueEl = document.getElementById(valueId);
+    const dropdown = document.getElementById(dropdownId);
+    const hiddenSelect = document.getElementById(hiddenSelectId);
+
+    if (!wrapper || !trigger || !dropdown) return;
+
+    // Clic sur le déclencheur
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrapper.classList.contains('is-open');
+      closeAllCustomSelects();
+      if (!isOpen) {
+        wrapper.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        dropdown.hidden = false;
+        const selected = dropdown.querySelector('.vb-custom-option.is-selected');
+        if (selected) {
+          selected.scrollIntoView({ block: 'nearest' });
+        }
+      }
+    });
+
+    // Clic sur une option
+    dropdown.addEventListener('click', (e) => {
+      const opt = e.target.closest('.vb-custom-option');
+      if (!opt) return;
+      e.stopPropagation();
+
+      const val = opt.getAttribute('data-value');
+      const labelSpan = opt.querySelector('span:first-child');
+      const label = labelSpan ? labelSpan.textContent.trim() : opt.textContent.trim();
+
+      if (valueEl) valueEl.textContent = label;
+
+      dropdown.querySelectorAll('.vb-custom-option').forEach(o => {
+        o.classList.remove('is-selected');
+        o.setAttribute('aria-selected', 'false');
+      });
+      opt.classList.add('is-selected');
+      opt.setAttribute('aria-selected', 'true');
+
+      wrapper.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
+      dropdown.hidden = true;
+      trigger.focus();
+
+      if (hiddenSelect) {
+        hiddenSelect.value = val;
+        hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if (typeof onChange === 'function') {
+        onChange(val);
+      }
+    });
+
+    // Accessibilité clavier dans le menu déroulant
+    dropdown.addEventListener('keydown', (e) => {
+      const options = Array.from(dropdown.querySelectorAll('.vb-custom-option'));
+      const activeIdx = options.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = options[activeIdx + 1] || options[0];
+        if (next) next.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = options[activeIdx - 1] || options[options.length - 1];
+        if (prev) prev.focus();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.classList.contains('vb-custom-option')) {
+          document.activeElement.click();
+        }
+      } else if (e.key === 'Escape') {
+        wrapper.classList.remove('is-open');
+        trigger.setAttribute('aria-expanded', 'false');
+        dropdown.hidden = true;
+        trigger.focus();
+      }
+    });
+  }
+
+  function setupDetectiveAutocomplete() {
+    const bookInput = document.getElementById('detective-book-input');
+    const dropdown = document.getElementById('detective-book-dropdown');
+    if (!bookInput || !dropdown) return;
+
+    const books = Array.from(new Set(BIBLE_VERSES.map(v => v.book))).sort();
+
+    function renderAutocomplete(query) {
+      const q = normalizeWord(query || '');
+      const filtered = q ? books.filter(b => normalizeWord(b).includes(q)) : books;
+
+      if (filtered.length === 0) {
+        dropdown.innerHTML = '<div class="vb-autocomplete-option" style="opacity:0.6; pointer-events:none;">Aucun livre correspondant</div>';
+      } else {
+        dropdown.innerHTML = filtered.map(b => `
+          <div class="vb-autocomplete-option" role="option" data-value="${escapeHtml(b)}" tabindex="0">${escapeHtml(b)}</div>
+        `).join('');
+      }
+      dropdown.hidden = false;
+    }
+
+    bookInput.addEventListener('focus', () => {
+      renderAutocomplete(bookInput.value);
+    });
+
+    bookInput.addEventListener('input', () => {
+      renderAutocomplete(bookInput.value);
+    });
+
+    dropdown.addEventListener('click', (e) => {
+      const opt = e.target.closest('.vb-autocomplete-option');
+      if (!opt || opt.hasAttribute('style')) return;
+      const val = opt.getAttribute('data-value');
+      if (val) {
+        bookInput.value = val;
+        dropdown.hidden = true;
+        const chapInput = document.getElementById('detective-chapter-input');
+        if (chapInput) chapInput.focus();
+      }
+    });
+
+    bookInput.addEventListener('keydown', (e) => {
+      if (dropdown.hidden) return;
+      const options = Array.from(dropdown.querySelectorAll('.vb-autocomplete-option[data-value]'));
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (options.length > 0) options[0].focus();
+      } else if (e.key === 'Escape') {
+        dropdown.hidden = true;
+      }
+    });
+
+    dropdown.addEventListener('keydown', (e) => {
+      const options = Array.from(dropdown.querySelectorAll('.vb-autocomplete-option[data-value]'));
+      const idx = options.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = options[idx + 1] || options[0];
+        if (next) next.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = options[idx - 1] || options[options.length - 1];
+        if (prev) prev.focus();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (document.activeElement) document.activeElement.click();
+      } else if (e.key === 'Escape') {
+        dropdown.hidden = true;
+        bookInput.focus();
+      }
+    });
+  }
+
   function init() {
     initTheme();
     populateFilters();
-    populateDatalist();
+    setupDetectiveAutocomplete();
     renderStatsRibbon();
     setupEventListeners();
     setupKeyboardNavigation();
@@ -912,11 +1104,14 @@
   function populateFilters() {
     const bookSelect = document.getElementById('graver-book-select');
     const themeSelect = document.getElementById('graver-theme-select');
+    const bookDropdown = document.getElementById('book-select-dropdown');
+    const themeDropdown = document.getElementById('theme-select-dropdown');
 
     if (!bookSelect || !themeSelect) return;
 
     // Livres uniques
     const books = Array.from(new Set(BIBLE_VERSES.map(v => v.book))).sort();
+    bookSelect.innerHTML = '<option value="all">Tous les livres</option>';
     books.forEach(b => {
       const opt = document.createElement('option');
       opt.value = b;
@@ -924,21 +1119,68 @@
       bookSelect.appendChild(opt);
     });
 
+    if (bookDropdown) {
+      bookDropdown.innerHTML = `
+        <div class="vb-custom-option is-selected" role="option" data-value="all" aria-selected="true" tabindex="0">
+          <span>Tous les livres</span>
+          <span class="vb-opt-check" aria-hidden="true">✓</span>
+        </div>
+      ` + books.map(b => `
+        <div class="vb-custom-option" role="option" data-value="${escapeHtml(b)}" aria-selected="false" tabindex="0">
+          <span>${escapeHtml(b)}</span>
+          <span class="vb-opt-check" aria-hidden="true">✓</span>
+        </div>
+      `).join('');
+    }
+
     // Thèmes uniques
     const themes = Array.from(new Set(BIBLE_VERSES.map(v => v.theme))).sort();
+    themeSelect.innerHTML = '<option value="all">Toutes les thématiques</option>';
     themes.forEach(t => {
       const opt = document.createElement('option');
       opt.value = t;
       opt.textContent = t;
       themeSelect.appendChild(opt);
     });
-  }
 
-  function populateDatalist() {
-    const datalist = document.getElementById('bible-books-datalist');
-    if (!datalist) return;
-    const books = Array.from(new Set(BIBLE_VERSES.map(v => v.book))).sort();
-    datalist.innerHTML = books.map(b => `<option value="${b}">`).join('');
+    if (themeDropdown) {
+      themeDropdown.innerHTML = `
+        <div class="vb-custom-option is-selected" role="option" data-value="all" aria-selected="true" tabindex="0">
+          <span>Toutes les thématiques</span>
+          <span class="vb-opt-check" aria-hidden="true">✓</span>
+        </div>
+      ` + themes.map(t => `
+        <div class="vb-custom-option" role="option" data-value="${escapeHtml(t)}" aria-selected="false" tabindex="0">
+          <span>${escapeHtml(t)}</span>
+          <span class="vb-opt-check" aria-hidden="true">✓</span>
+        </div>
+      `).join('');
+    }
+
+    // Initialisation des sélecteurs sur-mesure
+    setupCustomSelect({
+      wrapperId: 'custom-book-select',
+      triggerId: 'book-select-trigger',
+      valueId: 'book-select-value',
+      dropdownId: 'book-select-dropdown',
+      hiddenSelectId: 'graver-book-select'
+    });
+
+    setupCustomSelect({
+      wrapperId: 'custom-theme-select',
+      triggerId: 'theme-select-trigger',
+      valueId: 'theme-select-value',
+      dropdownId: 'theme-select-dropdown',
+      hiddenSelectId: 'graver-theme-select'
+    });
+
+    setupCustomSelect({
+      wrapperId: 'custom-version-select',
+      triggerId: 'version-select-trigger',
+      valueId: 'version-select-value',
+      dropdownId: 'version-select-dropdown',
+      hiddenSelectId: 'graver-version-select'
+    });
   }
 
   function renderStatsRibbon() {
@@ -1638,6 +1880,8 @@
         showVerbumToast("Aucun verset pour cette combinaison. Filtres réinitialisés.", "warning");
         bookSel.value = 'all';
         themeSel.value = 'all';
+        setCustomSelectValue('custom-book-select', 'all');
+        setCustomSelectValue('custom-theme-select', 'all');
         loadVerse(BIBLE_VERSES[0]);
       }
     }
@@ -1830,6 +2074,25 @@
         renderBiblioDirectory(e.target.value);
       });
     }
+
+    // Fermeture automatique des sélecteurs personnalisés au clic extérieur ou touche Échap
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.vb-custom-select')) {
+        closeAllCustomSelects();
+      }
+      if (!e.target.closest('.vb-autocomplete-wrapper')) {
+        const dDrop = document.getElementById('detective-book-dropdown');
+        if (dDrop) dDrop.hidden = true;
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAllCustomSelects();
+        const dDrop = document.getElementById('detective-book-dropdown');
+        if (dDrop) dDrop.hidden = true;
+      }
+    });
   }
 
   function setupKeyboardNavigation() {
